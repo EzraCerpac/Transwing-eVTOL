@@ -3,9 +3,7 @@ on:
   push:
     paths:
     - '**.py'
-permissions:
-  contents: read
-  id-token: write
+permissions: write-all
 jobs:
   autoyapf:
     runs-on: ubuntu-latest

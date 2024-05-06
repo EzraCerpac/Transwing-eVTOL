@@ -4,7 +4,7 @@ x = { 'a':37,'b':42,  }
 y = 'hello ' 'world'
 z = 'hello '+'world'
 a = 'hello {}'.format('world')
-class foo (   object  ):
+class foo (   object   ):
     def f (self ):
         return 37**2
     def g(self, x,y=42):
