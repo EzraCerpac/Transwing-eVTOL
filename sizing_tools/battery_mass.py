@@ -8,6 +8,7 @@ from utility.unit_conversion import convert_float
 
 
 class BatterySizing:
+
     def __init__(self, aircraft: Aircraft):
         """
         Initialize the BatterySizing class.
@@ -28,8 +29,8 @@ class BatterySizing:
 
         :return: The value of k.
         """
-        return 0.5 * (
-                pi * self.cruise_density * self.aircraft.propeller_radius ** 4 * self.aircraft.tension_coefficient)
+        return 0.5 * (pi * self.cruise_density * self.aircraft.propeller_radius
+                      **4 * self.aircraft.tension_coefficient)
 
     @property
     def cruise_energy_consumption(self) -> float:
@@ -38,7 +39,7 @@ class BatterySizing:
 
         :return: The cruise energy consumption.
         """
-        return self.k / self.aircraft.electric_propulsion_efficiency * self.aircraft.propeller_rotation_speed ** 2 * convert_float(
+        return self.k / self.aircraft.electric_propulsion_efficiency * self.aircraft.propeller_rotation_speed**2 * convert_float(
             self.aircraft.cruise_velocity, 'km', 'm') * self.cruise_time
 
     def battery_mass(self) -> float:
@@ -47,7 +48,8 @@ class BatterySizing:
 
         :return: The battery mass.
         """
-        return convert_float(self.cruise_energy_consumption, 'J', 'kWh') / self.aircraft.battery_energy_density
+        return convert_float(self.cruise_energy_consumption, 'J',
+                             'kWh') / self.aircraft.battery_energy_density
 
 
 if __name__ == '__main__':

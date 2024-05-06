@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class Aircraft(BaseModel):
     name: str = "Aircraft"
 
