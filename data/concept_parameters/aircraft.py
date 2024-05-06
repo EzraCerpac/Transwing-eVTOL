@@ -16,8 +16,10 @@ class Aircraft(BaseModel):
     propeller_rotation_speed: float  # rotations/s
     tension_coefficient: float  #
 
-    @field_validator('cruise_velocity', 'cruise_altitude', 'range', 'electric_propulsion_efficiency',
-                     'battery_energy_density', 'propeller_radius', 'propeller_rotation_speed', 'tension_coefficient')
+    @field_validator('cruise_velocity', 'cruise_altitude', 'range',
+                     'electric_propulsion_efficiency',
+                     'battery_energy_density', 'propeller_radius',
+                     'propeller_rotation_speed', 'tension_coefficient')
     @classmethod
     def check_positive(cls, v):
         if v <= 0:

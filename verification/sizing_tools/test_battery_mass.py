@@ -2,7 +2,9 @@ import unittest
 from unittest.mock import Mock
 from sizing_tools.battery_mass import BatterySizing
 
+
 class TestBatterySizing(unittest.TestCase):
+
     def setUp(self):
         self.aircraft = Mock()
         self.aircraft.cruise_altitude = 500  # m
@@ -20,11 +22,14 @@ class TestBatterySizing(unittest.TestCase):
 
     def test_cruise_energy_consumption_calculation(self):
         battery_sizing = BatterySizing(self.aircraft)
-        self.assertAlmostEqual(battery_sizing.cruise_energy_consumption / 1e6, 91692960.73 / 1e6, places=1)
+        self.assertAlmostEqual(battery_sizing.cruise_energy_consumption / 1e6,
+                               91692960.73 / 1e6,
+                               places=1)
 
     def test_battery_mass_calculation(self):
         battery_sizing = BatterySizing(self.aircraft)
         self.assertAlmostEqual(battery_sizing.battery_mass(), 84.9, places=1)
+
 
 if __name__ == '__main__':
     unittest.main()
