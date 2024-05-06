@@ -1,0 +1,112 @@
+\chapter{Project Guidelines}\label{ch:project_rules}
+All team members agreed upon following a set of guidelines to ensure a smooth and efficient workflow during the DSE.
+These guidelines are set up to ensure that all team members are on the same page and that the project is executed in a structured and organised manner, and are stated in the following sections.
+
+\paragraph{Contact \& Communication}
+\begin{itemize}
+    \item The Communication Officer is responsible for formal contact with tutors, coaches and teaching assistants.
+    \item Emails are written as a group and checked by the Communication Officer before being sent.
+    \item Informal communication within the team will be done via WhatsApp.
+\end{itemize}
+
+\paragraph{Schedule}
+\begin{itemize}
+    \item The group shall be notified as soon as possible when a team member is aware of any absence during the DSE.
+    \item When a team member arrives late to a session, he is obliged to bring a cake or something equivalent to the next session.
+    \item A team member or work group shall notify the appropriate parties timely when running behind schedule.
+    \item Everyone should feel encouraged to ask for help when deemed necessary.
+\end{itemize}
+
+\paragraph{Meeting}
+\begin{itemize}
+    \item During meetings, all team members are expected to give their attention fully, and thus no other work shall be executed simultaneously.
+    \item Only English shall be spoken during the meetings and the entire project.
+    \item At the start of the working day, a ten-minute stand-up meeting shall take place to:
+    \begin{itemize}
+        \item discuss the tasks and responsibilities of all individual team members;
+        \item set up the whiteboard;
+        \item assure that all team members are notified and conscious of the agenda of the meeting with the coaches.
+    \end{itemize}
+    \item At the end of the working day, a fifteen-minute shutdown meeting shall take place, where the tasks done for the day will be discussed and the timetable will be filled in.
+\end{itemize}
+
+\paragraph{Planning}
+\begin{itemize}
+    \item The Gantt Chart (\cref{sec:gantt-chart}) shall be used for the official planning of the project.
+    \item Trello boards shall be used for day-to-day task generation and tracking.
+    \item It is each team member’s responsibility to keep their tasks up to date on the Trello board and be informed of the tasks executed by other team members.
+\end{itemize}
+
+\paragraph{Documenting}
+\begin{itemize}
+    \item LaTeX shall be used for the generation of all report deliverables.
+    \item All LaTeX projects shall be stored and versioned in GitHub, as well as on the Overleaf platform for the most recent version.
+    \item Major versions of the report shall be exported as PDFs and stored in the directory named "Important reports versions" in the shared Microsoft Teams drive.
+    \item The following LaTeX guidelines are set up, these shall be enforced by the documents manager and software manager:
+    \begin{itemize}
+        \item For notes, comments, and tasks within the LaTeX projects, the \verb|/TODO| package shall be utilised.
+        Before handing in the report these \verb|/TODO| notes should be removed.
+        \item Every chapter, section, figure, table, and equation shall be labelled.
+        \item Every figure and table shall have a caption.
+        \item Every figure shall be stored in the \verb|figures| directory, in a separate subdirectory for each chapter, and preferably as a PDF file or vector graphic.
+        \item Every sentence shall start on a new line and paragraphs shall be divided by an empty line.
+        \item For referencing, the \verb|cleveref| package shall be used.
+        This entails the use of i.e\@. the \verb|\cref{}| and \verb|\Cref{}| commands.
+        \item For numerical values and units the \verb|siunitx| package shall be used.
+        This entails the use of i.e\@. the \verb|\qty{}{}| command.
+        %    \item For acronyms and abbreviations the \verb|acronym| package shall be used.
+        %    This entails the use of i.e\@. the \verb|\ac{}|, \verb|\Ac{}|, and \verb|\acf{}| commands.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{Language}
+\begin{itemize}
+    \item All deliverables shall be written in British English.
+    \item The use of the passive voice and the first person shall be avoided in the report.
+    \item During working hours only English is spoken.
+    \item Make correct and frequent use of punctuation in the report.
+\end{itemize}
+
+\paragraph{Proofreading}
+\begin{itemize}
+    \item Clear proofreading guidelines start by adhering strictly to the documenting and language guidelines.
+    \item The QAO shall assign all the team members with proofreading responsibilities, which consist of:
+    \begin{itemize}
+        \item Equal work per member.
+        \item Each member being assigned to their expertise and familiarity.
+    \end{itemize}
+    \item Clear and realistic deadlines are set by the QAO, which consists of multiple rounds of proofreading.
+    \item After the first proofreading round, each member proofreads a different chapter/section in a chronological order, and provides it with constructive feedback through comment features and discussion.
+    \item Ensure consistency and accuracy by double-checking references and style/punctuation used.
+    \item One more proofread round acts as a final review by all members of larger parts, to ensure an error-free and coherent report.
+\end{itemize}
+
+\paragraph{Code}
+\begin{itemize}
+    \item The Python programming language shall be used as much as possible for coding tasks.
+    \item All code shall be stored and versioned in the GitHub repository.
+    \item The code shall be written in a modular way, with functions, classes, and modules used to separate different parts of the code.
+    \item All code shall be properly typed, with type hints used for all functions and classes.
+    \item Further, the PEP8 coding standard shall be followed as much as possible.
+    \item Each team member shall work in the appropriate branch of the repository.
+    \item The Software Manager shall be responsible for merging the branches into the main branch, and overall code quality.
+    \item For notes, comments, and tasks within the repository, the \verb|#todo| comment shall be utilised.
+    \item For printing messages to the console, the \verb|logging| module shall be used.
+    \item Standard functions, for i.e\@. the generation of plots and figures, shall be provided and utilised whenever possible.
+\end{itemize}
+
+\paragraph{Computer Aided Modelling (CAD)}
+\begin{itemize}
+    \item The naming convention (TBD) shall be respected and utilised for all parts and assemblies.
+    \item Everything shall and must be iso-constrained.
+    \item Whenever possible, parameterised design shall be utilised, since iteration and modification will be a critical part of the design process.
+    \item It is encouraged to work in a highly modular manner, with parts and assemblies separated as much as possible.
+    \item So-called planes shall be hidden when not in use, to avoid confusion and clutter in the design.
+\end{itemize}
+
+\paragraph{Artificial Intelligence}
+\begin{itemize}
+    \item No generative artificial intelligence shall be used to generate content intended for a deliverable in any way.
+    \item Generative artificial intelligence shall not be used to perform or check calculations.
+    \item Generative artificial intelligence may be used to generate code lines if, and only if, the generated code is fully understood.
+\end{itemize}

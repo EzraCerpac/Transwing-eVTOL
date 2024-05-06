@@ -1,0 +1,85 @@
+\chapter{General Summary}
+\label{ch:General_Summary}
+This chapter will give a broad overview of what the "Transwing eVTOL" project consists of.
+In \cref{sec:description-of-entire-system} more context about the project will be given, from which the Mission Need Statement (MNS) and the Project Objective Statement (POS) will flow.
+\Cref{sec:customer-requirements} will lastly state the top-level requirements defined by the customer interested in the development and establishment of this technology.
+
+\section{Description of Entire System}
+\label{sec:description-of-entire-system}
+This project aims to fill a gap in the aviation market, namely Inter-Urban Air Mobility (I-UAM).
+UAM is an emerging branch of Air Mobility rapidly gaining traction in both the industry and scientific community \cite{UAM-Overview}.
+It entails the use of small, highly automated aircraft for passenger or cargo transportation in urban areas, similar to cars used today.
+Vertical Take-Off and Landing (VTOL) vehicles are preferred when constraints are put on the maximum ground footprint of the aircraft.
+The currently certified VTOL models for UAM mostly consist of wingless rotorcrafts.
+However, wings offer many advantages when it comes to efficient (cruise) flight over longer distances; to achieve I-UAM, and thereby facilitate travel between cities, wings offer a big advantage in terms of performance and design.
+To design a low ground footprint VTOL, a transwing option is proposed.
+Finally, the vehicle should be electric to reduce emissions, and noise pollution in urban areas and therefore increase product sustainability.
+The above considerations result in the following Mission Need Statement (MNS) and Project Objective Statement (POS).
+
+\paragraph{MNS:}“\textit{Achieve Sustainable Inter-Urban Air Mobility with a low ground footprint vehicle.}”
+\vspace{-5mm}
+\paragraph{POS:}“\textit{Design a low ground footprint, sustainable, urban transwing electric Vertical Take-Off and Landing vehicle within production costs of \num{2000}kEUR, by 10 students in 10 weeks time.}”
+
+
+
+\section{Requirements}\label{sec:customer-requirements}
+The first set of requirements given can be divided into the following main categories: performance, safety, customer, cost \& sustainability.
+Below, the top-level system requirements are listed in the words of the customer. These initial requirements will be further elaborated upon in the first phases of the design. 
+
+% \begin{table}[H]
+% \centering
+% \caption{Vehicle Requirements Specification}
+% \label{tab:vehicle_requirements}
+% \begin{tabular}{|l|p{10cm}|}
+% \hline
+% \textbf{ID} & \textbf{Requirement} \\ \hline
+% \multicolumn{2}{|c|}{\textbf{Performance}} \\ \hline
+% REQ-001 & Maximum payload weight of 400 kg \\ \hline
+% REQ-002 & Indicative maximum size is 8 x 4 x 1 m\textsuperscript{3} on the ground \\ \hline
+% REQ-003 & Cruise speed of 200 km/h \\ \hline
+% REQ-004 & Compliance with European noise emission regulations \\ \hline
+% REQ-005 & Electric power autonomy for 100 km + reserve \\ \hline
+% REQ-006 & Lifetime of the vehicle should be greater than 10 years \\ \hline
+% \multicolumn{2}{|c|}{\textbf{Safety}} \\ \hline
+% REQ-007 & Adoption of an autopilot and proximity sensors \\ \hline
+% REQ-008 & Operational at 5 m distance from people and 3 m from any object in densely populated areas \\ \hline
+% REQ-009 & Compliance with aero-acoustic regulations for emissions over urban areas, and maximum cabin noise of 60 dBA \\ \hline
+% \multicolumn{2}{|c|}{\textbf{Customer Requirements}} \\ \hline
+% REQ-010 & Capability for overnight flight \\ \hline
+% REQ-011 & Flight in windy conditions, up to 8 Beaufort, with or without rain \\ \hline
+% REQ-012 & Redundant propulsive system that can fly with 75\% of the system actively working \\ \hline
+% \multicolumn{2}{|c|}{\textbf{Cost and Sustainability}} \\ \hline
+% REQ-013 & Final product cost not exceeding 2000 kEUR \\ \hline
+% REQ-014 & Main structure should be reusable for at least 10 years and then easily recyclable \\ \hline
+% \end{tabular}
+% \end{table}
+
+
+\begin{table}[H]
+\centering
+\caption{Vehicle Requirements Specification}
+\label{tab:vehicle_requirements}
+\renewcommand{\arraystretch}{0.85}
+\begin{tabularx}{\linewidth}{|l|>{\centering\arraybackslash}X|}
+\hline
+\textbf{ID} & \textbf{Performance Requirements} \\ \hline
+REQ-PERF-001 & Maximum payload weight of 400 kg \\ \hline
+REQ-PERF-002 & Indicative maximum size is 8 x 4 x 1 m\(^3\) on the ground \\ \hline
+REQ-PERF-003 & Cruise speed of 200 km/h \\ \hline
+REQ-PERF-004 & Compliance with European noise emission regulations \\ \hline
+REQ-PERF-005 & Electric power autonomy for 100 km + reserve \\ \hline
+REQ-PERF-006 & Lifetime of the vehicle should be greater than 10 years \\ \hline
+\textbf{ID} & \textbf{Safety Requirements} \\ \hline
+REQ-SAF-001 & Adoption of an autopilot and proximity sensors \\ \hline
+REQ-SAF-002 & Operational at 5 m distance from people and 3 m from any object in populated areas \\ \hline
+REQ-SAF-003 & Maximum cabin noise of 60 dBA \\ \hline
+\textbf{ID} & \textbf{Customer Requirements} \\ \hline
+REQ-CUST-001 & Capability for overnight flight \\ \hline
+REQ-CUST-002 & Flight in windy conditions, up to 8 Beaufort, with or without rain \\ \hline
+REQ-CUST-003 & Redundant propulsive system that can fly with 75\% of the system actively working \\ \hline
+\textbf{ID} & \textbf{Cost and Sustainability Requirements} \\ \hline
+REQ-COST-001 & Final product cost not exceeding 2000 kEUR \\ \hline
+REQ-SUST-001 & Main structure should be reusable for at least 10 years and then easily recyclable \\ \hline
+\end{tabularx}
+\end{table}
+

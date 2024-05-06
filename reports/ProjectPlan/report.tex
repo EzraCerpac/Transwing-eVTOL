@@ -1,0 +1,147 @@
+\documentclass{tudelft-report.cls}
+
+%% Set up the bibliography
+\usepackage[sorting=none, citestyle=ieee, backend=biber]{biblatex}
+\addbibresource{report.bib}
+\usepackage{hyperref}
+\usepackage{gensymb}
+\usepackage{tabulary}
+\usepackage{listings}
+\usepackage{minted}
+\usemintedstyle{pastie}
+\usepackage{bm}
+\usepackage{lipsum}             
+\usepackage{xargs}              
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{lscape}
+\usepackage{graphicx}
+\usepackage[british]{babel}
+\usepackage{csquotes}
+\usepackage{graphics}
+\usepackage{multicol}
+\usepackage{parskip}
+\usepackage{adjustbox}
+\usepackage{longtable}
+\usepackage{lipsum}% this is dummy code
+%\usepackage{pgfgantt}
+\usepackage{wrapfig}
+\usepackage{graphicx}
+\usepackage{afterpage}
+\usepackage{multirow}
+\usepackage{colortbl}
+\usepackage{hhline}
+\usepackage[paper=A4,pagesize]{typearea}
+\geometry{a4paper,hscale=0.8,vscale=0.75}
+\KOMAoptions{DIV=15}
+
+\sisetup{
+     detect-all,
+    exponent-mode = threshold,
+    exponent-thresholds = -3:5,
+    per-mode = symbol,
+    round-mode = none,  % maybe change to "figures"
+    round-precision = 3,
+    round-pad = false, % whether their are extra trailing 0s
+    output-decimal-marker = {.},
+    group-digits = integer,
+    output-exponent-marker = e,
+    tight-spacing = false,
+    list-units = single,
+    product-units = single,
+    range-units = single,
+}
+
+%% Additional packages and commands
+\usepackage{parskip}
+\setlist{itemsep=-2pt} % Reducing white space in lists slightly
+\renewcommand{\deg}{\si{\degree}\xspace} % Use \deg easily, everywhere
+\newcommand{\bfemph}[1]{\textbf{\emph{#1}}} % Bold and italic
+
+%% ----------------------------------------------------------------------
+%%    Begin of document + Frontmatter (Roman page numbering)
+%% ----------------------------------------------------------------------
+
+\begin{document}
+
+\frontmatter
+
+%% Define the main parameters
+\title{Transwing eVTOL Project Plan}
+%\subtitle{A Catchy Optional Subtitle \\ that Grabs the Attention}
+\author{Project Group 1}
+
+\subject{AE3200: Design Synthesis Excersise} % Cover only
+\affiliation{Delft University of Technology} % Cover only
+\coverimage{figures/cover.jpg} % Aspect ratio of 2:3 (portrait) recommended
+\definecolor{title}{HTML}{4884d6} % Color for cover title
+
+%\makecover
+
+\input{frontmatter/title-report}
+%\input{frontmatter/preface}
+%\input{frontmatter/summary}
+
+\tableofcontents
+%\listoffigures
+%\listoftables
+
+%\input{frontmatter/nomenclature}
+
+%% ----------------------------------------------------------------------
+%%    Mainmatter (Arabic page numbering)
+%% ----------------------------------------------------------------------
+
+\mainmatter
+
+% \input{mainmatter/introduction}
+
+% \let\oldcleardoublepage\cleardoublepage
+% \let\oldclearpage\clearpage
+% \renewcommand{\cleardoublepage}{}
+% \renewcommand{\clearpage}{}
+
+
+%% From the deliverables description:
+% General Summary
+% User Requirements  
+% Description of the entire system (the Global Picture)  
+% Technical Design Development Organisational Breakdown Structure (organogram with the   responsibilities of the various group members) 
+% Work Flow Diagram (WFD)
+% Work Breakdown Structure (WBS)  
+% Schedule (Gantt chart)
+% Project rules 
+% Organisational risk assessment 
+% Project Approach with respect to sustainable development (not technical!)  
+% References
+% Appendices
+
+
+% \input{mainmatter/uncatagorised}
+\input{mainmatter/general_summary}
+\input{mainmatter/technical_design_development}
+\input{mainmatter/project_rules}
+\input{mainmatter/organisational_risk_assessment}
+\input{mainmatter/sustainable_development}
+
+
+%\renewcommand{\cleardoublepage}{\oldcleardoublepage}
+%\renewcommand{\clearpage}{\oldclearpage}
+
+
+%% Prevent urls running into margins in bibliography
+\setcounter{biburlnumpenalty}{7000}
+\setcounter{biburllcpenalty}{7000}
+\setcounter{biburlucpenalty}{7000}
+
+%% Add bibliography
+%\bibstyle{IEEEtran}
+\printbibliography[heading=bibintoc,title=References]
+
+
+
+%%% ADD APPENDICES HERE %%%
+
+%\appendix
+%\input{appendix/appendix-a}
+
+\end{document}
