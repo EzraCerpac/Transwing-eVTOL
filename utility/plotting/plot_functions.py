@@ -4,10 +4,12 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 
+
 def save(plot_function: callable, name: str = None):
     """
     Decorator to save the plot to a file.
     """
+
     def save_plot():
         """
         Save the plot to a file.
