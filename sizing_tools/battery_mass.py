@@ -1,3 +1,10 @@
+"""
+Note:
+    Actually, this is a bad example of a sizing tool. Write a function that takes all relevant parameters as input and
+    returns the battery mass. Afterwards create the class that takes the aircraft object as an input. This way, the
+    function can be used in other classes as well, and stuff like sensitivity analysis can be done more easily.
+"""
+
 from math import pi
 
 from aerosandbox import Atmosphere
