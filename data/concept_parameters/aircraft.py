@@ -1,4 +1,3 @@
-from dataclasses import Field
 from typing import Optional
 
 from pydantic import BaseModel, field_validator
@@ -23,7 +22,7 @@ class Aircraft(BaseModel):
     figure_of_merit: Optional[float] = None
     computed_drag_coefficient: Optional[float] = None
     propulsion_efficiency: Optional[float] = None
-    prop_count: Optional[int] = None
+    motor_prop_count: Optional[int] = None
     motor_power_margin: Optional[float] = None
     SoC_min: Optional[float] = None
     # specific_energy_density: Optional[float] = None (already included)
@@ -33,10 +32,23 @@ class Aircraft(BaseModel):
     oswald_efficiency_factor: Optional[float] = None
     fuselage_length: Optional[float] = None  # m
     fuselage_maximum_section_perimeter: Optional[float] = None  # m
+    # from here on, the values are not from the paper
+    wing_area: float = None  # m^2
+    design_load_factor: Optional[float] = None
+    S_th: Optional[float] = None  # m^2
+    AR_th: Optional[float] = None
+    t_rh: Optional[float] = None  # m
+    S_tv: Optional[float] = None  # m^2
+    AR_tv: Optional[float] = None
+    t_rv: Optional[float] = None  # m
+    lambda_quart_tv: Optional[float] = None  # rad
+    l_lg: Optional[float] = None  # m
+    eta_lg: Optional[float] = None
 
     # propeller parameters
     propeller_radius: Optional[float] = None  # m
     propeller_rotation_speed: Optional[float] = None  # rotations/s
+    propeller_blade_number: Optional[int] = None
     tension_coefficient: Optional[float] = None  #
 
     @field_validator('cruise_velocity', 'cruise_altitude', 'range',

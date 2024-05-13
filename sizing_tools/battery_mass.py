@@ -1,7 +1,7 @@
 """
 Note:
     Actually, this is a bad example of a sizing tool. Write a function that takes all relevant parameters as input and
-    returns the battery mass. Afterwards create the class that takes the aircraft object as an input. This way, the
+    returns the battery total_mass. Afterwards create the class that takes the aircraft object as an input. This way, the
     function can be used in other classes as well, and stuff like sensitivity analysis can be done more easily.
 """
 
@@ -51,9 +51,9 @@ class BatterySizing:
 
     def battery_mass(self) -> float:
         """
-        Calculate and return the battery mass in kg.
+        Calculate and return the battery total_mass in kg.
 
-        :return: The battery mass.
+        :return: The battery total_mass.
         """
         return convert_float(self.cruise_energy_consumption, 'J',
                              'kWh') / self.aircraft.battery_energy_density
