@@ -6,7 +6,6 @@ from pydantic import BaseModel, field_validator
 from data.concept_parameters.mission_profile import MissionProfile
 
 
-
 class Aircraft(BaseModel):
     name: str = "Aircraft"
 
