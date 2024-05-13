@@ -16,10 +16,10 @@ class Phase(StrEnum):
 
 class MissionPhase(BaseModel):
     phase: Phase
-    duration: float  # in minutes
+    duration: float  # in seconds
     horizontal_speed: float  # in km/h
     distance: float  # in km
-    vertical_speed: float  # in m/min
+    vertical_speed: float  # in m/second
     ending_altitude: float  # in m
 
     @field_validator('duration', 'horizontal_speed', 'distance',
@@ -35,7 +35,7 @@ class MissionPhase(BaseModel):
 
 
 class MissionProfile(BaseModel):
-    name: str
+    name: str = 'unnamed'
     phases: list[MissionPhase]
 
     @field_validator('phases')
@@ -64,35 +64,35 @@ typical_wingless_mission_profile = MissionProfile(
     name='typical wingless',
     phases=[
         MissionPhase(phase=Phase.TAKEOFF,
-                     duration=0.17,
+                     duration=0.17 * 60,
                      horizontal_speed=0,
                      distance=0,
-                     vertical_speed=0,
+                     vertical_speed=0 * 60,
                      ending_altitude=1.5),
         MissionPhase(phase=Phase.CLIMB,
-                     duration=2,
+                     duration=2 * 60,
                      horizontal_speed=0,
                      distance=0,
-                     vertical_speed=150,
+                     vertical_speed=150 * 60,
                      ending_altitude=300),
         MissionPhase(
             phase=Phase.CRUISE,
-            duration=25,
+            duration=25 * 60,
             horizontal_speed=240,
             distance=100,
-            vertical_speed=0,
+            vertical_speed=0 * 60,
             ending_altitude=300,
         ),
         MissionPhase(phase=Phase.DESCENT,
-                     duration=2,
+                     duration=2 * 60,
                      horizontal_speed=0,
                      distance=0,
-                     vertical_speed=-150,
+                     vertical_speed=-150 * 60,
                      ending_altitude=1.5),
         MissionPhase(phase=Phase.LANDING,
-                     duration=0.17,
+                     duration=0.17 * 60,
                      horizontal_speed=0,
                      distance=0,
-                     vertical_speed=0,
+                     vertical_speed=0 * 60,
                      ending_altitude=0)
     ])
