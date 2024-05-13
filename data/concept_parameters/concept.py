@@ -1,7 +1,6 @@
 from data.concept_parameters.aircraft import Aircraft
 from data.concept_parameters.mission_profile import typical_wingless_mission_profile
 
-
 test_from_excel = Aircraft(
     name='test_from_excel',
     propeller_radius=0.5,  # m
@@ -26,5 +25,4 @@ sizing_example_powered_lift = Aircraft(
     oswald_efficiency_factor=0.85,
     fuselage_length=5.0,  # m
     fuselage_maximum_section_perimeter=4.7,  # m
-    mission_profile=typical_wingless_mission_profile
-)
+    mission_profile=typical_wingless_mission_profile)
