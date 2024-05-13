@@ -5,6 +5,7 @@ from sizing_tools.mass_model.mass_model import MassModel
 
 
 class AirframeMassModel(MassModel):
+
     def __init__(self, aircraft: Aircraft, initial_total_mass: float):
         super().__init__(aircraft, initial_total_mass)
 
@@ -18,16 +19,22 @@ class AirframeMassModel(MassModel):
             self.aircraft.aspect_ratio ** 1.712
 
     def horizontal_tail_mass(self) -> float:
-        return (3.184 * self.initial_total_mass ** 0.887 * self.aircraft.S_th ** 0.101 * self.aircraft.AR_th ** 0.101) / (
-                    174.04 * self.aircraft.t_rh ** 0.223)
+        return (3.184 * self.initial_total_mass**0.887 *
+                self.aircraft.S_th**0.101 * self.aircraft.AR_th**0.101) / (
+                    174.04 * self.aircraft.t_rh**0.223)
 
     def vertical_tail_mass(self) -> float:
-        return (1.68 * self.initial_total_mass ** 0.567 * self.aircraft.S_tv ** 1.249 * self.aircraft.AR_tv ** 0.482) / (
-                    639.95 * self.aircraft.t_rv ** 0.747 * cos(self.aircraft.lambda_quart_tv) ** 0.882)
+        return (1.68 * self.initial_total_mass**0.567 *
+                self.aircraft.S_tv**1.249 * self.aircraft.AR_tv**0.482) / (
+                    639.95 * self.aircraft.t_rv**0.747 *
+                    cos(self.aircraft.lambda_quart_tv)**0.882)
 
     def landing_gear_mass(self) -> float:
-        return 0.054 * self.aircraft.l_lg**0.501 * (self.initial_total_mass * self.aircraft.eta_lg)**0.684
+        return 0.054 * self.aircraft.l_lg**0.501 * (
+            self.initial_total_mass * self.aircraft.eta_lg)**0.684
 
     def total_mass(self, initial_total_mass: float = None) -> float:
         self.initial_total_mass = initial_total_mass if initial_total_mass else self.initial_total_mass
-        return self.fuselage_mass() + self.wing_mass() + self.horizontal_tail_mass() + self.vertical_tail_mass() + self.landing_gear_mass()
+        return self.fuselage_mass() + self.wing_mass(
+        ) + self.horizontal_tail_mass() + self.vertical_tail_mass(
+        ) + self.landing_gear_mass()

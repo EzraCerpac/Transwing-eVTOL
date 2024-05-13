@@ -10,21 +10,23 @@ from utility.log import logger
 
 
 class TotalModel(MassModel):
+
     def __init__(self, aircraft: Aircraft, initial_total_mass: float = None):
         super().__init__(aircraft, initial_total_mass)
         self.initial_total_mass = initial_total_mass if initial_total_mass else aircraft.payload_mass
-        self.energy_system_mass_model = EnergySystemMassModel(aircraft, self.initial_total_mass)
-        self.airframe_mass_model = AirframeMassModel(aircraft, self.initial_total_mass)
-        self.propulsion_system_mass_model = PropulsionSystemMassModel(aircraft, self.initial_total_mass)
+        self.energy_system_mass_model = EnergySystemMassModel(
+            aircraft, self.initial_total_mass)
+        self.airframe_mass_model = AirframeMassModel(aircraft,
+                                                     self.initial_total_mass)
+        self.propulsion_system_mass_model = PropulsionSystemMassModel(
+            aircraft, self.initial_total_mass)
         self.battery_mass = self.energy_system_mass_model.total_mass()
         self.climb_power = self.energy_system_mass_model.climb_power
 
     def total_mass_estimation(self, initial_total_mass: float) -> float:
-        return (
-                self.battery_mass +
+        return (self.battery_mass +
                 self.airframe_mass_model.total_mass(initial_total_mass) +
-                self.propulsion_system_mass_model.total_mass(self.climb_power)
-        )
+                self.propulsion_system_mass_model.total_mass(self.climb_power))
 
     def total_mass(self, initial_total_mass: float = None) -> float:
         initial_mass = initial_total_mass if initial_total_mass else self.aircraft.payload_mass
