@@ -1,9 +1,6 @@
 import logging
 
-from utility.logging.log_setup import setup_logging
-
-logger = logging.getLogger(__name__)
-setup_logging()
+from utility.log import logger
 
 
 def main():
