@@ -1,5 +1,3 @@
-import logging
-
 from utility.log import logger
 
 
