@@ -2,6 +2,7 @@ from math import cos
 
 from data.concept_parameters.aircraft import Aircraft
 from sizing_tools.mass_model.mass_model import MassModel
+from utility.log import logger
 
 
 class AirframeMassModel(MassModel):
@@ -44,6 +45,9 @@ class AirframeMassModel(MassModel):
 
     def total_mass(self, initial_total_mass: float = None) -> float:
         self.initial_total_mass = initial_total_mass if initial_total_mass else self.initial_total_mass
-        return self.fuselage_mass() + self.wing_mass(
-        ) + self.horizontal_tail_mass() + self.vertical_tail_mass(
-        ) + self.landing_gear_mass()
+        mass_sum = 0
+        for mass_fn in [self.fuselage_mass, self.wing_mass, self.horizontal_tail_mass, self.landing_gear_mass]:
+            mass = mass_fn()
+            # logger.info(f'{mass_fn.__name__} = {mass} kg')
+            mass_sum += mass
+        return mass_sum
