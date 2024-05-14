@@ -10,7 +10,10 @@ class PropulsionSystemMassModel(MassModel):
 
     @property
     def necessary_parameters(self) -> list[str]:
-        return ['motor_power_margin', 'motor_prop_count', 'propeller_blade_number', 'propeller_radius']
+        return [
+            'motor_power_margin', 'motor_prop_count', 'propeller_blade_number',
+            'propeller_radius'
+        ]
 
     def motor_mass(self, climb_power: float) -> float:
         """
