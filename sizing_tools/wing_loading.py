@@ -20,7 +20,7 @@ npr = 0.8  # propulsion efficiency Cakin
 
 
 def loading_diagram(rho, A, e, CD0, Vv) -> tuple[float, float]:
-    W_over_S_opt = 0.5 * rho * Vcr ** 2 * math.sqrt(math.pi * A * e * CD0)
+    W_over_S_opt = 0.5 * rho * Vcr**2 * math.sqrt(math.pi * A * e * CD0)
     logger.info(f'{W_over_S_opt=}')
     W_over_P_vert_takeoff = 1 / Vv
     logger.info(W_over_P_vert_takeoff)
@@ -47,9 +47,9 @@ def plot_wp_ws(W_over_P_vert_takeoff, W_over_S_opt):
 
 
 def _wp(ws):
-    wp = npr * (rho / rho0) ** (
-            3 / 4) * (CD0 * 0.5 * rho * Vcr ** 3 / ws +
-                      ws * 1 / np.pi / A / e / 0.5 / rho / Vcr) ** (-1)
+    wp = npr * (rho / rho0)**(
+        3 / 4) * (CD0 * 0.5 * rho * Vcr**3 / ws +
+                  ws * 1 / np.pi / A / e / 0.5 / rho / Vcr)**(-1)
     return wp
 
 
