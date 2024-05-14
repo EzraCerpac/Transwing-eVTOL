@@ -17,6 +17,18 @@ class EnergySystemMassModel(MassModel):
         self.mission_profile = aircraft.mission_profile
         self.climb_power: float = 100  # random value, doesn't update
 
+    @property
+    def necessary_parameters(self) -> list[str]:
+        return [
+            'SoC_min',
+            'battery_energy_density',
+            'battery_system_efficiency',
+            'figure_of_merit',
+            'computed_drag_coefficient',
+            'wing_area',
+            'propulsion_efficiency'
+        ]
+
     def estimate_energy(self) -> float:
         return sum(
             self._power(phase) * phase.duration

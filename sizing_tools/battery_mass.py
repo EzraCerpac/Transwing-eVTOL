@@ -27,7 +27,7 @@ class BatterySizing:
         self.cruise_temperature = self.atmosphere.temperature()  # K
         self.cruise_pressure = self.atmosphere.pressure()  # Pa
         self.cruise_density = self.atmosphere.density()  # kg/m^3
-        self.cruise_time = self.aircraft.range / self.aircraft.cruise_velocity  # h
+        self.cruise_time = self.aircraft.range / self.aircraft.cruise_velocity  # s
 
     @property
     def k(self) -> float:
@@ -37,7 +37,7 @@ class BatterySizing:
         :return: The value of k.
         """
         return 0.5 * (pi * self.cruise_density * self.aircraft.propeller_radius
-                      **4 * self.aircraft.tension_coefficient)
+                      ** 4 * self.aircraft.tension_coefficient)
 
     @property
     def cruise_energy_consumption(self) -> float:
@@ -46,8 +46,8 @@ class BatterySizing:
 
         :return: The cruise energy consumption.
         """
-        return self.k / self.aircraft.electric_propulsion_efficiency * self.aircraft.propeller_rotation_speed**2 * convert_float(
-            self.aircraft.cruise_velocity, 'km', 'm') * self.cruise_time
+        return self.k / self.aircraft.electric_propulsion_efficiency * self.aircraft.propeller_rotation_speed ** 2 * \
+            self.aircraft.cruise_velocity * self.cruise_time * 1000
 
     def battery_mass(self) -> float:
         """
