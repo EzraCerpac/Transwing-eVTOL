@@ -7,6 +7,10 @@ class PropulsionSystemMassModel(MassModel):
     def __init__(self, aircraft: Aircraft, total_mass: float):
         super().__init__(aircraft, total_mass)
 
+    @property
+    def necessary_parameters(self) -> list[str]:
+        return ['motor_power_margin', 'motor_prop_count', 'propeller_blade_number', 'propeller_radius']
+
     def motor_mass(self, climb_power: float) -> float:
         return 0.165 * climb_power * (1 + self.aircraft.motor_power_margin
                                       ) / self.aircraft.motor_prop_count

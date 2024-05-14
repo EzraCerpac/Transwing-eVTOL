@@ -65,8 +65,8 @@ class WingLoading:
         plt.plot(xx, self._wp(xx), label='Optimisation max cruise speed')
         plt.xlabel('W/S')
         plt.ylabel('W/P')
-        plt.xlim(0, 2000)
-        plt.ylim(0, 1)
+        # plt.xlim(0, 2000)
+        # plt.ylim(0, 1)
         plt.legend()
         plt.show()
 

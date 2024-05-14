@@ -12,7 +12,6 @@ from utility.log import logger
 class TotalModel(MassModel):
 
     def __init__(self, aircraft: Aircraft, initial_total_mass: float = None):
-        super().__init__(aircraft, initial_total_mass)
         self.initial_total_mass = initial_total_mass if initial_total_mass else aircraft.payload_mass
         self.energy_system_mass_model = EnergySystemMassModel(
             aircraft, self.initial_total_mass)
@@ -20,8 +19,15 @@ class TotalModel(MassModel):
                                                      self.initial_total_mass)
         self.propulsion_system_mass_model = PropulsionSystemMassModel(
             aircraft, self.initial_total_mass)
+        super().__init__(aircraft, initial_total_mass)
         self.battery_mass = self.energy_system_mass_model.total_mass()
         self.climb_power = self.energy_system_mass_model.climb_power
+
+    @property
+    def necessary_parameters(self) -> list[str]:
+        return self.energy_system_mass_model.necessary_parameters + \
+               self.airframe_mass_model.necessary_parameters + \
+               self.propulsion_system_mass_model.necessary_parameters
 
     def total_mass_estimation(self, initial_total_mass: float) -> float:
         return (self.battery_mass +
