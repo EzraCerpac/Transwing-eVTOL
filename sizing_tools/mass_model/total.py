@@ -20,7 +20,8 @@ class TotalModel(MassModel):
         self.propulsion_system_mass_model = PropulsionSystemMassModel(
             aircraft, self.initial_total_mass)
         super().__init__(aircraft, self.initial_total_mass)
-        self.battery_mass = self.energy_system_mass_model.total_mass(self.initial_total_mass)
+        self.battery_mass = self.energy_system_mass_model.total_mass(
+            self.initial_total_mass)
         self.climb_power = self.energy_system_mass_model.climb_power
 
     @property
@@ -30,10 +31,11 @@ class TotalModel(MassModel):
                self.propulsion_system_mass_model.necessary_parameters
 
     def total_mass_estimation(self, initial_total_mass: float) -> float:
-        return (self.battery_mass +
-                self.airframe_mass_model.total_mass(initial_total_mass) +
-                self.propulsion_system_mass_model.total_mass(self.climb_power) +
-                self.aircraft.payload_mass)
+        return (
+            self.battery_mass +
+            self.airframe_mass_model.total_mass(initial_total_mass) +
+            self.propulsion_system_mass_model.total_mass(self.climb_power) +
+            self.aircraft.payload_mass)
 
     def total_mass(self, **kwargs) -> float:
         logger.info(f'Initial total_mass: {self.initial_total_mass} kg')
