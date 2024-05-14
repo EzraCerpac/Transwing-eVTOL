@@ -16,7 +16,7 @@ class EnergySystemMassModel(MassModel):
     def __init__(self, aircraft: Aircraft, initial_total_mass: float):
         super().__init__(aircraft, initial_total_mass)
         self.mission_profile = aircraft.mission_profile
-        self.climb_power: float = 5e5  # random value, doesn't update
+        self.climb_power: float = 3e5  # random value, doesn't update
 
     @property
     def necessary_parameters(self) -> list[str]:
@@ -43,10 +43,10 @@ class EnergySystemMassModel(MassModel):
         P_hv = rotor_disk_thrust ** (3 / 2) / (self.aircraft.figure_of_merit *
                                                sqrt(2 * rho * rotor_disk_area))
         match phase.phase:
-            case Phase.TAKEOFF:
+            case Phase.TAKEOFF | Phase.CLIMB:
                 power = P_hv
             case Phase.CLIMB:
-                # raise NotImplementedError
+                raise NotImplementedError
                 # assert phase.vertical_speed / self.aircraft.mission_profile.phases[
                 #     0].vertical_speed > 0
                 # self.climb_power = P_hv * P_cp_over_P_hv
@@ -64,5 +64,5 @@ class EnergySystemMassModel(MassModel):
             case _:
                 logger.error(f'unknown phase {phase.phase}')
                 power = 0
-        # logger.info(f'{phase.phase} power: {power} W')
+        logger.info(f'{phase.phase} power: {power} W')
         return power

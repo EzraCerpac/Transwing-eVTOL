@@ -38,6 +38,6 @@ sizing_example_powered_lift = Aircraft(
     lambda_quart_tv=0.0,  # rad
     l_lg=0.5,  # m
     eta_lg=1.5,
-    propeller_radius=0.5,  # m
+    propeller_radius=1.25,  # m
     propeller_blade_number=2,
 )
