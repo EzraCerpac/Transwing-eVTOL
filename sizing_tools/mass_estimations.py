@@ -5,6 +5,7 @@ from data.concept_parameters.aircraft import Aircraft
 from data.literature.evtol_performance import plot_mass_over_payload as plot_mass_over_payload_data
 from data.literature.evtol_performance import plot_range_over_mass as plot_range_over_mass_data
 from sizing_tools.mass_model.total import TotalModel
+from utility.log import logger
 from utility.plotting import save
 from utility.unit_conversion import convert_float
 
@@ -20,7 +21,8 @@ class MassEstimation:
         for payload in payloads:
             self.initial_aircraft.payload_mass = payload
             model = TotalModel(self.initial_aircraft, self.initial_mass)
-            mass.append(model.total_mass())
+            masses = model.mass_breakdown()
+            mass.append(masses['total'])
         return np.array(mass)
 
     def mass_over_range(self, ranges: np.ndarray) -> np.ndarray:
@@ -32,7 +34,8 @@ class MassEstimation:
                                                                        self.initial_aircraft.mission_profile.phases[
                                                                            2].horizontal_speed
             model = TotalModel(self.initial_aircraft, self.initial_mass)
-            mass.append(model.total_mass())
+            masses = model.mass_breakdown()
+            mass.append(masses['total'])
         return np.array(mass)
 
     # @save

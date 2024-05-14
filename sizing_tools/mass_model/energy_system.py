@@ -22,7 +22,7 @@ class EnergySystemMassModel(MassModel):
     def necessary_parameters(self) -> list[str]:
         return [
             'SoC_min', 'battery_energy_density', 'battery_system_efficiency',
-            'figure_of_merit', 'computed_drag_coefficient', 'wing_area',
+            'figure_of_merit', 'estimated_CD0', 'wing_area',
             'propulsion_efficiency'
         ]
 
@@ -52,7 +52,9 @@ class EnergySystemMassModel(MassModel):
                 # self.climb_power = P_hv * P_cp_over_P_hv
                 power = self.climb_power
             case Phase.CRUISE:
-                drag = 0.5 * rho * phase.horizontal_speed**2 * self.aircraft.computed_drag_coefficient * self.aircraft.wing_area
+                C_L = 2 * self.initial_total_mass * g / (rho * phase.horizontal_speed**2 * self.aircraft.wing_area)
+                c_D = self.aircraft.estimated_CD0 + C_L**2 / (math.pi * self.aircraft.aspect_ratio * self.aircraft.oswald_efficiency_factor)
+                drag = 0.5 * rho * phase.horizontal_speed**2 * c_D * self.aircraft.wing_area
                 power = drag * phase.horizontal_speed / self.aircraft.propulsion_efficiency
             case Phase.DESCENT:
                 # raise NotImplementedError
