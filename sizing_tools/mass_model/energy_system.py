@@ -10,7 +10,6 @@ from utility.log import logger
 from utility.unit_conversion import convert_float
 
 
-
 class EnergySystemMassModel(MassModel):
 
     def __init__(self, aircraft: Aircraft, initial_total_mass: float):
