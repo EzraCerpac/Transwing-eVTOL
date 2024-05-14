@@ -10,7 +10,6 @@ from utility.log import logger
 from utility.unit_conversion import convert_float
 
 
-
 class EnergySystemMassModel(MassModel):
 
     def __init__(self, aircraft: Aircraft, initial_total_mass: float):
@@ -39,7 +38,7 @@ class EnergySystemMassModel(MassModel):
     def _power(self, phase: MissionPhase) -> float:
         rho = Atmosphere(altitude=phase.ending_altitude).density()
         rotor_disk_thrust = self.initial_total_mass
-        rotor_disk_area = 2 * math.pi * self.aircraft.propeller_radius ** 2
+        rotor_disk_area = 2 * math.pi * self.aircraft.propeller_radius**2
         P_hv = rotor_disk_thrust**(3 / 2) / (self.aircraft.figure_of_merit *
                                              sqrt(2 * rho * rotor_disk_area))
         match phase.phase:
