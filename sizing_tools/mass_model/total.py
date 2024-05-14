@@ -40,7 +40,8 @@ class TotalModel(MassModel):
         logger.info(f'Initial total_mass: {self.initial_total_mass} kg')
         if kwargs:
             logger.warning(f'Kwargs are given and not expected: {kwargs=}')
-        self.final_mass = fixed_point(self.total_mass_estimation, self.initial_total_mass)
+        self.final_mass = fixed_point(self.total_mass_estimation,
+                                      self.initial_total_mass)
         return self.final_mass
 
     def mass_breakdown(self) -> dict[str, float | dict[str, float]]:
@@ -51,13 +52,18 @@ class TotalModel(MassModel):
                 'total': self.airframe_mass_model.total_mass(),
                 'fuselage': self.airframe_mass_model.fuselage_mass(),
                 'wing': self.airframe_mass_model.wing_mass(),
-                'horizontal tail': self.airframe_mass_model.horizontal_tail_mass(),
+                'horizontal tail':
+                self.airframe_mass_model.horizontal_tail_mass(),
                 'landing_gear': self.airframe_mass_model.landing_gear_mass(),
             },
             'propulsion system': {
-                'total': self.propulsion_system_mass_model.total_mass(self.climb_power),
-                'motor': self.propulsion_system_mass_model.motor_mass(self.climb_power),
-                'propeller': self.propulsion_system_mass_model.propeller_mass(self.climb_power),
+                'total':
+                self.propulsion_system_mass_model.total_mass(self.climb_power),
+                'motor':
+                self.propulsion_system_mass_model.motor_mass(self.climb_power),
+                'propeller':
+                self.propulsion_system_mass_model.propeller_mass(
+                    self.climb_power),
             }
         }
 
