@@ -18,14 +18,14 @@ class Phase(StrEnum):
 class MissionPhase(BaseModel):
     phase: Phase
     duration: float  # in seconds
-    horizontal_speed: float  # in km/h
-    distance: float  # in km
+    horizontal_speed: float  # in m/second
+    distance: float  # in m
     vertical_speed: float  # in m/second
     ending_altitude: float  # in m
 
+    @classmethod
     @field_validator('duration', 'horizontal_speed', 'distance',
                      'ending_altitude')  # vertical_speed can be negative
-    @classmethod
     def check_positive(cls, v):
         if v < 0:
             logger.error(f'negative value in {cls.__name__}: {v}')
@@ -39,8 +39,8 @@ class MissionProfile(BaseModel):
     name: str = 'unnamed'
     phases: list[MissionPhase]
 
-    @field_validator('phases')
     @classmethod
+    @field_validator('phases')
     def check_phases(cls, v):
         if len(v) == 0:
             logger.error(f'no phase in {cls.name}')
@@ -79,7 +79,7 @@ typical_wingless_mission_profile = MissionProfile(
         MissionPhase(
             phase=Phase.CRUISE,
             duration=25 * 60,
-            horizontal_speed=convert_float(240, 'km/h', 'm/s'),
+            horizontal_speed=convert_float(200, 'km/h', 'm/s'),
             distance=convert_float(100, 'km', 'm'),
             vertical_speed=0 * 60,
             ending_altitude=300,

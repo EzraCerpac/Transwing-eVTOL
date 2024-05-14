@@ -10,7 +10,7 @@ from math import pi
 from aerosandbox import Atmosphere
 
 from data.concept_parameters.aircraft import Aircraft
-from data.concept_parameters.concept import test_from_excel
+from data.concept_parameters.example_aircraft import test_from_excel
 from utility.unit_conversion import convert_float
 
 

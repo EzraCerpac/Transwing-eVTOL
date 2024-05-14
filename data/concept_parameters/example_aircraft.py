@@ -20,14 +20,13 @@ sizing_example_powered_lift = Aircraft(
     SoC_min=0.2,
     battery_energy_density=0.275,  # kWh/kg
     battery_system_efficiency=0.85,
-    aerofoil_lift_coefficient=1.5,
     aspect_ratio=7.0,
     oswald_efficiency_factor=0.85,
     fuselage_length=7.0,  # m
     fuselage_maximum_section_perimeter=3,  # m
     mission_profile=typical_wingless_mission_profile,
     # from here on, the values are not from the paper
-    wing_area=10.0,  # m^2
+    wing_area=8.0,  # m^2
     design_load_factor=1.5,
     S_th=0.5,  # m^2
     AR_th=4.0,

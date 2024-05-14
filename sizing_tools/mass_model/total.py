@@ -53,14 +53,14 @@ class TotalModel(MassModel):
                 'wing': self.airframe_mass_model.wing_mass(),
                 'horizontal tail':
                 self.airframe_mass_model.horizontal_tail_mass(),
-                'landing_gear': self.airframe_mass_model.landing_gear_mass(),
+                'landing gear': self.airframe_mass_model.landing_gear_mass(),
             },
             'propulsion system': {
                 'total':
                 self.propulsion_system_mass_model.total_mass(self.climb_power),
-                'motor':
+                'single motor':
                 self.propulsion_system_mass_model.motor_mass(self.climb_power),
-                'propeller':
+                'single propeller':
                 self.propulsion_system_mass_model.propeller_mass(
                     self.climb_power),
             }
@@ -73,15 +73,18 @@ class TotalModel(MassModel):
             if isinstance(value, dict):
                 text += f'{key}:\n'
                 for sub_key, sub_value in value.items():
-                    text += f'    {sub_key}: {sub_value} kg\n'
+                    text += f'    {sub_key}: {sub_value:.2f} kg\n'
             else:
-                text += f'{key}: {value} kg\n'
+                text += f'{key}: {value:.2f} kg\n'
         logger.info(text)
 
 
 if __name__ == '__main__':
-    from data.concept_parameters.concept import sizing_example_powered_lift
-    ac = sizing_example_powered_lift
+    from data.concept_parameters.example_aircraft import sizing_example_powered_lift
+    from data.concept_parameters.concepts import concept_C2_1
+    # ac = sizing_example_powered_lift
+    ac = concept_C2_1
     # ac.payload_mass = 1000
     total_model = TotalModel(ac, initial_total_mass=1500.)
     total_model.print_mass_breakdown()
+    logger.info(f'C_L: {total_model.energy_system_mass_model.C_L:.4f}')

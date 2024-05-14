@@ -62,7 +62,7 @@ class MassEstimation:
 
 
 if __name__ == '__main__':
-    from data.concept_parameters.concept import sizing_example_powered_lift
+    from data.concept_parameters.example_aircraft import sizing_example_powered_lift
 
     mass_estimation = MassEstimation(sizing_example_powered_lift)
     mass_estimation.plot_mass_over_payload()
