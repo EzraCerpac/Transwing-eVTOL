@@ -11,7 +11,12 @@ class AirframeMassModel(MassModel):
 
     @property
     def necessary_parameters(self) -> list[str]:
-        return ['fuselage_length', 'fuselage_maximum_section_perimeter', 'n_pax', 'wing_area', 'design_load_factor', 'aspect_ratio', 'S_th', 'AR_th', 't_rh', 'S_tv', 'AR_tv', 't_rv', 'lambda_quart_tv', 'l_lg', 'eta_lg']
+        return [
+            'fuselage_length', 'fuselage_maximum_section_perimeter', 'n_pax',
+            'wing_area', 'design_load_factor', 'aspect_ratio', 'S_th', 'AR_th',
+            't_rh', 'S_tv', 'AR_tv', 't_rv', 'lambda_quart_tv', 'l_lg',
+            'eta_lg'
+        ]
 
     def fuselage_mass(self) -> float:
         return 14.86 * self.initial_total_mass ** 0.144 * (

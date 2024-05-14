@@ -37,7 +37,7 @@ class BatterySizing:
         :return: The value of k.
         """
         return 0.5 * (pi * self.cruise_density * self.aircraft.propeller_radius
-                      ** 4 * self.aircraft.tension_coefficient)
+                      **4 * self.aircraft.tension_coefficient)
 
     @property
     def cruise_energy_consumption(self) -> float:
