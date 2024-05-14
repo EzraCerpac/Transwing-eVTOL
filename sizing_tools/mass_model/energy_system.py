@@ -1,3 +1,4 @@
+import math
 from math import sqrt
 
 from aerosandbox import Atmosphere
@@ -8,7 +9,6 @@ from sizing_tools.mass_model.mass_model import MassModel
 from utility.log import logger
 from utility.unit_conversion import convert_float
 
-rotor_disk_area = 0.785  # m^2 (unknown value, random guess)
 
 
 class EnergySystemMassModel(MassModel):
@@ -39,6 +39,7 @@ class EnergySystemMassModel(MassModel):
     def _power(self, phase: MissionPhase) -> float:
         rho = Atmosphere(altitude=phase.ending_altitude).density()
         rotor_disk_thrust = self.initial_total_mass
+        rotor_disk_area = 2 * math.pi * self.aircraft.propeller_radius ** 2
         P_hv = rotor_disk_thrust ** (3 / 2) / (self.aircraft.figure_of_merit *
                                                sqrt(2 * rho * rotor_disk_area))
         match phase.phase:
