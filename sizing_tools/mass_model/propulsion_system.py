@@ -22,8 +22,8 @@ class PropulsionSystemMassModel(MassModel):
         :return: mass of the motor in kg
         """
         return 0.165 * convert_float(climb_power, 'W', 'kW') * (
-                1 +
-                self.aircraft.motor_power_margin) / self.aircraft.motor_prop_count
+            1 +
+            self.aircraft.motor_power_margin) / self.aircraft.motor_prop_count
 
     def propeller_mass(self, climb_power: float) -> float:
         """
@@ -32,8 +32,9 @@ class PropulsionSystemMassModel(MassModel):
         :return: mass of the propeller in kg
         """
         return 0.144 * (2 * self.aircraft.propeller_radius *
-                        (convert_float(climb_power, 'W', 'kW') / self.aircraft.motor_prop_count) *
-                        self.aircraft.propeller_blade_number ** 0.5) ** 0.782
+                        (convert_float(climb_power, 'W', 'kW') /
+                         self.aircraft.motor_prop_count) *
+                        self.aircraft.propeller_blade_number**0.5)**0.782
 
     def total_mass(self,
                    climb_power: float,
@@ -45,4 +46,4 @@ class PropulsionSystemMassModel(MassModel):
         :return: total mass of the propulsion system in kg
         """
         return self.aircraft.motor_prop_count * (
-                self.motor_mass(climb_power) + self.propeller_mass(climb_power))
+            self.motor_mass(climb_power) + self.propeller_mass(climb_power))
