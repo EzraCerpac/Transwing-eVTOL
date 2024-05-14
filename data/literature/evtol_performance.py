@@ -1,4 +1,7 @@
+from pandas import DataFrame
+
 from utility.data_management.df_generation import df_from_markdown
+from utility.plotting import save
 
 df = df_from_markdown(
     """
@@ -14,14 +17,15 @@ df = df_from_markdown(
     | Joby eVTOL | Joby Aviation | US | PL | 160.9 | 90.7 | 226.8 | [51] |
     | Lilium (5-seater) | Lilium | DE | PL | 250 | 500 | 1800 | [5] |
     | LimoConnect | Limosa | CA | PL | 321.9 | 499.0 | 3175.1 | [79] |
-    | Volocopter <br> (2-seater) | Volocopter | DE | WL | 27.4 | 158.8 | 449.1 | [57] |
+    | Volocopter (2-seater) | Volocopter | DE | WL | 27.4 | 158.8 | 449.1 | [57] |
     | Voyager X2 | XPeng | CN | WL | 76.0 | 200.0 | 560.2 | [80] |
     | VTOL | Napoleon Aero | RU | PL | 100.0 | 400.0 | 1500.0 | [81] |
     """
 )
 
 
-def plot_range_over_mass(df):
+# @save
+def plot_range_over_mass(df: DataFrame):
     import matplotlib.pyplot as plt
 
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -36,5 +40,22 @@ def plot_range_over_mass(df):
     plt.show()
 
 
+# @save
+def plot_range_over_payload(df: DataFrame):
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    for i, row in df.iterrows():
+        ax.scatter(row["Payload (kg)"], row["Range (km)"], label=row["Name"])
+
+    ax.set_xlabel("Payload (kg)")
+    ax.set_ylabel("Range (km)")
+    ax.set_title("Range over Payload")
+    ax.legend()
+    plt.show()
+
+
 if __name__ == '__main__':
     plot_range_over_mass(df)
+    plot_range_over_payload(df)
