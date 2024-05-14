@@ -10,6 +10,7 @@ from utility.unit_conversion import convert_float
 
 
 class MassEstimation:
+
     def __init__(self, initial_aircraft: Aircraft):
         self.initial_aircraft = initial_aircraft
         self.initial_mass = 1000

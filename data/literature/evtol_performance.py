@@ -53,6 +53,7 @@ def plot_range_over_payload(df: DataFrame = vtol_data):
     # ax.legend()
     # plt.show()
 
+
 # @save
 def plot_mass_over_payload(df: DataFrame = vtol_data):
     import matplotlib.pyplot as plt
