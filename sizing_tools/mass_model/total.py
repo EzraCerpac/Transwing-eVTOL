@@ -1,7 +1,6 @@
 from scipy.optimize import fixed_point
 
 from data.concept_parameters.aircraft import Aircraft
-from data.concept_parameters.concept import sizing_example_powered_lift
 from sizing_tools.mass_model.airframe import AirframeMassModel
 from sizing_tools.mass_model.energy_system import EnergySystemMassModel
 from sizing_tools.mass_model.mass_model import MassModel
@@ -37,7 +36,7 @@ class TotalModel(MassModel):
             self.aircraft.payload_mass)
 
     def total_mass(self, **kwargs) -> float:
-        logger.info(f'Initial total_mass: {self.initial_total_mass} kg')
+        # logger.info(f'Initial total_mass: {self.initial_total_mass} kg')
         if kwargs:
             logger.warning(f'Kwargs are given and not expected: {kwargs=}')
         self.final_mass = fixed_point(self.total_mass_estimation, self.initial_total_mass)
@@ -75,6 +74,7 @@ class TotalModel(MassModel):
 
 
 if __name__ == '__main__':
+    from data.concept_parameters.concept import sizing_example_powered_lift
     ac = sizing_example_powered_lift
     # ac.payload_mass = 1000
     total_model = TotalModel(ac, initial_total_mass=1500.)

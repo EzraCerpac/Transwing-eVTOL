@@ -80,7 +80,7 @@ typical_wingless_mission_profile = MissionProfile(
             phase=Phase.CRUISE,
             duration=25 * 60,
             horizontal_speed=convert_float(240, 'km/h', 'm/s'),
-            distance=100,
+            distance=convert_float(100, 'km', 'm'),
             vertical_speed=0 * 60,
             ending_altitude=300,
         ),
