@@ -3,8 +3,7 @@ from pandas import DataFrame
 from utility.data_management.df_generation import df_from_markdown
 from utility.plotting import save
 
-df = df_from_markdown(
-    """
+df = df_from_markdown("""
     | Name | Developer | Country Code | Primary Class | Range (km) | Payload (kg) | Mass (kg) | Source |
     | Acubed Vahana | Airbus | US | PL | 96.6 | 204.1 | 930.0 | [54] |
     | AMVA | Micor Technologies | US | PL | 125.0 | 450.0 | 1300.0 | [72] |
@@ -20,8 +19,7 @@ df = df_from_markdown(
     | Volocopter (2-seater) | Volocopter | DE | WL | 27.4 | 158.8 | 449.1 | [57] |
     | Voyager X2 | XPeng | CN | WL | 76.0 | 200.0 | 560.2 | [80] |
     | VTOL | Napoleon Aero | RU | PL | 100.0 | 400.0 | 1500.0 | [81] |
-    """
-)
+    """)
 
 
 # @save
