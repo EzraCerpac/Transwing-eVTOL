@@ -21,7 +21,8 @@ def save(plot_function: callable, name: str = None):
         ax.set_title('')
 
         # Construct the file name
-        file_path = Path(__file__).resolve().parents[2] / 'figures' / _get_caller_file_name()
+        file_path = Path(__file__).resolve(
+        ).parents[2] / 'figures' / _get_caller_file_name()
         os.makedirs(file_path, exist_ok=True)
         if name is None:
             filename = f"{plot_function.__name__}.pdf"
