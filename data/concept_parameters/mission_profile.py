@@ -4,6 +4,7 @@ from enum import StrEnum
 from pydantic import BaseModel, field_validator
 
 from utility.log import logger
+from utility.unit_conversion import convert_float
 
 
 class Phase(StrEnum):
@@ -78,7 +79,7 @@ typical_wingless_mission_profile = MissionProfile(
         MissionPhase(
             phase=Phase.CRUISE,
             duration=25 * 60,
-            horizontal_speed=240,
+            horizontal_speed=convert_float(240, 'km/h', 'm/s'),
             distance=100,
             vertical_speed=0 * 60,
             ending_altitude=300,
