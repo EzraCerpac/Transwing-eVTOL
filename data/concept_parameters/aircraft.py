@@ -1,19 +1,21 @@
 from typing import Optional
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, Field
 
 from data.concept_parameters.mission_profile import MissionProfile
+from utility.log import logger
+from utility.unit_conversion import convert_float
 
 
 class Aircraft(BaseModel):
-    name: str = "Aircraft"
+    name: Optional[str] = Field('Aircraft', min_length=1)
 
     # Default values
-    cruise_velocity: float = 200  # km/h
-    cruise_altitude: float = 500  # m
-    range: float = 100  # km
-    electric_propulsion_efficiency: float = 0.2
-    battery_energy_density: float = 0.3  # kWh/kg
+    cruise_velocity: Optional[float] = Field(convert_float(200, 'km/h', 'm/s'), gt=0)  # m/s
+    cruise_altitude: Optional[float] = Field(500, gt=0)  # m
+    range: Optional[float] = Field(convert_float(100, 'km', 'm'), gt=0)  # m
+    electric_propulsion_efficiency: Optional[float] = Field(0.2, gt=0)
+    battery_energy_density: Optional[float] = Field(0.3, gt=0)  # kWh/kg
 
     # for eVTOL sizing paper
     mission_profile: Optional[MissionProfile] = None
@@ -51,14 +53,20 @@ class Aircraft(BaseModel):
     propeller_blade_number: Optional[int] = None
     tension_coefficient: Optional[float] = None  #
 
-    @field_validator('cruise_velocity', 'cruise_altitude', 'range',
-                     'electric_propulsion_efficiency',
-                     'battery_energy_density', 'propeller_radius',
-                     'propeller_rotation_speed', 'tension_coefficient')
+    # for wing loading
+    estimated_CD0: Optional[float] = None
+
     @classmethod
-    def check_positive(cls, v):
-        if v <= 0:
-            raise ValueError('Parameter must be positive')
+    @field_validator('name')
+    def check_name(cls, v):
+        if not isinstance(v, str):
+            logger.error('Name must be a string')
+            return 'Aircraft'
+        if v == '':
+            logger.error('Name must not be empty')
+            return 'Aircraft'
+        if v == 'Aircraft':
+            logger.warning('Name must not be "Aircraft"')
         return v
 
     @field_validator('electric_propulsion_efficiency', 'tension_coefficient')
