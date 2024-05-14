@@ -1,7 +1,6 @@
 from utility.data_management.df_generation import df_from_markdown
 
-df = df_from_markdown(
-    """
+df = df_from_markdown("""
     | Motor(s) | Power (kW) | Mass (kg) | Source |
     | Emrax 188 | 52 | 7 | [82] |
     | Emrax 208 | 68 | 9.1 | [82] |
@@ -28,8 +27,7 @@ df = df_from_markdown(
     | Yuneec Power Drive 20 | 20 | 8.2 | [86] |
     | Yuneec Power Drive 40 | 40 | 19 | [86] |
     | Yuneec Power Drive 60 | 60 | 30 | [86] |
-    """
-)
+    """)
 
 
 def plot_power_over_mass(df):
@@ -38,8 +36,7 @@ def plot_power_over_mass(df):
     fig, ax = plt.subplots(figsize=(10, 6))
 
     for i, row in df.iterrows():
-        ax.scatter(row["Mass (kg)"], row
-        ["Power (kW)"], label=row["Motor(s)"])
+        ax.scatter(row["Mass (kg)"], row["Power (kW)"], label=row["Motor(s)"])
 
     ax.set_xlabel("Mass (kg)")
     ax.set_ylabel("Power (kW)")
