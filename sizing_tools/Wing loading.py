@@ -40,6 +40,8 @@ def loading_diagram(rho, A, e, CD0, Vv):
     ws = np.arange(1, 2000)
     plt.plot(ws, wp(ws), label='Optimisation max cruise speed')
     print(wp(ws))
+    plt.xlabel('W/S')
+    plt.ylabel('W/P')
     plt.xlim(0, 2000)
     plt.ylim((0, 1))
     plt.legend()
