@@ -10,9 +10,15 @@ from utility.log import logger
 
 
 class WingLoading:
-    def __init__(self, aircraft: Aircraft, power_setting: float = 0.9, mtow_setting: float = 0.8):
+
+    def __init__(self,
+                 aircraft: Aircraft,
+                 power_setting: float = 0.9,
+                 mtow_setting: float = 0.8):
         self.aircraft = aircraft
-        self.atmosphere = Atmosphere(altitude=self.aircraft.cruise_altitude if self.aircraft.cruise_altitude is not None else 0)
+        self.atmosphere = Atmosphere(
+            altitude=self.aircraft.cruise_altitude if self.aircraft.
+            cruise_altitude is not None else 0)
         self.rho = self.atmosphere.density()
         self.power_setting = power_setting
         self.mtow_setting = mtow_setting
@@ -20,29 +26,29 @@ class WingLoading:
 
     def _check_input(self):
         for param in [
-            'cruise_velocity',
-            'aspect_ratio',
-            'oswald_efficiency_factor',
-            'estimated_CD0',
-            'electric_propulsion_efficiency'
+                'cruise_velocity', 'aspect_ratio', 'oswald_efficiency_factor',
+                'estimated_CD0', 'electric_propulsion_efficiency'
         ]:
             if getattr(self.aircraft, param) is None:
                 raise ValueError(f'{param} is not set in the aircraft object')
 
     def W_over_S_cruise(self) -> float:
-        W_over_S_opt = 0.5 * self.rho * self.aircraft.cruise_velocity ** 2 * math.sqrt(
-            math.pi * self.aircraft.aspect_ratio * self.aircraft.oswald_efficiency_factor * self.aircraft.estimated_CD0)
+        W_over_S_opt = 0.5 * self.rho * self.aircraft.cruise_velocity**2 * math.sqrt(
+            math.pi * self.aircraft.aspect_ratio *
+            self.aircraft.oswald_efficiency_factor *
+            self.aircraft.estimated_CD0)
         logger.info(f'{W_over_S_opt=}')
         return W_over_S_opt
 
     def _wp(self, ws: np.ndarray) -> np.ndarray:
         ws = self.mtow_setting * ws
         wp = self.power_setting * self.aircraft.electric_propulsion_efficiency * (
-                    self.rho / Atmosphere().density()) ** (
-                     3 / 4) * (self.aircraft.estimated_CD0 * 0.5 * self.rho * self.aircraft.cruise_velocity ** 3 / ws +
-                               ws / (
-                                       np.pi * self.aircraft.aspect_ratio * self.aircraft.oswald_efficiency_factor * 0.5 * self.rho * self.aircraft.cruise_velocity)) ** (
-                 -1)
+            self.rho / Atmosphere().density())**(
+                3 / 4) * (self.aircraft.estimated_CD0 * 0.5 * self.rho *
+                          self.aircraft.cruise_velocity**3 / ws + ws /
+                          (np.pi * self.aircraft.aspect_ratio *
+                           self.aircraft.oswald_efficiency_factor * 0.5 *
+                           self.rho * self.aircraft.cruise_velocity))**(-1)
         return wp
 
     def plot_wp_ws(self, W_over_S_opt: Optional[float]):
