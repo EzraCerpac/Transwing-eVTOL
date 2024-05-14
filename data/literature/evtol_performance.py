@@ -38,7 +38,7 @@ def plot_range_over_mass(df: DataFrame):
     plt.show()
 
 
-# @save
+@save
 def plot_range_over_payload(df: DataFrame):
     import matplotlib.pyplot as plt
 
