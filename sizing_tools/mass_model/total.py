@@ -21,6 +21,7 @@ class TotalModel(MassModel):
             aircraft, self.initial_total_mass)
         super().__init__(aircraft, self.initial_total_mass)
         self.climb_power = self.energy_system_mass_model.climb_power
+        self.final_mass = None
 
     @property
     def necessary_parameters(self) -> list[str]:
@@ -39,17 +40,42 @@ class TotalModel(MassModel):
         logger.info(f'Initial total_mass: {self.initial_total_mass} kg')
         if kwargs:
             logger.warning(f'Kwargs are given and not expected: {kwargs=}')
-        return fixed_point(self.total_mass_estimation, self.initial_total_mass)
+        self.final_mass = fixed_point(self.total_mass_estimation, self.initial_total_mass)
+        return self.final_mass
+
+    def mass_breakdown(self) -> dict[str, float | dict[str, float]]:
+        return {
+            'total': self.final_mass if self.final_mass else self.total_mass(),
+            'battery': self.energy_system_mass_model.total_mass(),
+            'airframe': {
+                'total': self.airframe_mass_model.total_mass(),
+                'fuselage': self.airframe_mass_model.fuselage_mass(),
+                'wing': self.airframe_mass_model.wing_mass(),
+                'horizontal tail': self.airframe_mass_model.horizontal_tail_mass(),
+                'landing_gear': self.airframe_mass_model.landing_gear_mass(),
+            },
+            'propulsion system': {
+                'total': self.propulsion_system_mass_model.total_mass(self.climb_power),
+                'motor': self.propulsion_system_mass_model.motor_mass(self.climb_power),
+                'propeller': self.propulsion_system_mass_model.propeller_mass(self.climb_power),
+            }
+        }
+
+    def print_mass_breakdown(self):
+        breakdown = self.mass_breakdown()
+        text = ''
+        for key, value in breakdown.items():
+            if isinstance(value, dict):
+                text += f'{key}:\n'
+                for sub_key, sub_value in value.items():
+                    text += f'    {sub_key}: {sub_value} kg\n'
+            else:
+                text += f'{key}: {value} kg\n'
+        logger.info(text)
 
 
 if __name__ == '__main__':
     ac = sizing_example_powered_lift
     # ac.payload_mass = 1000
     total_model = TotalModel(ac, initial_total_mass=1500.)
-    total_mass = total_model.total_mass()
-    logger.info(f'Total total_mass estimation: {total_mass} kg')
-    logger.info(f'''
-    Battery total_mass: {total_model.energy_system_mass_model.total_mass()} kg
-    Airframe total_mass: {total_model.airframe_mass_model.total_mass()} kg
-    Propulsion system total_mass: {total_model.propulsion_system_mass_model.total_mass(total_model.climb_power)} kg
-    ''')
+    total_model.print_mass_breakdown()

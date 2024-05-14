@@ -64,5 +64,5 @@ class EnergySystemMassModel(MassModel):
             case _:
                 logger.error(f'unknown phase {phase.phase}')
                 power = 0
-        logger.info(f'{phase.phase} power: {power} W')
+        # logger.info(f'{phase.phase} power: {power} W')
         return power
