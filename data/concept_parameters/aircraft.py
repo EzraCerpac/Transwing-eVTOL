@@ -11,7 +11,8 @@ class Aircraft(BaseModel):
     name: Optional[str] = Field('Aircraft', min_length=1)
 
     # Default values
-    cruise_velocity: Optional[float] = Field(convert_float(200, 'km/h', 'm/s'), gt=0)  # m/s
+    cruise_velocity: Optional[float] = Field(convert_float(200, 'km/h', 'm/s'),
+                                             gt=0)  # m/s
     cruise_altitude: Optional[float] = Field(500, gt=0)  # m
     range: Optional[float] = Field(convert_float(100, 'km', 'm'), gt=0)  # m
     electric_propulsion_efficiency: Optional[float] = Field(0.2, gt=0)
