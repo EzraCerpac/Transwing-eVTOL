@@ -33,15 +33,15 @@ class EnergySystemMassModel(MassModel):
 
     def total_mass(self, initial_total_mass: float = None) -> float:
         return self.estimate_energy() * (1 + self.aircraft.SoC_min) / (
-                convert_float(self.aircraft.battery_energy_density, 'kWh', 'W*s') *
-                self.aircraft.battery_system_efficiency)
+            convert_float(self.aircraft.battery_energy_density, 'kWh', 'W*s') *
+            self.aircraft.battery_system_efficiency)
 
     def _power(self, phase: MissionPhase) -> float:
         rho = Atmosphere(altitude=phase.ending_altitude).density()
         rotor_disk_thrust = self.initial_total_mass * g
-        rotor_disk_area = 2 * math.pi * self.aircraft.propeller_radius ** 2
-        P_hv = rotor_disk_thrust ** (3 / 2) / (self.aircraft.figure_of_merit *
-                                               sqrt(2 * rho * rotor_disk_area))
+        rotor_disk_area = 2 * math.pi * self.aircraft.propeller_radius**2
+        P_hv = rotor_disk_thrust**(3 / 2) / (self.aircraft.figure_of_merit *
+                                             sqrt(2 * rho * rotor_disk_area))
         match phase.phase:
             case Phase.TAKEOFF | Phase.CLIMB:
                 power = P_hv
@@ -52,7 +52,7 @@ class EnergySystemMassModel(MassModel):
                 # self.climb_power = P_hv * P_cp_over_P_hv
                 power = self.climb_power
             case Phase.CRUISE:
-                drag = 0.5 * rho * phase.horizontal_speed ** 2 * self.aircraft.computed_drag_coefficient * self.aircraft.wing_area
+                drag = 0.5 * rho * phase.horizontal_speed**2 * self.aircraft.computed_drag_coefficient * self.aircraft.wing_area
                 power = drag * phase.horizontal_speed / self.aircraft.propulsion_efficiency
             case Phase.DESCENT:
                 # raise NotImplementedError

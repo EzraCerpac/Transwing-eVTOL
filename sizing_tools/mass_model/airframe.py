@@ -46,7 +46,8 @@ class AirframeMassModel(MassModel):
     def total_mass(self, initial_total_mass: float = None) -> float:
         self.initial_total_mass = initial_total_mass if initial_total_mass else self.initial_total_mass
         mass_sum = 0
-        for mass_fn in [self.fuselage_mass, self.wing_mass, self.horizontal_tail_mass, self.vertical_tail_mass, self.landing_gear_mass]:
+        for mass_fn in [self.fuselage_mass, self.wing_mass, self.horizontal_tail_mass, self.vertical_tail_mass, self.landing_gear_mass
+        ]:
             mass = mass_fn()
             # logger.info(f'{mass_fn.__name__} = {mass} kg')
             mass_sum += mass
