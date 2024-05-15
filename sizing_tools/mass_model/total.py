@@ -187,4 +187,6 @@ if __name__ == '__main__':
     #      concept_C2_6,
     #      concept_C2_10])
 
-    concept_iteration([joby_s4, ])
+    concept_iteration([
+        joby_s4,
+    ])
