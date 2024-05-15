@@ -1,6 +1,8 @@
 import math
 from typing import Optional
 
+import sys
+
 import matplotlib.pyplot as plt
 import numpy as np
 from aerosandbox import Atmosphere
@@ -8,6 +10,7 @@ from aerosandbox import Atmosphere
 from data.concept_parameters.aircraft import Aircraft
 from sizing_tools.mass_model.energy_system import EnergySystemMassModel
 from utility.log import logger
+
 
 
 class WingLoading:
@@ -24,6 +27,7 @@ class WingLoading:
         self.power_setting = power_setting
         self.mtow_setting = mtow_setting
         self._check_input()
+        self.V_stall = 31.3889 #m/s CS23 stall speed
 
     def _check_input(self):
         for param in [
@@ -63,6 +67,9 @@ class WingLoading:
                            self.aircraft.oswald_efficiency_factor * 0.5 *
                            self.rho * self.aircraft.cruise_velocity))**(-1)
         return wp
+    
+    def w_s_stall_speed(self):
+        return 0.5 * self.V_stall**2 * self.rho * 1.1
 
     def plot_wp_ws(self, W_over_S_opt: Optional[float]):
         xx = np.arange(1, 2000)
@@ -71,6 +78,7 @@ class WingLoading:
                         color='b',
                         linestyle='-',
                         label='Optimal W/S for max range')
+            plt.axvline(x = self.w_s_stall_speed())
         # plt.axhline(y=W_over_P_vert_takeoff,
         #             color='r',
         #             linestyle='-',
