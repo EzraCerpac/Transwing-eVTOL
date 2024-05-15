@@ -121,16 +121,18 @@ class TotalModel(MassModel):
         sub_masses.pop('battery')
 
         legend1 = ax.legend(
-            wedges1, [f'{k}: {v:.2f} kg' for k, v in major_masses.items()],
+            wedges1, [f'{k}:\t{v:.2f} kg'.expandtabs(6) for k, v in major_masses.items()],
             loc="upper left",
             bbox_to_anchor=(1, 0, 0.5, 1),
-            title="Major masses")
+            title="Major masses",
+            prop={'family': 'DejaVu Sans Mono'})
         ax.add_artist(legend1)
         legend2 = ax.legend(
-            wedges2[2:], [f'{k}: {v:.2f} kg' for k, v in sub_masses.items()],
+            wedges2[2:], ["{}:{}\t{:>6.2f} kg".format(k, "\t" if len(k) < 8 else "", v).expandtabs(9) for k, v in sub_masses.items()],
             loc="lower right",
             bbox_to_anchor=(1, 0, 0.3, 1),
-            title="Sub-masses")
+            title="Sub-masses",
+            prop={'family': 'DejaVu Sans Mono'})
         ax.text(0.5,
                 0.5,
                 f'Total Mass\n{breakdown["total"]:.2f} kg',
