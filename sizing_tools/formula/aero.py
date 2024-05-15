@@ -15,10 +15,11 @@ def C_L_from_lift(lift: float, rho: float, velocity: float,
     :param surface_area: The wing surface area in m^2
     :return: The lift coefficient
     """
-    return 2 * lift / (rho * velocity ** 2 * surface_area)
+    return 2 * lift / (rho * velocity**2 * surface_area)
 
 
-def velocity_from_lift(lift: float, rho: float, C_L: float, surface_area: float) -> float:
+def velocity_from_lift(lift: float, rho: float, C_L: float,
+                       surface_area: float) -> float:
     """
     Calculate the velocity from the lift force.
 
@@ -43,7 +44,7 @@ def drag(C_D: float, rho: float, velocity: float,
     :param surface_area: The wing surface area in m^2
     :return: The drag force in N
     """
-    return 0.5 * C_D * rho * velocity ** 2 * surface_area
+    return 0.5 * C_D * rho * velocity**2 * surface_area
 
 
 # Function to calculate the drag coefficient (C_D) from the lift coefficient (C_L)
@@ -58,7 +59,7 @@ def C_D_from_CL(C_L: float, C_D0: float, aspect_ratio: float,
     :param e: The Oswald efficiency factor
     :return: The drag coefficient
     """
-    return C_D0 + C_L ** 2 / (pi * aspect_ratio * e)
+    return C_D0 + C_L**2 / (pi * aspect_ratio * e)
 
 
 def C_L_climb_opt(C_D0: float, aspect_ratio: float, e: float) -> float:
@@ -69,8 +70,9 @@ def C_L_climb_opt(C_D0: float, aspect_ratio: float, e: float) -> float:
     :param e: The Oswald efficiency factor
     :return: The optimal lift coefficient
     """
-    min_func = lambda C_L: -C_L ** 3 / C_D_from_CL(C_L, C_D0, aspect_ratio, e) ** 2
+    min_func = lambda C_L: -C_L**3 / C_D_from_CL(C_L, C_D0, aspect_ratio, e)**2
     return minimize(min_func, x0=0.5).x[0]
+
 
 def C_L_cruise_opt(C_D0: float, aspect_ratio: float, e: float) -> float:
     """
@@ -111,8 +113,8 @@ def hover_power(rotor_disk_thrust: float, rotor_disk_area: float,
     :param rho: The air density in kg/m^3
     :return: The power required for hovering in W
     """
-    return rotor_disk_thrust ** (3 / 2) / (figure_of_merit *
-                                           sqrt(2 * rho * rotor_disk_area))
+    return rotor_disk_thrust**(3 / 2) / (figure_of_merit *
+                                         sqrt(2 * rho * rotor_disk_area))
 
 
 # Function to calculate the rotor disk area
@@ -123,4 +125,4 @@ def rotor_disk_area(radius: float) -> float:
     :param radius: The radius of the rotor disk in m
     :return: The rotor disk area in m^2
     """
-    return 2 * pi * radius ** 2
+    return 2 * pi * radius**2
