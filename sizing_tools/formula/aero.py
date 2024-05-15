@@ -1,5 +1,6 @@
 from math import sqrt, pi
 
+
 # Function to calculate the lift coefficient (C_L) from the lift force
 def C_L_from_lift(lift: float, rho: float, velocity: float,
                   surface_area: float) -> float:
