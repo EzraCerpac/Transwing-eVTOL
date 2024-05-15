@@ -33,7 +33,7 @@ def plot_range_over_mass(
 
     ax.set_xlabel("Mass (kg)")
     ax.set_ylabel("Range (km)")
-    ax.set_title("Range over Mass")
+    # ax.set_title("Range over Mass")
     # ax.legend()
     # plt.show()
     return fig, ax
@@ -49,7 +49,7 @@ def plot_range_over_payload(
 
     ax.set_xlabel("Payload (kg)")
     ax.set_ylabel("Range (km)")
-    ax.set_title("Range over Payload")
+    # ax.set_title("Range over Payload")
     # ax.legend()
     # plt.show()
     return fig, ax
@@ -65,7 +65,7 @@ def plot_mass_over_payload(
 
     ax.set_xlabel("Payload (kg)")
     ax.set_ylabel("Mass (kg)")
-    ax.set_title("Mass over Payload")
+    # ax.set_title("Mass over Payload")
     # ax.legend()
     # plt.show()
     return fig, ax

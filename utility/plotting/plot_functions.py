@@ -20,6 +20,7 @@ def show(plot_function: plotFunction):
         Show the plot.
         """
         fig, ax = plot_function(*args, **kwargs)
+        fig.tight_layout()
         plt.show()
 
         return fig, ax
@@ -27,7 +28,7 @@ def show(plot_function: plotFunction):
     return show_plot
 
 
-def save(plot_function: plotFunction, name: str = None):
+def save(plot_function: plotFunction, name_func: callable = None):
     """
     Decorator to save the plot to a file.
     """
@@ -42,7 +43,7 @@ def save(plot_function: plotFunction, name: str = None):
         file_path = Path(__file__).resolve(
         ).parents[2] / 'figures' / _get_caller_file_name()
         os.makedirs(file_path, exist_ok=True)
-        if name is None:
+        if name_func is None:
             filename = f"{plot_function.__name__}.pdf"
             if filename == 'show_plot.pdf':
                 logger.warning(
@@ -50,7 +51,7 @@ def save(plot_function: plotFunction, name: str = None):
                 )
             filename = filename.strip('plot').strip('_')
         else:
-            filename = f"{name}.pdf"
+            filename = f"{name_func(args[0])}.pdf"
 
         full_path = file_path / filename
         fig.savefig(full_path, bbox_inches="tight")
@@ -62,6 +63,10 @@ def save(plot_function: plotFunction, name: str = None):
         return fig, ax
 
     return save_plot
+
+
+def save_with_name(name_func: callable):
+    return lambda plot_function: save(plot_function, name_func)
 
 
 def _get_caller_file_name():
