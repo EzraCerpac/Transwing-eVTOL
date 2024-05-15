@@ -64,6 +64,7 @@ def save(plot_function: plotFunction, name_func: callable = None):
 
     return save_plot
 
+
 def save_with_name(name_func: callable):
     return lambda plot_function: save(plot_function, name_func)
 
