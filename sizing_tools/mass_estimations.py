@@ -63,7 +63,7 @@ class MassEstimation:
         return fig, ax
 
     def plot_range_over_mass(self, ax: plt.Axes) -> plt.Axes:
-        ranges = np.linspace(20, 300, 21) # km
+        ranges = np.linspace(20, 300, 21)  # km
         masses = self.mass_over_range(ranges)
         ax.plot(masses, ranges, label=self.initial_aircraft.name)
         return ax
@@ -77,7 +77,8 @@ def reduced_vtol_data() -> pd.DataFrame:
 
 @show
 @save
-def plot_concepts_range_over_mass(concepts: list[Aircraft]) -> tuple[plt.Figure, plt.Axes]:
+def plot_concepts_range_over_mass(
+        concepts: list[Aircraft]) -> tuple[plt.Figure, plt.Axes]:
     fig, ax = plot_range_over_mass_data(reduced_vtol_data())
     for concept in concepts:
         mass_estimation = MassEstimation(concept)
@@ -90,4 +91,5 @@ def plot_concepts_range_over_mass(concepts: list[Aircraft]) -> tuple[plt.Figure,
 
 if __name__ == '__main__':
     from data.concept_parameters.concepts import concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10
-    plot_concepts_range_over_mass([concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10])
+    plot_concepts_range_over_mass(
+        [concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10])
