@@ -86,7 +86,7 @@ class WingLoading:
 
 if __name__ == '__main__':
     aircraft = Aircraft(
-        cruise_velocity=200/3.6,
+        cruise_velocity=200 / 3.6,
         aspect_ratio=6,
         oswald_efficiency_factor=0.8,
         estimated_CD0=0.011,
