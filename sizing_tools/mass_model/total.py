@@ -35,10 +35,10 @@ class TotalModel(MassModel):
 
     def total_mass_estimation(self, initial_total_mass: float) -> float:
         return (
-                self.energy_system_mass_model.total_mass(initial_total_mass) +
-                self.airframe_mass_model.total_mass(initial_total_mass) +
-                self.propulsion_system_mass_model.total_mass(self.climb_power) +
-                self.aircraft.payload_mass)
+            self.energy_system_mass_model.total_mass(initial_total_mass) +
+            self.airframe_mass_model.total_mass(initial_total_mass) +
+            self.propulsion_system_mass_model.total_mass(self.climb_power) +
+            self.aircraft.payload_mass)
 
     def total_mass(self, **kwargs) -> float:
         # logger.info(f'Initial total_mass: {self.initial_total_mass} kg')
@@ -61,23 +61,26 @@ class TotalModel(MassModel):
                 'total': self.airframe_mass_model.total_mass(),
                 'fuselage': self.airframe_mass_model.fuselage_mass(),
                 'wing': self.airframe_mass_model.wing_mass(),
-                'horizontal tail': self.airframe_mass_model.horizontal_tail_mass(),
+                'horizontal tail':
+                self.airframe_mass_model.horizontal_tail_mass(),
                 'vertical tail': self.airframe_mass_model.vertical_tail_mass(),
                 'landing gear': self.airframe_mass_model.landing_gear_mass(),
             },
             'propulsion': {
                 'total':
-                    self.propulsion_system_mass_model.total_mass(self.climb_power),
+                self.propulsion_system_mass_model.total_mass(self.climb_power),
                 'motors':
-                    self.propulsion_system_mass_model.motor_mass(self.climb_power) * self.aircraft.motor_prop_count,
+                self.propulsion_system_mass_model.motor_mass(self.climb_power)
+                * self.aircraft.motor_prop_count,
                 'propellers':
-                    self.propulsion_system_mass_model.propeller_mass(
-                        self.climb_power) * self.aircraft.motor_prop_count,
+                self.propulsion_system_mass_model.propeller_mass(
+                    self.climb_power) * self.aircraft.motor_prop_count,
             }
         }
 
     @staticmethod
-    def print_mass_breakdown(breakdown: dict[str, float | dict[str, float]] = None):
+    def print_mass_breakdown(breakdown: dict[str,
+                                             float | dict[str, float]] = None):
         text = ''
         for key, value in breakdown.items():
             if isinstance(value, dict):
@@ -89,7 +92,8 @@ class TotalModel(MassModel):
         logger.info(f'Mass breakdown:\n{text}')
 
     @show
-    @save_with_name(lambda self: self.aircraft.name.replace(' ', '_') + '_mass_breakdown')
+    @save_with_name(
+        lambda self: self.aircraft.name.replace(' ', '_') + '_mass_breakdown')
     def plot_mass_breakdown(self) -> tuple[plt.Figure, plt.Axes]:
         fig, ax = plt.subplots(figsize=(12, 8))
         breakdown = self.mass_breakdown()
@@ -105,21 +109,38 @@ class TotalModel(MassModel):
             else:
                 major_masses[key] = value
         major_masses.pop('total')
-        wedges1, texts1, autotexts1 = ax.pie(major_masses.values(), labels=major_masses.keys(), startangle=0, autopct=lambda pct: func(pct, list(major_masses.values())))
+        wedges1, texts1, autotexts1 = ax.pie(
+            major_masses.values(),
+            labels=major_masses.keys(),
+            startangle=0,
+            autopct=lambda pct: func(pct, list(major_masses.values())))
         wedges2, texts2 = ax.pie(sub_masses.values(), startangle=0, radius=0.5)
         wedges2[0].set_visible(False)
         wedges2[1].set_visible(False)
         sub_masses.pop('payload')
         sub_masses.pop('battery')
 
-        legend1 = ax.legend(wedges1, [f'{k}: {v:.2f} kg' for k, v in major_masses.items()], loc="upper left", bbox_to_anchor=(1, 0, 0.5, 1), title="Major masses")
+        legend1 = ax.legend(
+            wedges1, [f'{k}: {v:.2f} kg' for k, v in major_masses.items()],
+            loc="upper left",
+            bbox_to_anchor=(1, 0, 0.5, 1),
+            title="Major masses")
         ax.add_artist(legend1)
-        legend2 = ax.legend(wedges2[2:], [f'{k}: {v:.2f} kg' for k, v in sub_masses.items()], loc="lower right", bbox_to_anchor=(1, 0, 0.3, 1), title="Sub-masses")
-        ax.text(0.5, 0.5, f'Total Mass\n{breakdown["total"]:.2f} kg',
+        legend2 = ax.legend(
+            wedges2[2:], [f'{k}: {v:.2f} kg' for k, v in sub_masses.items()],
+            loc="lower right",
+            bbox_to_anchor=(1, 0, 0.3, 1),
+            title="Sub-masses")
+        ax.text(0.5,
+                0.5,
+                f'Total Mass\n{breakdown["total"]:.2f} kg',
                 horizontalalignment='center',
                 verticalalignment='center',
                 transform=ax.transAxes,
-                bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.5', alpha=0.8))
+                bbox=dict(facecolor='white',
+                          edgecolor='black',
+                          boxstyle='round,pad=0.5',
+                          alpha=0.8))
 
         plt.setp(texts1, size=10, weight="bold")
         plt.setp(autotexts1, size=8, weight="bold")
@@ -135,7 +156,12 @@ def func(pct, allvalues: list[float]) -> str:
 if __name__ == '__main__':
     from data.concept_parameters.concepts import concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10
 
-    estimations = {concept_C1_5: {}, concept_C2_1: {}, concept_C2_6: {}, concept_C2_10: {}}
+    estimations = {
+        concept_C1_5: {},
+        concept_C2_1: {},
+        concept_C2_6: {},
+        concept_C2_10: {}
+    }
 
     for concept in estimations.keys():
         model = TotalModel(concept, initial_total_mass=1500.)
