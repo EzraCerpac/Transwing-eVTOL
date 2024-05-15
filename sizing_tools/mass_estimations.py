@@ -64,12 +64,11 @@ class MassEstimation:
         ax.legend()
         return fig, ax
 
+
 def reduced_vtol_data() -> pd.DataFrame:
     df = vtol_data.copy()
-    df = df[df['Primary Class']=='PL']
+    df = df[df['Primary Class'] == 'PL']
     return df
-
-
 
 
 if __name__ == '__main__':
