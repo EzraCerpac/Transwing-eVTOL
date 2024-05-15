@@ -80,7 +80,8 @@ def reduced_vtol_data() -> pd.DataFrame:
 
 @show
 @save
-def plot_concepts_mass_over_payload(concepts: list[Aircraft]) -> tuple[plt.Figure, plt.Axes]:
+def plot_concepts_mass_over_payload(
+        concepts: list[Aircraft]) -> tuple[plt.Figure, plt.Axes]:
     fig, ax = plot_mass_over_payload_data(reduced_vtol_data())
     for concept in concepts:
         mass_estimation = MassEstimation(concept)
