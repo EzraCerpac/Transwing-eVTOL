@@ -69,6 +69,7 @@ def plot_mass_over_payload(df: DataFrame = vtol_data) -> tuple[plt.Figure, plt.A
 
 
 if __name__ == '__main__':
+    print(vtol_data.to_string())
     plot_range_over_mass()
     plot_range_over_payload()
     plot_mass_over_payload()

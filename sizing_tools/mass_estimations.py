@@ -1,8 +1,9 @@
 import numpy as np
+import pandas as pd
 from matplotlib import pyplot as plt
 
 from data.concept_parameters.aircraft import Aircraft
-from data.literature.evtol_performance import plot_mass_over_payload as plot_mass_over_payload_data
+from data.literature.evtol_performance import plot_mass_over_payload as plot_mass_over_payload_data, vtol_data
 from data.literature.evtol_performance import plot_range_over_mass as plot_range_over_mass_data
 from sizing_tools.mass_model.total import TotalModel
 from utility.log import logger
@@ -42,9 +43,9 @@ class MassEstimation:
     @show
     @save
     def plot_mass_over_payload(self) -> tuple[plt.Figure, plt.Axes]:
-        payloads = np.linspace(80, 500, 21)
+        payloads = np.linspace(80, 500, 21)  # kg
         masses = self.mass_over_payload(payloads)
-        fig, ax = plot_mass_over_payload_data()
+        fig, ax = plot_mass_over_payload_data(reduced_vtol_data())
         ax.plot(payloads, masses, label='Mass Model')
         ax.set_xlabel('Payloads [kg]')
         ax.set_ylabel('Total mass [kg]')
@@ -54,14 +55,21 @@ class MassEstimation:
     @show
     @save
     def plot_range_over_mass(self) -> tuple[plt.Figure, plt.Axes]:
-        ranges = np.linspace(20, 300, 21)
+        ranges = np.linspace(20, 300, 21)  # km
         masses = self.mass_over_range(ranges)
-        fig, ax = plot_range_over_mass_data()
+        fig, ax = plot_range_over_mass_data(reduced_vtol_data())
         ax.plot(masses, ranges, label='Mass Model')
         ax.set_xlabel('Total mass [kg]')
         ax.set_ylabel('Range [km]')
         ax.legend()
         return fig, ax
+
+def reduced_vtol_data() -> pd.DataFrame:
+    df = vtol_data.copy()
+    df = df[df['Primary Class']=='PL']
+    return df
+
+
 
 
 if __name__ == '__main__':
