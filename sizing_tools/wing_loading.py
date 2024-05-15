@@ -28,11 +28,11 @@ class WingLoading:
         self.mtow_setting = mtow_setting
         self._check_input()
         self.V_stall = 31.3889  #m/s CS23 stall speed
-        self.ROC_ver = 5 # vertical rate of climb 
-        self.Fom = 0.75 # figure of merit
-        self.n_prop = 0.8 #propeller efficiency
-        self.ROC_std = 3.65 #m/s from joby s4
-        self.cd_cl_three_over_2 = 1/18
+        self.ROC_ver = 5  # vertical rate of climb
+        self.Fom = 0.75  # figure of merit
+        self.n_prop = 0.8  #propeller efficiency
+        self.ROC_std = 3.65  #m/s from joby s4
+        self.cd_cl_three_over_2 = 1 / 18
 
     def _check_input(self):
         for param in [
@@ -75,27 +75,32 @@ class WingLoading:
 
     def w_s_stall_speed(self):
         return 0.5 * self.V_stall**2 * self.rho * 1.1
-    
+
     def ver_climb(self):
-        T_W = 1.2*(1+ 1/(np.arange(1, 2000))*self.rho*self.ROC_ver**2*1.2)
-        T_A = 440 # assumed taken by Joby s4
-        P_W = (T_W*(1/(self.Fom*self.n_prop))*np.sqrt(T_A/(2*self.rho)))**-1
+        T_W = 1.2 * (1 + 1 /
+                     (np.arange(1, 2000)) * self.rho * self.ROC_ver**2 * 1.2)
+        T_A = 440  # assumed taken by Joby s4
+        P_W = (T_W * (1 / (self.Fom * self.n_prop)) *
+               np.sqrt(T_A / (2 * self.rho)))**-1
         return P_W
+
     def steady_climb(self):
-        W_P = self.n_prop*(self.ROC_std + self.cd_cl_three_over_2 * np.sqrt(2*np.arange(1, 2000)/self.rho))**-1
+        W_P = self.n_prop * (self.ROC_std + self.cd_cl_three_over_2 *
+                             np.sqrt(2 * np.arange(1, 2000) / self.rho))**-1
         return W_P
+
     def plot_wp_ws(self, W_over_S_opt: Optional[float]):
         xx = np.arange(1, 2000)
         if W_over_S_opt is not None:
-            
-            plt.axvline(x=self.w_s_stall_speed(), label = ' Stall Speed')
+
+            plt.axvline(x=self.w_s_stall_speed(), label=' Stall Speed')
         # plt.axhline(y=W_over_P_vert_takeoff,
         #             color='r',
         #             linestyle='-',
         #             label='Vertical TO requirement')
         plt.plot(xx, self._wp(xx), label='Optimisation max cruise speed')
-        plt.plot(xx, self.ver_climb(), label = 'Vertical Climb')
-        plt.plot(xx, self.steady_climb(), label = 'Cruise Climb')
+        plt.plot(xx, self.ver_climb(), label='Vertical Climb')
+        plt.plot(xx, self.steady_climb(), label='Cruise Climb')
         plt.xlabel('W/S')
         plt.ylabel('W/P')
         # plt.xlim(0, 2000)
