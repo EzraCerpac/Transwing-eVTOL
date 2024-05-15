@@ -1,5 +1,5 @@
 import logging
-from enum import StrEnum
+from enum import Enum
 
 from pydantic import BaseModel, field_validator
 
@@ -7,7 +7,7 @@ from utility.log import logger
 from utility.unit_conversion import convert_float
 
 
-class Phase(StrEnum):
+class Phase(Enum):
     TAKEOFF = 'takeoff'
     CLIMB = 'climb'
     CRUISE = 'cruise'

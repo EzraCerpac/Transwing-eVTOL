@@ -17,7 +17,7 @@ class EnergySystemMassModel(MassModel):
         super().__init__(aircraft, initial_total_mass)
         self.mission_profile = aircraft.mission_profile
         self.climb_power: float = 3e5  # random value, doesn't update
-
+        self.P_hv = 0
     @property
     def necessary_parameters(self) -> list[str]:
         return [
