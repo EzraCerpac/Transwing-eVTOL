@@ -1,13 +1,9 @@
 import math
 from typing import Optional
+
 import matplotlib.pyplot as plt
 import numpy as np
 from aerosandbox import Atmosphere
-
-import sys
-
-sys.path.append(
-    "c:/Users/phili/OneDrive/Documenten/AE 3rd Year/DSE/Transwing-eVTOL")
 
 from data.concept_parameters.aircraft import Aircraft
 from sizing_tools.mass_model.energy_system import EnergySystemMassModel
@@ -90,7 +86,7 @@ class WingLoading:
 
 if __name__ == '__main__':
     aircraft = Aircraft(
-        cruise_velocity=200 / 3.6,
+        cruise_velocity=200/3.6,
         aspect_ratio=6,
         oswald_efficiency_factor=0.8,
         estimated_CD0=0.011,

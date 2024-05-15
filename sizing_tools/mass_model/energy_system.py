@@ -48,6 +48,7 @@ class EnergySystemMassModel(MassModel):
             case Phase.TAKEOFF | Phase.CLIMB:
                 power = P_hv
             case Phase.CLIMB:
+                # is implemented as takeoff now, but should be changed
                 raise NotImplementedError
                 # assert phase.vertical_speed / self.aircraft.mission_profile.phases[
                 #     0].vertical_speed > 0
