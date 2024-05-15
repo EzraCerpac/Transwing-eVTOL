@@ -24,7 +24,8 @@ vtol_data = df_from_markdown("""
 
 
 # @save
-def plot_range_over_mass(df: DataFrame = vtol_data) -> tuple[plt.Figure, plt.Axes]:
+def plot_range_over_mass(
+        df: DataFrame = vtol_data) -> tuple[plt.Figure, plt.Axes]:
     fig, ax = plt.subplots(figsize=(10, 6))
 
     for i, row in df.iterrows():
@@ -39,7 +40,8 @@ def plot_range_over_mass(df: DataFrame = vtol_data) -> tuple[plt.Figure, plt.Axe
 
 
 # @save
-def plot_range_over_payload(df: DataFrame = vtol_data) -> tuple[plt.Figure, plt.Axes]:
+def plot_range_over_payload(
+        df: DataFrame = vtol_data) -> tuple[plt.Figure, plt.Axes]:
     fig, ax = plt.subplots(figsize=(10, 6))
 
     for i, row in df.iterrows():
@@ -54,7 +56,8 @@ def plot_range_over_payload(df: DataFrame = vtol_data) -> tuple[plt.Figure, plt.
 
 
 # @save
-def plot_mass_over_payload(df: DataFrame = vtol_data) -> tuple[plt.Figure, plt.Axes]:
+def plot_mass_over_payload(
+        df: DataFrame = vtol_data) -> tuple[plt.Figure, plt.Axes]:
     fig, ax = plt.subplots(figsize=(10, 6))
 
     for i, row in df.iterrows():

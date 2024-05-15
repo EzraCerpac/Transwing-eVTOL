@@ -26,6 +26,7 @@ def show(plot_function: plotFunction):
 
     return show_plot
 
+
 def save(plot_function: plotFunction, name: str = None):
     """
     Decorator to save the plot to a file.
@@ -44,7 +45,9 @@ def save(plot_function: plotFunction, name: str = None):
         if name is None:
             filename = f"{plot_function.__name__}.pdf"
             if filename == 'show_plot.pdf':
-                logger.warning(r"Make sure to use the @save decorator after the @show decorator.")
+                logger.warning(
+                    r"Make sure to use the @save decorator after the @show decorator."
+                )
             filename = filename.strip('plot').strip('_')
         else:
             filename = f"{name}.pdf"
