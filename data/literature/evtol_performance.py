@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 from pandas import DataFrame
 
 from utility.data_management.df_generation import df_from_markdown
@@ -23,9 +24,8 @@ vtol_data = df_from_markdown("""
 
 
 # @save
-def plot_range_over_mass(df: DataFrame = vtol_data):
-    import matplotlib.pyplot as plt
-
+def plot_range_over_mass(
+        df: DataFrame = vtol_data) -> tuple[plt.Figure, plt.Axes]:
     fig, ax = plt.subplots(figsize=(10, 6))
 
     for i, row in df.iterrows():
@@ -36,12 +36,12 @@ def plot_range_over_mass(df: DataFrame = vtol_data):
     ax.set_title("Range over Mass")
     # ax.legend()
     # plt.show()
+    return fig, ax
 
 
 # @save
-def plot_range_over_payload(df: DataFrame = vtol_data):
-    import matplotlib.pyplot as plt
-
+def plot_range_over_payload(
+        df: DataFrame = vtol_data) -> tuple[plt.Figure, plt.Axes]:
     fig, ax = plt.subplots(figsize=(10, 6))
 
     for i, row in df.iterrows():
@@ -52,12 +52,12 @@ def plot_range_over_payload(df: DataFrame = vtol_data):
     ax.set_title("Range over Payload")
     # ax.legend()
     # plt.show()
+    return fig, ax
 
 
 # @save
-def plot_mass_over_payload(df: DataFrame = vtol_data):
-    import matplotlib.pyplot as plt
-
+def plot_mass_over_payload(
+        df: DataFrame = vtol_data) -> tuple[plt.Figure, plt.Axes]:
     fig, ax = plt.subplots(figsize=(10, 6))
 
     for i, row in df.iterrows():
@@ -68,9 +68,11 @@ def plot_mass_over_payload(df: DataFrame = vtol_data):
     ax.set_title("Mass over Payload")
     # ax.legend()
     # plt.show()
+    return fig, ax
 
 
 if __name__ == '__main__':
+    print(vtol_data.to_string())
     plot_range_over_mass()
     plot_range_over_payload()
     plot_mass_over_payload()
