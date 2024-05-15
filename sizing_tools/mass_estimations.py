@@ -93,7 +93,8 @@ def plot_concepts_mass_over_payload(concepts: list[Aircraft]) -> tuple[plt.Figur
 
 @show
 @save
-def plot_concepts_range_over_mass(concepts: list[Aircraft]) -> tuple[plt.Figure, plt.Axes]:
+def plot_concepts_range_over_mass(
+        concepts: list[Aircraft]) -> tuple[plt.Figure, plt.Axes]:
     fig, ax = plot_range_over_mass_data(reduced_vtol_data())
     for concept in concepts:
         mass_estimation = MassEstimation(concept)
