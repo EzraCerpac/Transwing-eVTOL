@@ -19,7 +19,7 @@ class EnergySystemMassModel(MassModel):
         self.climb_power: float = 3e5  # random value, doesn't update
         self.C_L: float = 0
         self.P_hv = 0
-        
+
     @property
     def necessary_parameters(self) -> list[str]:
         return [
