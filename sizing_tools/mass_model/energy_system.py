@@ -1,15 +1,12 @@
-import math
-from math import sqrt
-
 from aerosandbox import Atmosphere
 from scipy.constants import g
 
 from data.concept_parameters.aircraft import Aircraft
 from data.concept_parameters.mission_profile import MissionPhase, Phase
 from sizing_tools.formula.aero import C_L_from_lift, hover_power, rotor_disk_area, C_D_from_CL, drag, power_required
+from sizing_tools.formula.battery import mass_from_energy
 from sizing_tools.mass_model.mass_model import MassModel
 from utility.log import logger
-from utility.unit_conversion import convert_float
 
 
 class EnergySystemMassModel(MassModel):
@@ -36,9 +33,12 @@ class EnergySystemMassModel(MassModel):
             for phase in self.mission_profile.phases)
 
     def total_mass(self, initial_total_mass: float = None) -> float:
-        return self.estimate_energy() * (1 + self.aircraft.SoC_min) / (
-            convert_float(self.aircraft.battery_energy_density, 'kWh', 'W*s') *
-            self.aircraft.battery_system_efficiency)
+        return mass_from_energy(
+            self.estimate_energy(),
+            self.aircraft.battery_energy_density,
+            self.aircraft.battery_system_efficiency,
+            self.aircraft.SoC_min,
+        )
 
     def _power(self, phase: MissionPhase) -> float:
         rho = Atmosphere(altitude=phase.ending_altitude).density()
