@@ -3,7 +3,7 @@ from pandas import DataFrame
 from utility.data_management.df_generation import df_from_markdown
 from utility.plotting import save
 
-df = df_from_markdown("""
+vtol_data = df_from_markdown("""
     | Name | Developer | Country Code | Primary Class | Range (km) | Payload (kg) | Mass (kg) | Source |
     | Acubed Vahana | Airbus | US | PL | 96.6 | 204.1 | 930.0 | [54] |
     | AMVA | Micor Technologies | US | PL | 125.0 | 450.0 | 1300.0 | [72] |
@@ -23,7 +23,7 @@ df = df_from_markdown("""
 
 
 # @save
-def plot_range_over_mass(df: DataFrame):
+def plot_range_over_mass(df: DataFrame = vtol_data):
     import matplotlib.pyplot as plt
 
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -34,12 +34,12 @@ def plot_range_over_mass(df: DataFrame):
     ax.set_xlabel("Mass (kg)")
     ax.set_ylabel("Range (km)")
     ax.set_title("Range over Mass")
-    ax.legend()
-    plt.show()
+    # ax.legend()
+    # plt.show()
 
 
-@save
-def plot_range_over_payload(df: DataFrame):
+# @save
+def plot_range_over_payload(df: DataFrame = vtol_data):
     import matplotlib.pyplot as plt
 
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -50,10 +50,27 @@ def plot_range_over_payload(df: DataFrame):
     ax.set_xlabel("Payload (kg)")
     ax.set_ylabel("Range (km)")
     ax.set_title("Range over Payload")
-    ax.legend()
-    plt.show()
+    # ax.legend()
+    # plt.show()
+
+
+# @save
+def plot_mass_over_payload(df: DataFrame = vtol_data):
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    for i, row in df.iterrows():
+        ax.scatter(row["Payload (kg)"], row["Mass (kg)"], label=row["Name"])
+
+    ax.set_xlabel("Payload (kg)")
+    ax.set_ylabel("Mass (kg)")
+    ax.set_title("Mass over Payload")
+    # ax.legend()
+    # plt.show()
 
 
 if __name__ == '__main__':
-    plot_range_over_mass(df)
-    plot_range_over_payload(df)
+    plot_range_over_mass()
+    plot_range_over_payload()
+    plot_mass_over_payload()

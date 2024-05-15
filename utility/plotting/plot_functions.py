@@ -18,8 +18,6 @@ def save(plot_function: callable, name: str = None):
 
         plot_function(*args, **kwargs)
 
-        ax.set_title('')
-
         # Construct the file name
         file_path = Path(__file__).resolve(
         ).parents[2] / 'figures' / _get_caller_file_name()
