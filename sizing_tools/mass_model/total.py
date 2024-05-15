@@ -71,20 +71,18 @@ class TotalModel(MassModel):
         text = ''
         for key, value in breakdown.items():
             if isinstance(value, dict):
-                text += f'{key}:\n'
+                text += f'{key.capitalize()}:\n'
                 for sub_key, sub_value in value.items():
                     text += f'    {sub_key}: {sub_value:.2f} kg\n'
             else:
                 text += f'{key}: {value:.2f} kg\n'
-        logger.info(text)
+        logger.info(f'{self.aircraft.name} mass breakdown:\n{text}')
 
 
 if __name__ == '__main__':
-    from data.concept_parameters.example_aircraft import sizing_example_powered_lift
-    from data.concept_parameters.concepts import concept_C2_1
-    # ac = sizing_example_powered_lift
-    ac = concept_C2_1
-    # ac.payload_mass = 1000
-    total_model = TotalModel(ac, initial_total_mass=1500.)
-    total_model.print_mass_breakdown()
-    logger.info(f'C_L: {total_model.energy_system_mass_model.C_L:.4f}')
+    from data.concept_parameters.concepts import concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10
+
+    for concept in [concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10]:
+        total_model = TotalModel(concept, initial_total_mass=1500.)
+        total_model.print_mass_breakdown()
+        # logger.info(f'C_L: {total_model.energy_system_mass_model.C_L:.4f}')
