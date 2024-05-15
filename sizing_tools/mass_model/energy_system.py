@@ -43,7 +43,9 @@ class EnergySystemMassModel(MassModel):
     def _power(self, phase: MissionPhase) -> float:
         rho = Atmosphere(altitude=phase.ending_altitude).density()
         rotor_disk_thrust = self.initial_total_mass * g
-        P_hv = hover_power(rotor_disk_thrust, rotor_disk_area(self.aircraft.propeller_radius), self.aircraft.figure_of_merit, rho)
+        P_hv = hover_power(rotor_disk_thrust,
+                           rotor_disk_area(self.aircraft.propeller_radius),
+                           self.aircraft.figure_of_merit, rho)
         match phase.phase:
             case Phase.TAKEOFF | Phase.CLIMB:
                 power = P_hv
@@ -56,10 +58,15 @@ class EnergySystemMassModel(MassModel):
                 power = self.climb_power
             case Phase.CRUISE:
                 L = self.initial_total_mass * g
-                self.C_L = C_L_from_lift(L, rho, phase.horizontal_speed, self.aircraft.wing_area)
-                self.C_D = C_D_from_CL(self.C_L, self.aircraft.estimated_CD0, self.aircraft.aspect_ratio, self.aircraft.oswald_efficiency_factor)
-                D = drag(self.C_D, rho, phase.horizontal_speed, self.aircraft.wing_area)
-                power = power_required(D, phase.horizontal_speed, self.aircraft.propulsion_efficiency)
+                self.C_L = C_L_from_lift(L, rho, phase.horizontal_speed,
+                                         self.aircraft.wing_area)
+                self.C_D = C_D_from_CL(self.C_L, self.aircraft.estimated_CD0,
+                                       self.aircraft.aspect_ratio,
+                                       self.aircraft.oswald_efficiency_factor)
+                D = drag(self.C_D, rho, phase.horizontal_speed,
+                         self.aircraft.wing_area)
+                power = power_required(D, phase.horizontal_speed,
+                                       self.aircraft.propulsion_efficiency)
             case Phase.DESCENT:
                 # raise NotImplementedError
                 # assert phase.vertical_speed / self.aircraft.mission_profile.phases[
