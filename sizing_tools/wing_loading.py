@@ -1,11 +1,15 @@
 import math
 from typing import Optional
-
 import matplotlib.pyplot as plt
 import numpy as np
 from aerosandbox import Atmosphere
 
+
+import sys
+sys.path.append("c:/Users/phili/OneDrive/Documenten/AE 3rd Year/DSE/Transwing-eVTOL")
+
 from data.concept_parameters.aircraft import Aircraft
+from sizing_tools.mass_model.energy_system import EnergySystemMassModel
 from utility.log import logger
 
 
@@ -33,12 +37,24 @@ class WingLoading:
                 raise ValueError(f'{param} is not set in the aircraft object')
 
     def W_over_S_cruise(self) -> float:
-        W_over_S_opt = 0.5 * self.rho * self.aircraft.cruise_velocity**2 * math.sqrt(
+        W_over_S_opt = 0.5 * self.rho * (self.aircraft.cruise_velocity)**2 * math.sqrt(
             math.pi * self.aircraft.aspect_ratio *
             self.aircraft.oswald_efficiency_factor *
             self.aircraft.estimated_CD0)
+       
         logger.info(f'{W_over_S_opt=}')
         return W_over_S_opt
+    
+    def W_over_P_takeoff(self, a) -> float:
+        obj = EnergySystemMassModel(a,1500)
+        obj._power()
+        print(obj.P_hv)
+        rho = Atmosphere(altitude=phase.ending_altitude).density()
+        rotor_disk_thrust = self.initial_total_mass * g
+        rotor_disk_area = 2 * math.pi * self.aircraft.propeller_radius**2
+        P_hv = rotor_disk_thrust**(3 / 2) / (self.aircraft.figure_of_merit *
+                                             np.sqrt(2 * rho * rotor_disk_area))
+
 
     def _wp(self, ws: np.ndarray) -> np.ndarray:
         ws = self.mtow_setting * ws
@@ -73,7 +89,7 @@ class WingLoading:
 
 if __name__ == '__main__':
     aircraft = Aircraft(
-        cruise_velocity=200,
+        cruise_velocity=200/3.6,
         aspect_ratio=6,
         oswald_efficiency_factor=0.8,
         estimated_CD0=0.011,
@@ -82,6 +98,7 @@ if __name__ == '__main__':
     wing_loading = WingLoading(aircraft)
     W_over_S_opt = wing_loading.W_over_S_cruise()
     wing_loading.plot_wp_ws(W_over_S_opt)
+    wing_loading.W_over_P_takeoff(aircraft)
 
 # Design points:
 # 'w/s'=700
