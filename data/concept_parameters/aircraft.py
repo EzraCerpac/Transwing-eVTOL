@@ -15,6 +15,8 @@ class Aircraft(BaseModel):
                                              gt=0)  # m/s
     cruise_altitude: Optional[float] = Field(500, gt=0)  # m
     range: Optional[float] = Field(convert_float(100, 'km', 'm'), gt=0)  # m
+
+    rate_of_climb: Optional[float] = Field(10, gt=0)  # m/s
     electric_propulsion_efficiency: Optional[float] = Field(0.2, gt=0)
     battery_energy_density: Optional[float] = Field(0.3, gt=0)  # kWh/kg
 
@@ -73,11 +75,11 @@ class Aircraft(BaseModel):
                                  vertical_speed=0 * 60,
                                  ending_altitude=1.5),
                     MissionPhase(phase=Phase.CLIMB,
-                                 duration=2 * 60,
-                                 horizontal_speed=0,
-                                 distance=0,
-                                 vertical_speed=150 * 60,
-                                 ending_altitude=300),
+                                 duration=self.cruise_altitude / self.rate_of_climb,
+                                 horizontal_speed=self.cruise_velocity,  # gets adjusted in model
+                                 distance=self.cruise_velocity * self.cruise_altitude / self.rate_of_climb,  # gets adjusted in model
+                                 vertical_speed=self.rate_of_climb,
+                                 ending_altitude=self.cruise_altitude),
                     MissionPhase(phase=Phase.CRUISE,
                                  duration=self.range / self.cruise_velocity,
                                  horizontal_speed=self.cruise_velocity,
@@ -85,10 +87,10 @@ class Aircraft(BaseModel):
                                  vertical_speed=0,
                                  ending_altitude=self.cruise_altitude),
                     MissionPhase(phase=Phase.DESCENT,
-                                 duration=2 * 60,
-                                 horizontal_speed=0,
-                                 distance=0,
-                                 vertical_speed=-150 * 60,
+                                 duration=self.cruise_altitude / self.rate_of_climb,
+                                 horizontal_speed=self.cruise_velocity,  # gets adjusted in model
+                                 distance=self.cruise_velocity * self.cruise_altitude / self.rate_of_climb,  # gets adjusted in model
+                                 vertical_speed=self.rate_of_climb,  # weird assumption
                                  ending_altitude=1.5),
                     MissionPhase(phase=Phase.LANDING,
                                  duration=0.17 * 60,

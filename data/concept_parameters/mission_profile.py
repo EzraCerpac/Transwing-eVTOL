@@ -1,4 +1,3 @@
-import logging
 from enum import Enum
 
 from pydantic import BaseModel, field_validator
@@ -33,6 +32,14 @@ class MissionPhase(BaseModel):
 
     def __hash__(self):
         return hash(self.phase)
+
+    def __str__(self):
+        return f'{self.phase.value} phase:\n' + \
+            f' duration: {self.duration:.2f} seconds,\n' + \
+            f' horizontal speed: {self.horizontal_speed:.2f} m/s ({convert_float(self.horizontal_speed, "m/s", "km/h")} km/h),\n' + \
+            f' distance: {self.distance:.2f} m,\n' + \
+            f' vertical speed: {self.vertical_speed:.2f} m/s,\n' + \
+            f' ending altitude: {self.ending_altitude:.2f} m\n'
 
 
 class MissionProfile(BaseModel):

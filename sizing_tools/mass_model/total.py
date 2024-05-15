@@ -35,7 +35,7 @@ class TotalModel(MassModel):
 
     def total_mass_estimation(self, initial_total_mass: float) -> float:
         return (
-            self.energy_system_mass_model.total_mass(initial_total_mass) +
+            self.energy_system_mass_model.total_mass() +
             self.airframe_mass_model.total_mass(initial_total_mass) +
             self.propulsion_system_mass_model.total_mass(self.climb_power) +
             self.aircraft.payload_mass)
@@ -113,7 +113,7 @@ class TotalModel(MassModel):
             major_masses.values(),
             labels=major_masses.keys(),
             startangle=0,
-            autopct=lambda pct: func(pct, list(major_masses.values())))
+            autopct=lambda pct: _func(pct, list(major_masses.values())))
         wedges2, texts2 = ax.pie(sub_masses.values(), startangle=0, radius=0.5)
         wedges2[0].set_visible(False)
         wedges2[1].set_visible(False)
@@ -154,26 +154,35 @@ class TotalModel(MassModel):
         return fig, ax
 
 
-def func(pct, allvalues: list[float]) -> str:
+def _func(pct, allvalues: list[float]) -> str:
     mass = pct / 100. * sum(allvalues)
     return "{:.1f}%\n({:.1f} kg)".format(pct, mass)
 
 
-if __name__ == '__main__':
-    from data.concept_parameters.concepts import concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10
+def concept_iteration(concepts: list[Aircraft]):
+    estimations = {key: {} for key in concepts}
 
-    estimations = {
-        concept_C1_5: {},
-        concept_C2_1: {},
-        concept_C2_6: {},
-        concept_C2_10: {}
-    }
-
-    for concept in estimations.keys():
+    for concept in concepts:
         model = TotalModel(concept, initial_total_mass=1500.)
+
         mass_breakdown = model.mass_breakdown()
         estimations[concept] = mass_breakdown
         print(f'{concept.name=}')
         TotalModel.print_mass_breakdown(mass_breakdown)
         print()
         model.plot_mass_breakdown()
+
+        # model.total_mass()
+        # logger.debug(f'{model.aircraft.name}: {model.aircraft.mission_profile.phases[1]}')
+        # logger.debug(f'{model.aircraft.name}: {model.aircraft.mission_profile.phases[2]}')
+
+
+if __name__ == '__main__':
+    from data.concept_parameters.concepts import concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10
+
+    concept_iteration([
+        concept_C1_5,
+        concept_C2_1,
+        concept_C2_6,
+        concept_C2_10
+    ])
