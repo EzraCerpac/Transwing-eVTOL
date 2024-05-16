@@ -54,7 +54,7 @@ class Aircraft(BaseModel):
 
     # propeller parameters
     propeller_radius: Optional[float] = None  # m
-    propeller_rotation_speed: Optional[float] = None  # rotations/s
+    propeller_rotation_speed: Optional[float] = Field(2300, gt=0)  # rpm
     propeller_blade_number: Optional[int] = None
     tension_coefficient: Optional[float] = None  #
 
