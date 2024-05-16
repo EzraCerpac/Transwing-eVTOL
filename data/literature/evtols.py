@@ -18,6 +18,6 @@ joby_s4 = Aircraft(  # from https://aviationweek.com/aerospace/advanced-air-mobi
     wing_area=11.8 * 2,
     # total length = 6.4 m (21 ft)
     fuselage_length=4,  # estimation
-    fuselage_maximum_section_perimeter=2,  # estimation
+    fuselage_maximum_section_perimeter=1.4,  # estimation
     estimated_CD0=0.04,  # estimation
 )
