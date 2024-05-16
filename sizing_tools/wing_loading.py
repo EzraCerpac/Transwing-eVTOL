@@ -56,15 +56,15 @@ class WingLoading:
         logger.info(f'{W_over_S_opt=}')
         return W_over_S_opt
 
-    def W_over_P_takeoff(self, a) -> float:
-        obj = EnergySystemMassModel(a, 1500)
-        obj._power()
-        print(obj.P_hv)
-        rho = Atmosphere(altitude=phase.ending_altitude).density()
-        rotor_disk_thrust = self.initial_total_mass * g
-        rotor_disk_area = 2 * math.pi * self.aircraft.propeller_radius**2
-        P_hv = rotor_disk_thrust**(3 / 2) / (
-            self.aircraft.figure_of_merit * np.sqrt(2 * rho * rotor_disk_area))
+    # def W_over_P_takeoff(self, a) -> float:
+    #     obj = EnergySystemMassModel(a, 1500)
+    #     obj._power()
+    #     print(obj.P_hv)
+    #     rho = Atmosphere(altitude=phase.ending_altitude).density()
+    #     rotor_disk_thrust = self.initial_total_mass * g
+    #     rotor_disk_area = 2 * math.pi * self.aircraft.propeller_radius**2
+    #     P_hv = rotor_disk_thrust**(3 / 2) / (
+    #         self.aircraft.figure_of_merit * np.sqrt(2 * rho * rotor_disk_area))
 
     def _wp(self, ws: np.ndarray) -> np.ndarray:
         ws = self.mtow_setting * ws
@@ -102,7 +102,7 @@ class WingLoading:
         #             color='r',
         #             linestyle='-',
         #             label='Vertical TO requirement')
-        plt.plot(xx, self._wp(xx), label='Optimisation max cruise speed')
+        plt.plot(xx, self._wp(xx), label='Cruise')
         plt.plot(xx, self.ver_climb(), label='Vertical Climb')
         plt.plot(xx, self.steady_climb(), label='Cruise Climb')
         plt.xlabel('W/S')
