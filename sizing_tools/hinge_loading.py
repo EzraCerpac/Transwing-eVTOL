@@ -33,7 +33,6 @@ def L(eta: float = 0) -> tuple[float]:
     b = np.sqrt(model.aircraft.wing_area * model.aircraft.aspect_ratio)
     lmbd = 0.4  #TODO: remove hardcoding
 
-
 def W_engine(eta: np.ndarray = 0) -> tuple[float]:
     """_summary_
 
@@ -51,11 +50,11 @@ def W_engine(eta: np.ndarray = 0) -> tuple[float]:
     l_1 = 0.3
     l_2 = 0.5
 
-    eta1 = eta * (l_1 > eta)
+    # eta1 = eta * (l_1 > eta)
     V1 = -2 * M_engine * 9.81 * (l_1 > eta)
     M1 = -((l_1 - eta) + (l_2 - eta)) * M_engine * 9.81 * (l_1 > eta)
 
-    eta2 = eta * (np.logical_and(l_2 > eta, eta >= l_1))
+    # eta2 = eta * (np.logical_and(l_2 > eta, eta >= l_1))
     V2 = -M_engine * 9.81 * (np.logical_and(l_2 > eta, eta >= l_1))
     M2 = -M_engine * 9.81 * (l_2 - eta) * (np.logical_and(
         l_2 > eta, eta >= l_1))
