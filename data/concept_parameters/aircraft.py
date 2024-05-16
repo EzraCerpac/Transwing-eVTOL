@@ -76,42 +76,47 @@ class Aircraft(BaseModel):
         self.mission_profile = MissionProfile(
             name='default',
             phases={
-                Phase.TAKEOFF: MissionPhase(phase=Phase.TAKEOFF,
-                                            duration=0.17 * 60,
-                                            horizontal_speed=0,
-                                            distance=0,
-                                            vertical_speed=0 * 60,
-                                            ending_altitude=1.5),
-                Phase.CLIMB: MissionPhase(
+                Phase.TAKEOFF:
+                MissionPhase(phase=Phase.TAKEOFF,
+                             duration=0.17 * 60,
+                             horizontal_speed=0,
+                             distance=0,
+                             vertical_speed=0 * 60,
+                             ending_altitude=1.5),
+                Phase.CLIMB:
+                MissionPhase(
                     phase=Phase.CLIMB,
                     duration=self.cruise_altitude / self.rate_of_climb,
                     horizontal_speed=self.
                     cruise_velocity,  # gets adjusted in model
                     distance=self.cruise_velocity * self.cruise_altitude /
-                             self.rate_of_climb,  # gets adjusted in model
+                    self.rate_of_climb,  # gets adjusted in model
                     vertical_speed=self.rate_of_climb,
                     ending_altitude=self.cruise_altitude),
-                Phase.CRUISE: MissionPhase(phase=Phase.CRUISE,
-                                           duration=self.range / self.cruise_velocity,
-                                           horizontal_speed=self.cruise_velocity,
-                                           distance=self.range,
-                                           vertical_speed=0,
-                                           ending_altitude=self.cruise_altitude),
-                Phase.DESCENT: MissionPhase(
+                Phase.CRUISE:
+                MissionPhase(phase=Phase.CRUISE,
+                             duration=self.range / self.cruise_velocity,
+                             horizontal_speed=self.cruise_velocity,
+                             distance=self.range,
+                             vertical_speed=0,
+                             ending_altitude=self.cruise_altitude),
+                Phase.DESCENT:
+                MissionPhase(
                     phase=Phase.DESCENT,
                     duration=self.cruise_altitude / self.rate_of_climb,
                     horizontal_speed=self.
                     cruise_velocity,  # gets adjusted in model
                     distance=self.cruise_velocity * self.cruise_altitude /
-                             self.rate_of_climb,  # gets adjusted in model
+                    self.rate_of_climb,  # gets adjusted in model
                     vertical_speed=self.rate_of_climb,  # weird assumption
                     ending_altitude=1.5),
-                Phase.LANDING: MissionPhase(phase=Phase.LANDING,
-                                            duration=0.17 * 60,
-                                            horizontal_speed=0,
-                                            distance=0,
-                                            vertical_speed=0 * 60,
-                                            ending_altitude=0),
+                Phase.LANDING:
+                MissionPhase(phase=Phase.LANDING,
+                             duration=0.17 * 60,
+                             horizontal_speed=0,
+                             distance=0,
+                             vertical_speed=0 * 60,
+                             ending_altitude=0),
             })
 
     @classmethod
