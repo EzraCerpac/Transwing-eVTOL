@@ -22,7 +22,7 @@ class PropulsionSystemMassModel(MassModel):
         Calculate the mass of the motor
         :return: mass of the motor in kg
         """
-        climb_power = self.aircraft.mission_profile.phases[Phase.CLIMB].power
+        climb_power = self.aircraft.mission_profile.CLIMB.power
         return engine_mass(convert_float(climb_power, 'W', 'kW'),
                            self.aircraft.motor_power_margin,
                            self.aircraft.motor_prop_count)
@@ -32,7 +32,7 @@ class PropulsionSystemMassModel(MassModel):
         Calculate the mass of the propeller
         :return: mass of the propeller in kg
         """
-        climb_power = self.aircraft.mission_profile.phases[Phase.CLIMB].power
+        climb_power = self.aircraft.mission_profile.CLIMB.power
         return 0.144 * (2 * self.aircraft.propeller_radius *
                         (convert_float(climb_power, 'W', 'kW') /
                          self.aircraft.motor_prop_count) *

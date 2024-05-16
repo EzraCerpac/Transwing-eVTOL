@@ -181,6 +181,10 @@ class MassObject(BaseModel):
     cg: Optional[float] = Field(None, ge=0)
     submasses: dict[str, 'MassObject'] = Field({})
 
+    def __init__(self, **data):
+        super().__init__(**data)
+        self.set_cg()
+
     @classmethod
     def from_mass_dict(cls, name: str, data: dict) -> 'MassObject':
         mass = data.get('total', 0)
@@ -191,6 +195,16 @@ class MassObject(BaseModel):
             elif key != 'total':
                 submasses[key] = cls(name=key, mass=value)
         return cls(name=name, mass=mass, submasses=submasses)
+
+    def set_cg(self):
+        if not self.submasses and self.cg is not None:
+            return
+        cg = 0
+        for value in self.submasses.values():
+            value.set_cg()
+            cg += value.mass * value.cg
+        assert self.mass > 0, f"Mass must be greater than zero. Got {self.mass}"
+        self.cg = cg / self.mass
 
     def __getattr__(self, item):
         if item in self.submasses:
