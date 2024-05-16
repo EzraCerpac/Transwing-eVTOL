@@ -1,6 +1,6 @@
 from enum import Enum
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, PrivateAttr
 
 from utility.log import logger
 from utility.unit_conversion import convert_float
@@ -21,6 +21,33 @@ class MissionPhase(BaseModel):
     distance: float  # in m
     vertical_speed: float  # in m/second
     ending_altitude: float  # in m
+    _energy: float = PrivateAttr(None)
+    _power: float = PrivateAttr(None)
+    _C_L: float = PrivateAttr(None)
+
+    @property
+    def energy(self):
+        return self._energy
+
+    @energy.setter
+    def energy(self, value):
+        self._energy = value
+
+    @property
+    def power(self):
+        return self._power
+
+    @power.setter
+    def power(self, value):
+        self._power = value
+
+    @property
+    def C_L(self):
+        return self._C_L
+
+    @C_L.setter
+    def C_L(self, value):
+        self._C_L = value
 
     @classmethod
     @field_validator('duration', 'horizontal_speed', 'distance',
@@ -44,7 +71,17 @@ class MissionPhase(BaseModel):
 
 class MissionProfile(BaseModel):
     name: str = 'unnamed'
-    phases: list[MissionPhase]
+    phases: dict[Phase, MissionPhase]
+
+    _energy: float = PrivateAttr(None)
+
+    @property
+    def energy(self):
+        return self._energy
+
+    @energy.setter
+    def energy(self, value):
+        self._energy = value
 
     @classmethod
     @field_validator('phases')
@@ -68,21 +105,24 @@ class MissionProfile(BaseModel):
 
 
 typical_wingless_mission_profile = MissionProfile(
-    # from eVTOL sizing paper
+    # from eVTOL sizing paper  # not very accurate for our vtols
     name='typical wingless',
-    phases=[
+    phases={
+        Phase.TAKEOFF:
         MissionPhase(phase=Phase.TAKEOFF,
                      duration=0.17 * 60,
                      horizontal_speed=0,
                      distance=0,
                      vertical_speed=0 * 60,
                      ending_altitude=1.5),
+        Phase.CLIMB:
         MissionPhase(phase=Phase.CLIMB,
                      duration=2 * 60,
                      horizontal_speed=0,
                      distance=0,
                      vertical_speed=150 * 60,
                      ending_altitude=300),
+        Phase.CRUISE:
         MissionPhase(
             phase=Phase.CRUISE,
             duration=25 * 60,
@@ -91,16 +131,18 @@ typical_wingless_mission_profile = MissionProfile(
             vertical_speed=0 * 60,
             ending_altitude=300,
         ),
+        Phase.DESCENT:
         MissionPhase(phase=Phase.DESCENT,
                      duration=2 * 60,
                      horizontal_speed=0,
                      distance=0,
                      vertical_speed=-150 * 60,
                      ending_altitude=1.5),
+        Phase.LANDING:
         MissionPhase(phase=Phase.LANDING,
                      duration=0.17 * 60,
                      horizontal_speed=0,
                      distance=0,
                      vertical_speed=0 * 60,
                      ending_altitude=0)
-    ])
+    })

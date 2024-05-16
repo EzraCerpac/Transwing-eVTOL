@@ -9,7 +9,7 @@ concept_C1_5 = Aircraft(
     propeller_blade_number=4,
     wing=Wing(
         area=20,
-        span=8,
+        span=12,
     ),
     fuselage=Fuselage(
         length=4,
@@ -43,7 +43,7 @@ concept_C2_6 = Aircraft(
     propeller_blade_number=4,
     wing=Wing(
         area=20,
-        span=14,
+        span=10,
     ),
     fuselage=Fuselage(
         length=4,
@@ -61,7 +61,7 @@ concept_C2_10 = Aircraft(
     propeller_blade_number=2,
     wing=Wing(
         area=20,
-        span=8.5,
+        span=8,
     ),
     fuselage=Fuselage(
         length=8.5,

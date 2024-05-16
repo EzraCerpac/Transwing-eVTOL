@@ -3,8 +3,10 @@ from typing import Optional
 import os
 import sys
 
-curreent_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(curreent_dir)
+from utility.plotting import show, save
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 
 from data.concept_parameters.aircraft_components import Wing
@@ -82,9 +84,12 @@ class WingLoading:
                              np.sqrt(2 * np.arange(1, 2000) / self.rho))**-1
         return W_P
 
-    def plot_wp_ws(self, T_A, Sref_Sw, cd_cl_three_over_2, AR):
+    @show
+    @save
+    def plot_wp_ws(self, T_A, Sref_Sw, cd_cl_three_over_2,
+                   AR) -> tuple[plt.Figure, plt.Axes]:
+        fig, ax = plt.subplots()
         xx = np.arange(1, 2000)
-        #if W_over_S_opt is not None:
 
         plt.axvline(x=self.w_s_stall_speed(), label=' Stall Speed')
         plt.plot(xx, self._wp(xx, AR), label='Cruise')
@@ -95,7 +100,7 @@ class WingLoading:
         plt.xlabel('W/S')
         plt.ylabel('W/P')
         plt.legend()
-        plt.show()
+        return fig, ax
 
 
 if __name__ == '__main__':
