@@ -36,23 +36,24 @@ class TotalModel(MassModel):
             self.propulsion_system_mass_model.necessary_parameters
 
     def total_mass_estimation(self, initial_total_mass: float) -> float:
-        return (
-            self.energy_system_mass_model.total_mass() +
-            self.airframe_mass_model.total_mass(initial_total_mass) +
-            self.propulsion_system_mass_model.total_mass() +
-            self.aircraft.payload_mass)
+        return (self.energy_system_mass_model.total_mass() +
+                self.airframe_mass_model.total_mass(initial_total_mass) +
+                self.propulsion_system_mass_model.total_mass() +
+                self.aircraft.payload_mass)
 
     def total_mass(self, **kwargs) -> float:
         # logger.info(f'Initial total_mass: {self.initial_total_mass} kg')
         if kwargs:
             logger.warning(f'Kwargs are given and not expected: {kwargs=}')
         self.aircraft.total_mass = fixed_point(self.total_mass_estimation,
-                                      self.initial_total_mass)
+                                               self.initial_total_mass)
         return self.aircraft.total_mass
 
     def mass_breakdown(self) -> dict[str, float | dict[str, float]]:
         return {
-            'total': self.aircraft.total_mass if self.aircraft.total_mass else self.total_mass(),
+            'total':
+            self.aircraft.total_mass
+            if self.aircraft.total_mass else self.total_mass(),
             'payload': {
                 'total': self.aircraft.payload_mass,
             },
@@ -72,10 +73,11 @@ class TotalModel(MassModel):
                 'total':
                 self.propulsion_system_mass_model.total_mass(),
                 'motors':
-                self.propulsion_system_mass_model.motor_mass()
-                * self.aircraft.motor_prop_count,
+                self.propulsion_system_mass_model.motor_mass() *
+                self.aircraft.motor_prop_count,
                 'propellers':
-                self.propulsion_system_mass_model.propeller_mass() * self.aircraft.motor_prop_count,
+                self.propulsion_system_mass_model.propeller_mass() *
+                self.aircraft.motor_prop_count,
             }
         }
 
@@ -188,4 +190,3 @@ if __name__ == '__main__':
     concept_iteration([
         joby_s4,
     ])
-
