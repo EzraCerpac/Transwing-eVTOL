@@ -16,6 +16,10 @@ concept_C1_5 = Aircraft(
         maximum_section_perimeter=3,
     ),
     estimated_CD0=0.04,
+    sref = 25,
+    TA = 400
+
+
 )
 
 concept_C2_1 = Aircraft(
@@ -33,6 +37,8 @@ concept_C2_1 = Aircraft(
         maximum_section_perimeter=2.5,
     ),
     estimated_CD0=0.03,
+    sref = 12.5,
+    TA = 400
 )
 
 concept_C2_6 = Aircraft(
@@ -50,6 +56,8 @@ concept_C2_6 = Aircraft(
         maximum_section_perimeter=2.5,
     ),
     estimated_CD0=0.035,
+    sref = 25,
+    TA = 400
 )
 
 concept_C2_10 = Aircraft(
@@ -68,4 +76,6 @@ concept_C2_10 = Aircraft(
         maximum_section_perimeter=2.5,
     ),
     estimated_CD0=0.04,
+    sref = 20,
+    TA = 400
 )

@@ -18,7 +18,7 @@ class Aircraft(BaseModel):
     range: Optional[float] = Field(convert_float(100, 'km', 'm'), gt=0)  # m
     total_mass: Optional[float] = Field(None, gt=0)  # kg
 
-    rate_of_climb: Optional[float] = Field(10, gt=0)  # m/s
+    rate_of_climb: Optional[float] = Field(5, gt=0)  # m/s
     electric_propulsion_efficiency: Optional[float] = Field(0.2, gt=0)
     battery_energy_density: Optional[float] = Field(0.3, gt=0)  # kWh/kg
 
@@ -53,6 +53,9 @@ class Aircraft(BaseModel):
 
     # for wing loading
     estimated_CD0: Optional[float] = None
+    v_stall: Optional[float] = Field(31.889, gt=0)
+    TA:Optional[float] = None
+    sref:Optional[float] = None
     # for hinge loading
     taper: Optional[float] = Field(0.4, gt=0)
 
