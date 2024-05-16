@@ -30,11 +30,11 @@ class WingLoading:
         self.power_setting = power_setting
         self.mtow_setting = mtow_setting
         self._check_input()
-        self.V_stall = 31.3889               #m/s CS23 stall speed
-        self.ROC_ver = 5                     # vertical rate of climb
-        self.Fom = 0.75                      # figure of merit
-        self.n_prop = 0.8                    # propeller efficiency
-        self.ROC_std = 3.65                  # m/s from joby s4
+        self.V_stall = 31.3889  #m/s CS23 stall speed
+        self.ROC_ver = 5  # vertical rate of climb
+        self.Fom = 0.75  # figure of merit
+        self.n_prop = 0.8  # propeller efficiency
+        self.ROC_std = 3.65  # m/s from joby s4
         self.cd_cl_three_over_2 = 1 / 18
 
     def _check_input(self):
