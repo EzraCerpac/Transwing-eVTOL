@@ -20,8 +20,8 @@ class WingLoading:
 
     def __init__(self,
                  aircraft: Aircraft,
-                 power_setting: float = 0.9,
-                 mtow_setting: float = 0.8):
+                 power_setting: float = 0.75,
+                 mtow_setting: float = 1):
         self.aircraft = aircraft
         self.atmosphere = Atmosphere(
             altitude=self.aircraft.cruise_altitude if self.aircraft.
@@ -45,17 +45,17 @@ class WingLoading:
             if getattr(self.aircraft, param) is None:
                 raise ValueError(f'{param} is not set in the aircraft object')
 
-    def W_over_S_cruise(self) -> float:
+    def W_over_S_cruise(self, AR) -> float:
         W_over_S_opt = 0.5 * self.rho * (
             self.aircraft.cruise_velocity)**2 * math.sqrt(
-                math.pi * self.aircraft.aspect_ratio *
+                math.pi * AR *
                 self.aircraft.oswald_efficiency_factor *
                 self.aircraft.estimated_CD0)
 
         logger.info(f'{W_over_S_opt=}')
         return W_over_S_opt
 
-    def _wp(self, ws: np.ndarray) -> np.ndarray:
+    def _wp(self, ws: np.ndarray, AR) -> np.ndarray:
         ws = self.mtow_setting * ws
         wp = self.power_setting * self.aircraft.electric_propulsion_efficiency * (
             self.rho / Atmosphere().density())**(
@@ -69,27 +69,26 @@ class WingLoading:
     def w_s_stall_speed(self):
         return 0.5 * self.V_stall**2 * self.rho * 1.1
 
-    def ver_climb(self):
+    def ver_climb(self, T_A, Sref_Sw):
         T_W = 1.2 * (1 + 1 /
-                     (np.arange(1, 2000)) * self.rho * self.ROC_ver**2 * 1.2)
-        T_A = 440  # assumed taken by Joby s4
+                     (np.arange(1, 2000)) * self.rho * self.ROC_ver**2 * Sref_Sw)
         P_W = (T_W * (1 / (self.Fom * self.n_prop)) *
                np.sqrt(T_A / (2 * self.rho)))**-1
         return P_W
 
-    def steady_climb(self):
+    def steady_climb(self, cd_cl_three_over_2):
         W_P = self.n_prop * (self.ROC_std + self.cd_cl_three_over_2 *
                              np.sqrt(2 * np.arange(1, 2000) / self.rho))**-1
         return W_P
 
-    def plot_wp_ws(self, W_over_S_opt: Optional[float]):
+    def plot_wp_ws(self, T_A, Sref_Sw,cd_cl_three_over_2, AR ):
         xx = np.arange(1, 2000)
-        if W_over_S_opt is not None:
+        #if W_over_S_opt is not None:
 
-            plt.axvline(x=self.w_s_stall_speed(), label=' Stall Speed')
-        plt.plot(xx, self._wp(xx), label='Cruise')
-        plt.plot(xx, self.ver_climb(), label='Vertical Climb')
-        plt.plot(xx, self.steady_climb(), label='Cruise Climb')
+        plt.axvline(x=self.w_s_stall_speed(), label=' Stall Speed')
+        plt.plot(xx, self._wp(xx, AR), label='Cruise')
+        plt.plot(xx, self.ver_climb(T_A, Sref_Sw), label='Vertical Climb')
+        plt.plot(xx, self.steady_climb(cd_cl_three_over_2), label='Cruise Climb')
         plt.xlabel('W/S')
         plt.ylabel('W/P')
         plt.legend()
@@ -105,9 +104,15 @@ if __name__ == '__main__':
         electric_propulsion_efficiency=0.8,
     )
     wing_loading = WingLoading(aircraft)
-    W_over_S_opt = wing_loading.W_over_S_cruise()
-    wing_loading.plot_wp_ws(W_over_S_opt)
-    wing_loading.W_over_P_takeoff(aircraft)
+    Sref_Sw = [1.3, 0.6, 1.3, 1]
+    T_A = [400, 400, 400, 400]
+    V_stall = [31.4, 31.4, 31.4, 31.4]
+    AR = [9.9, 7.3, 5.1, 3.2]
+    Cd_0 = [0.035, 0.035, 0.035, 0.035]
+    cd_cl_three_over_2 = [0.10644, 0.11769, 0.13633, 0.17066]
+    for i in range(0,4):
+        wing_loading.plot_wp_ws(T_A[i], Sref_Sw[i],cd_cl_three_over_2[i], AR[i])
+
 
 # Design points:
 # 'w/s'=700
