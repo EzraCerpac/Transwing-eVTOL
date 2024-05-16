@@ -6,7 +6,7 @@ from utility.plotting import save
 
 vtol_data = df_from_markdown("""
     | Name | Developer | Country Code | Primary Class | Range (km) | Payload (kg) | Mass (kg) | Source |
-    | Acubed Vahana | Airbus | US | PL | 96.6 | 204.1 | 930.0 | [54] |
+    | Acubed Vahana    | Airbus | US | PL | 96.6 | 204.1 | 930.0 | [54] |
     | AMVA | Micor Technologies | US | PL | 125.0 | 450.0 | 1300.0 | [72] |
     | EHang 184 | EHang | CN | WL | 31.0 | 100.0 | 360.0 | [73] |
     | Elroy | Astro Aerospace | US | WL | 25.0 | 120.0 | 360.0 | [74] |

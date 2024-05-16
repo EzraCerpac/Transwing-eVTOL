@@ -1,9 +1,13 @@
 import math
 from typing import Optional
-
+import os
 import sys
 
-sys.path.append("c:/Users/salma/Downloads/Transwing-eVTOL")
+curreent_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(curreent_dir)
+sys.path.append(parent_dir)
+
+
 import matplotlib.pyplot as plt
 import numpy as np
 from aerosandbox import Atmosphere
