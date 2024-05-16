@@ -8,6 +8,7 @@ major = 5.0
 minor = 3.0
 style = 'default'
 
+
 # Set all parameters for the plot
 def set_plot_params():
     """

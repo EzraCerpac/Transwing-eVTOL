@@ -27,18 +27,23 @@ class NoiseModel(Model):
         :param power: Power of the engine in W
         :return: Sound pressure level in dB
         """
-        return SPL_1_max(convert_float(power, 'W', 'kW'),
-                         self.aircraft.propeller_radius * 2,
-                         tip_mach_number(self.aircraft.propeller_radius * 2, self.aircraft.propeller_rotation_speed),
-                         self.aircraft.propeller_blade_number)
+        return SPL_1_max(
+            convert_float(power, 'W',
+                          'kW'), self.aircraft.propeller_radius * 2,
+            tip_mach_number(self.aircraft.propeller_radius * 2,
+                            self.aircraft.propeller_rotation_speed),
+            self.aircraft.propeller_blade_number)
 
-    def sound_pressure_level_1m(self, power: float) -> float:  # can be adapted to account for multiple engine sizes
+    def sound_pressure_level_1m(
+        self, power: float
+    ) -> float:  # can be adapted to account for multiple engine sizes
         """
         Calculate the sound pressure level of all engines at 1m distance from the aircraft
         :param power: Power of the engines in W
         :return: Sound pressure level in dB
         """
-        return 10 * log10(self.aircraft.motor_prop_count * 10**(self.sound_pressure_level_1m_1engine(power) / 10))
+        return 10 * log10(self.aircraft.motor_prop_count * 10**
+                          (self.sound_pressure_level_1m_1engine(power) / 10))
 
 
 if __name__ == '__main__':

@@ -28,7 +28,8 @@ def show(plot_function: plotFunction) -> plotFunction:
     return show_plot
 
 
-def save(plot_function: plotFunction, name_func: callable = None) -> plotFunction:
+def save(plot_function: plotFunction,
+         name_func: callable = None) -> plotFunction:
     """
     Decorator to save the plot to a file.
     """
@@ -65,7 +66,8 @@ def save(plot_function: plotFunction, name_func: callable = None) -> plotFunctio
     return save_plot
 
 
-def save_with_name(name_func: callable) -> Callable[[plotFunction], plotFunction]:
+def save_with_name(
+        name_func: callable) -> Callable[[plotFunction], plotFunction]:
     return lambda plot_function: save(plot_function, name_func)
 
 
