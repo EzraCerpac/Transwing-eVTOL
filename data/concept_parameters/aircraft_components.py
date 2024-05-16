@@ -2,6 +2,8 @@ from typing import Optional
 
 from pydantic import BaseModel, field_validator, Field, PrivateAttr
 
+from utility.log import logger
+
 
 class Propeller(BaseModel):
     id: Optional[int | str] = None
@@ -171,3 +173,36 @@ class Tail(BaseModel):
 class Fuselage(BaseModel):
     length: Optional[float] = None  # m
     maximum_section_perimeter: Optional[float] = None  # m
+
+
+class MassObject(BaseModel):
+    name: str
+    mass: Optional[float] = Field(None, gt=0)
+    cg: Optional[float] = Field(None, ge=0)
+    submasses: dict[str, 'MassObject'] = Field({})
+
+    @classmethod
+    def from_mass_dict(cls, name: str, data: dict) -> 'MassObject':
+        mass = data.get('total', 0)
+        submasses = {}
+        for key, value in data.items():
+            if isinstance(value, dict):
+                submasses[key] = cls.from_mass_dict(key, value)
+            elif key != 'total':
+                submasses[key] = cls(name=key, mass=value)
+        return cls(name=name, mass=mass, submasses=submasses)
+
+    def __getattr__(self, item):
+        if item in self.submasses:
+            return self.submasses[item]
+        else:
+            raise AttributeError(f"No such attribute: {item}")
+
+    def __setattr__(self, key, value):  # not tested
+        if key in self.submasses:
+            self.submasses[key] = value
+        else:
+            super().__setattr__(key, value)
+
+    def __repr__(self):
+        return f"MassObject(name={self.name}, mass={self.mass}, cg={self.cg}, submasses={self.submasses})"

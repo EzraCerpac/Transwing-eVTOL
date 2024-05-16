@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 from scipy.optimize import fixed_point
 
 from data.concept_parameters.aircraft import Aircraft
+from data.concept_parameters.aircraft_components import MassObject
 from data.literature.evtols import joby_s4
 from sizing_tools.mass_model.airframe import AirframeMassModel
 from sizing_tools.mass_model.energy_system import EnergySystemMassModel
@@ -51,7 +52,7 @@ class TotalModel(MassModel):
         return self.aircraft.total_mass
 
     def mass_breakdown(self) -> dict[str, float | dict[str, float]]:
-        return {
+        breakdown =  {
             'total': self.aircraft.total_mass if self.aircraft.total_mass else self.total_mass(),
             'payload': {
                 'total': self.aircraft.payload_mass,
@@ -63,10 +64,10 @@ class TotalModel(MassModel):
                 'total': self.airframe_mass_model.total_mass(),
                 'fuselage': self.airframe_mass_model.fuselage_mass(),
                 'wing': self.airframe_mass_model.wing_mass(),
-                'horizontal tail':
+                'horizontal_tail':
                 self.airframe_mass_model.horizontal_tail_mass(),
-                'vertical tail': self.airframe_mass_model.vertical_tail_mass(),
-                'landing gear': self.airframe_mass_model.landing_gear_mass(),
+                'vertical_tail': self.airframe_mass_model.vertical_tail_mass(),
+                'landing_gear': self.airframe_mass_model.landing_gear_mass(),
             },
             'propulsion': {
                 'total':
@@ -78,6 +79,8 @@ class TotalModel(MassModel):
                 self.propulsion_system_mass_model.propeller_mass() * self.aircraft.motor_prop_count,
             }
         }
+        self.aircraft.mass_breakdown = MassObject.from_mass_dict('total', breakdown)
+        return breakdown
 
     @staticmethod
     def mass_breakdown_to_str(
@@ -174,9 +177,6 @@ def concept_iteration(concepts: list[Aircraft]):
         )
         model.plot_mass_breakdown()
 
-        # model.total_mass()
-        # logger.debug(f'{model.aircraft.name}: {model.aircraft.mission_profile.phases[1]}')
-        # logger.debug(f'{model.aircraft.name}: {model.aircraft.mission_profile.phases[2]}')
 
 
 if __name__ == '__main__':
@@ -188,4 +188,3 @@ if __name__ == '__main__':
     concept_iteration([
         joby_s4,
     ])
-

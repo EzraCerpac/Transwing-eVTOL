@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel, field_validator, Field
 
-from data.concept_parameters.aircraft_components import Propeller, Tail, Fuselage, Wing
+from data.concept_parameters.aircraft_components import Propeller, Tail, Fuselage, Wing, MassObject
 from data.concept_parameters.mission_profile import MissionProfile, MissionPhase, Phase
 from utility.log import logger
 from utility.unit_conversion import convert_float
@@ -10,6 +10,8 @@ from utility.unit_conversion import convert_float
 
 class Aircraft(BaseModel):
     name: Optional[str] = Field('Aircraft', min_length=1)
+
+    mass_breakdown: Optional[MassObject] = None
 
     # Default values
     cruise_velocity: Optional[float] = Field(convert_float(200, 'km/h', 'm/s'),
