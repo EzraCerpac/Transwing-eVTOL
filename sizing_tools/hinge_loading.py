@@ -78,7 +78,12 @@ def W_engine(eta: np.ndarray = 0) -> tuple[float]:
 
     return V, M
 
-
+def get_load(eta):
+    eta = np.array([eta])
+    V_L, M_L = L(eta)
+    V_E, M_E = W_engine(eta)
+    return V_L+V_E, M_L+M_E
+    
 if __name__ == '__main__':
 
     from matplotlib import pyplot as plt
@@ -87,4 +92,5 @@ if __name__ == '__main__':
     plt.plot(eta, L(eta)[0] + W_engine(eta)[0], label='Shear')
     plt.plot(eta, L(eta)[1] + W_engine(eta)[1], label='Moment')
     plt.legend()
+    print(get_load(0.5))
     plt.show()
