@@ -30,7 +30,8 @@ class MassEstimation:
         mass = []
         for r in ranges:
             distance = convert_float(r, 'km', 'm')
-            self.initial_aircraft.mission_profile.phases[Phase.CRUISE].distance = distance
+            self.initial_aircraft.mission_profile.phases[
+                Phase.CRUISE].distance = distance
             self.initial_aircraft.mission_profile.phases[Phase.CRUISE].duration = distance / \
                                                                        self.initial_aircraft.mission_profile.phases[
                                                                            Phase.CRUISE].horizontal_speed
