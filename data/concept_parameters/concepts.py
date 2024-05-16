@@ -3,7 +3,7 @@ from data.concept_parameters.aircraft import Aircraft
 concept_C1_5 = Aircraft(
     name="Concept C1.5 (Fixed Wing)",
     motor_prop_count=4,
-    motor_wing_count=0
+    motor_wing_count=0,
     propeller_radius=1.25,
     propeller_blade_number=4,
     aspect_ratio=8**2 / 20,
@@ -29,7 +29,7 @@ concept_C1_5 = Aircraft(
 concept_C2_1 = Aircraft(
     name="Concept C2.1 (Pterodynamics)",
     motor_prop_count=4,
-    motor_wing_count=4
+    motor_wing_count=4,
     propeller_radius=1.25,
     propeller_blade_number=4,
     aspect_ratio=14**2 / 20,
@@ -56,7 +56,7 @@ concept_C2_10 = Aircraft(
     # modeled as a 3 prop aircraft, but model doesn't account for this design yet
     name="Concept C2.10 (Tomaso)",
     motor_prop_count=3,
-    motor_wing_count=0
+    motor_wing_count=0,
     propeller_radius=1,
     propeller_blade_number=2,
     aspect_ratio=8.5**2 / 20,
