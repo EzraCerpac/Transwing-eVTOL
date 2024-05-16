@@ -6,12 +6,12 @@ from scipy.optimize import fixed_point
 from data.concept_parameters.aircraft import Aircraft
 from data.concept_parameters.aircraft_components import MassObject
 from data.literature.evtols import joby_s4
-from sizing_tools.mass_model.airframe import AirframeMassModel
-from sizing_tools.mass_model.energy_system import EnergySystemMassModel
+from sizing_tools.mass_model.classII.airframe import AirframeMassModel
+from sizing_tools.mass_model.classII.energy_system import EnergySystemMassModel
 from sizing_tools.mass_model.mass_model import MassModel
-from sizing_tools.mass_model.propulsion_system import PropulsionSystemMassModel
+from sizing_tools.mass_model.classII.propulsion_system import PropulsionSystemMassModel
 from utility.log import logger
-from utility.plotting.plot_functions import show, save, save_with_name
+from utility.plotting.plot_functions import show, save_with_name
 
 
 class TotalModel(MassModel):

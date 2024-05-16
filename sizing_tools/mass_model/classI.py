@@ -1,8 +1,9 @@
 import math
-from typing import Optional
 import os
 import sys
 import scipy as sc
+
+from sizing_tools.model import Model
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
@@ -17,39 +18,30 @@ from aerosandbox import Atmosphere
 from data.concept_parameters.mission_profile import Phase
 from utility.plotting import show, save
 from data.concept_parameters.aircraft import Aircraft
-from sizing_tools.mass_model.energy_system import EnergySystemMassModel
 from utility.log import logger
 
 
-class WingLoading:
+class WingLoading(Model):
 
     def __init__(self,
                  aircraft: Aircraft,
                  power_setting: float = 0.75,
                  mtow_setting: float = 1):
-        self.aircraft = aircraft
+        super().__init__(aircraft)
         self.atmosphere = Atmosphere(
             altitude=self.aircraft.cruise_altitude if self.aircraft.
             cruise_altitude is not None else 0)
         self.rho = self.atmosphere.density()
         self.power_setting = power_setting
         self.mtow_setting = mtow_setting
-        self._check_input()
-
         self.ROC_ver = 5  # vertical rate of climb
 
-    def _check_input(self):
-        for param in [
-                'cruise_velocity', 'wing', 'estimated_CD0',
-                'electric_propulsion_efficiency'
-        ]:
-            if getattr(self.aircraft, param) is None:
-                raise ValueError(f'{param} is not set in the aircraft object')
-
-    def S_w(self):
-        return 2 * self.aircraft.total_mass * sc.g / (
-            self.rho * self.aircraft.cruise_velocity
-            ^ 2 * self.aircraft.mission_profile[Phase.CRUISE].C_L)
+    @property
+    def necessary_parameters(self) -> list[str]:
+        return [
+            'cruise_velocity', 'wing', 'estimated_CD0', 'propulsion_efficiency',
+            'v_stall', 'cruise_altitude', 'mission_profile',
+        ]
 
     def _wp(self, ws: np.ndarray, AR) -> np.ndarray:
         ws = self.mtow_setting * ws
@@ -109,23 +101,6 @@ class WingLoading:
 if __name__ == '__main__':
     from data.concept_parameters.concepts import concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10
 
-    # aircraft = Aircraft(
-    #     cruise_velocity=200 / 3.6,
-    #     wing=Wing(
-    #         aspect_ratio=6,
-    #         oswald_efficiency_factor=0.8,
-    #     ),
-    #     estimated_CD0=0.011,
-    #     electric_propulsion_efficiency=0.8,
-    # )
-    # aircraft.mission_profile.phases[Phase.TAKEOFF].vertical_speed = 5
-
-    # cd_cl_three_over_2 = [0.10644, 0.11769, 0.13633, 0.17066]
-
     for concept in [concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10]:
         wing_loading = WingLoading(concept)
         wing_loading.plot_wp_ws(concept)
-
-# Design points:
-# 'w/s'=700
-# 'w/p'=0.14

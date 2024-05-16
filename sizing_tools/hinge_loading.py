@@ -6,10 +6,8 @@ curreent_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(curreent_dir)
 sys.path.append(parent_dir)
 
-from mass_model.total import TotalModel
-from mass_model.propulsion_system import PropulsionSystemMassModel
+from sizing_tools.mass_model.classII.total import TotalModel
 from data.concept_parameters.concepts import concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10
-from mass_model.total import concept_iteration
 
 
 #todo : After midterm make sure to implement engine position on wing in code;

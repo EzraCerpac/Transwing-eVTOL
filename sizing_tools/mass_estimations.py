@@ -3,10 +3,9 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 from data.concept_parameters.aircraft import Aircraft
-from data.concept_parameters.mission_profile import Phase
 from data.literature.evtol_performance import plot_mass_over_payload as plot_mass_over_payload_data, vtol_data
 from data.literature.evtol_performance import plot_range_over_mass as plot_range_over_mass_data
-from sizing_tools.mass_model.total import TotalModel
+from sizing_tools.mass_model.classII.total import TotalModel
 from utility.plotting import show, save
 from utility.unit_conversion import convert_float
 
