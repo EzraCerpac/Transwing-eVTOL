@@ -33,7 +33,8 @@ def L(eta: float = 0) -> tuple[float]:
     b = np.sqrt(model.aircraft.wing_area * model.aircraft.aspect_ratio)
     lmbd = 0.4  #TODO: remove hardcoding
 
-def W_engine(eta:np.ndarray = 0) -> tuple[float]:
+
+def W_engine(eta: np.ndarray = 0) -> tuple[float]:
     """_summary_
 
     Args:
@@ -49,25 +50,22 @@ def W_engine(eta:np.ndarray = 0) -> tuple[float]:
         'total'] / 4  #TODO: remove hardcoding
     l_1 = 0.3
     l_2 = 0.5
-    
-    
 
-    
-    
-    eta1 = eta*(l_1>eta)
-    V1 = -2*M_engine*9.81*(l_1>eta)
-    M1 = -((l_1-eta) + (l_2-eta))*M_engine*9.81*(l_1>eta)
-    
-    eta2 = eta*(np.logical_and(l_2 > eta, eta >= l_1))
-    V2 = -M_engine*9.81*(np.logical_and(l_2 > eta, eta >= l_1))
-    M2 = -M_engine*9.81*(l_2-eta)*(np.logical_and(l_2 > eta, eta >= l_1))
+    eta1 = eta * (l_1 > eta)
+    V1 = -2 * M_engine * 9.81 * (l_1 > eta)
+    M1 = -((l_1 - eta) + (l_2 - eta)) * M_engine * 9.81 * (l_1 > eta)
 
-    V3 = 0*(eta >= l_2)
-    M3 = 0*(eta >= l_2)
+    eta2 = eta * (np.logical_and(l_2 > eta, eta >= l_1))
+    V2 = -M_engine * 9.81 * (np.logical_and(l_2 > eta, eta >= l_1))
+    M2 = -M_engine * 9.81 * (l_2 - eta) * (np.logical_and(
+        l_2 > eta, eta >= l_1))
+
+    V3 = 0 * (eta >= l_2)
+    M3 = 0 * (eta >= l_2)
 
     V = V1 + V2 + V3
     M = M1 + M2 + M3
-    
+
     return V, M
 
 
@@ -76,7 +74,7 @@ if __name__ == '__main__':
     from matplotlib import pyplot as plt
 
     eta = np.linspace(0, 1, 100)
-    plt.plot(eta, L(eta)[0]+W_engine(eta)[0], label='Shear')
-    plt.plot(eta, L(eta)[1]+W_engine(eta)[1], label='Moment')
+    plt.plot(eta, L(eta)[0] + W_engine(eta)[0], label='Shear')
+    plt.plot(eta, L(eta)[1] + W_engine(eta)[1], label='Moment')
     plt.legend()
     plt.show()
