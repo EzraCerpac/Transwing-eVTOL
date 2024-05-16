@@ -134,9 +134,6 @@ class Aircraft(BaseModel):
             raise ValueError('Parameter must be less than 1')
         return v
 
-    def __str__(self):
-        return self.name
-
     def __repr__(self):
         return f'Aircraft(name={self.name})'
 

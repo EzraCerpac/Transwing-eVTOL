@@ -16,7 +16,11 @@ from utility.plotting.plot_functions import show, save, save_with_name
 class TotalModel(MassModel):
 
     def __init__(self, aircraft: Aircraft, initial_total_mass: float = None):
-        self.initial_total_mass = initial_total_mass if initial_total_mass else aircraft.payload_mass
+        if aircraft.total_mass is None:
+            self.initial_total_mass = initial_total_mass if initial_total_mass else aircraft.payload_mass
+        else:
+            self.initial_total_mass = aircraft.total_mass
+            aircraft.total_mass = None
         self.energy_system_mass_model = EnergySystemMassModel(
             aircraft, self.initial_total_mass)
         self.airframe_mass_model = AirframeMassModel(aircraft,
@@ -24,8 +28,6 @@ class TotalModel(MassModel):
         self.propulsion_system_mass_model = PropulsionSystemMassModel(
             aircraft, self.initial_total_mass)
         super().__init__(aircraft, self.initial_total_mass)
-        self.climb_power = self.energy_system_mass_model.climb_power
-        self.final_mass = None
 
     @property
     def necessary_parameters(self) -> list[str]:
@@ -37,20 +39,20 @@ class TotalModel(MassModel):
         return (
             self.energy_system_mass_model.total_mass() +
             self.airframe_mass_model.total_mass(initial_total_mass) +
-            self.propulsion_system_mass_model.total_mass(self.climb_power) +
+            self.propulsion_system_mass_model.total_mass() +
             self.aircraft.payload_mass)
 
     def total_mass(self, **kwargs) -> float:
         # logger.info(f'Initial total_mass: {self.initial_total_mass} kg')
         if kwargs:
             logger.warning(f'Kwargs are given and not expected: {kwargs=}')
-        self.final_mass = fixed_point(self.total_mass_estimation,
+        self.aircraft.total_mass = fixed_point(self.total_mass_estimation,
                                       self.initial_total_mass)
-        return self.final_mass
+        return self.aircraft.total_mass
 
     def mass_breakdown(self) -> dict[str, float | dict[str, float]]:
         return {
-            'total': self.final_mass if self.final_mass else self.total_mass(),
+            'total': self.aircraft.total_mass if self.aircraft.total_mass else self.total_mass(),
             'payload': {
                 'total': self.aircraft.payload_mass,
             },
@@ -68,13 +70,12 @@ class TotalModel(MassModel):
             },
             'propulsion': {
                 'total':
-                self.propulsion_system_mass_model.total_mass(self.climb_power),
+                self.propulsion_system_mass_model.total_mass(),
                 'motors':
-                self.propulsion_system_mass_model.motor_mass(self.climb_power)
+                self.propulsion_system_mass_model.motor_mass()
                 * self.aircraft.motor_prop_count,
                 'propellers':
-                self.propulsion_system_mass_model.propeller_mass(
-                    self.climb_power) * self.aircraft.motor_prop_count,
+                self.propulsion_system_mass_model.propeller_mass() * self.aircraft.motor_prop_count,
             }
         }
 
@@ -173,10 +174,6 @@ def concept_iteration(concepts: list[Aircraft]):
         )
         model.plot_mass_breakdown()
 
-        logger.info(
-            f'{concept.name} climb power: {model.energy_system_mass_model.climb_power} W'
-        )
-
         # model.total_mass()
         # logger.debug(f'{model.aircraft.name}: {model.aircraft.mission_profile.phases[1]}')
         # logger.debug(f'{model.aircraft.name}: {model.aircraft.mission_profile.phases[2]}')
@@ -191,3 +188,4 @@ if __name__ == '__main__':
     concept_iteration([
         joby_s4,
     ])
+
