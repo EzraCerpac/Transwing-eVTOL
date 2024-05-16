@@ -46,7 +46,7 @@ class BatterySizing:
 
         :return: The cruise energy consumption.
         """
-        return self.k / self.aircraft.electric_propulsion_efficiency * self.aircraft.propeller_rotation_speed ** 2 * \
+        return self.k / self.aircraft.electric_propulsion_efficiency * convert_float(self.aircraft.propeller_rotation_speed, 'min', 'sec') ** 2 * \
             self.aircraft.cruise_velocity * self.cruise_time * 1000
 
     def battery_mass(self) -> float:

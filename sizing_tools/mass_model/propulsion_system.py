@@ -1,4 +1,5 @@
 from data.concept_parameters.aircraft import Aircraft
+from sizing_tools.formula.emperical import engine_mass
 from sizing_tools.mass_model.mass_model import MassModel
 from utility.unit_conversion import convert_float
 
@@ -21,9 +22,9 @@ class PropulsionSystemMassModel(MassModel):
         :param climb_power: power required for climb in W
         :return: mass of the motor in kg
         """
-        return 0.165 * convert_float(climb_power, 'W', 'kW') * (
-            1 +
-            self.aircraft.motor_power_margin) / self.aircraft.motor_prop_count
+        return engine_mass(convert_float(climb_power, 'W', 'kW'),
+                           self.aircraft.motor_power_margin,
+                           self.aircraft.motor_prop_count)
 
     def propeller_mass(self, climb_power: float) -> float:
         """

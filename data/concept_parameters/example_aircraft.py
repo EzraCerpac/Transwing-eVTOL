@@ -16,6 +16,7 @@ sizing_example_powered_lift = Aircraft(
     estimated_CD0=0.04,  # from Philip
     propulsion_efficiency=0.85,
     motor_prop_count=4,
+    motor_wing_count=0,
     motor_power_margin=0.5,
     SoC_min=0.2,
     battery_energy_density=0.275,  # kWh/kg

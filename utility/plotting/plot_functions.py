@@ -10,12 +10,12 @@ from utility.log import logger
 plotFunction = Callable[..., Tuple[plt.Figure, plt.Axes]]
 
 
-def show(plot_function: plotFunction):
+def show(plot_function: plotFunction) -> plotFunction:
     """
     Decorator to show the plot.
     """
 
-    def show_plot(*args, **kwargs):
+    def show_plot(*args, **kwargs) -> Tuple[plt.Figure, plt.Axes]:
         """
         Show the plot.
         """
@@ -28,12 +28,13 @@ def show(plot_function: plotFunction):
     return show_plot
 
 
-def save(plot_function: plotFunction, name_func: callable = None):
+def save(plot_function: plotFunction,
+         name_func: callable = None) -> plotFunction:
     """
     Decorator to save the plot to a file.
     """
 
-    def save_plot(*args, **kwargs):
+    def save_plot(*args, **kwargs) -> Tuple[plt.Figure, plt.Axes]:
         """
         Save the plot to a file.
         """
@@ -65,11 +66,12 @@ def save(plot_function: plotFunction, name_func: callable = None):
     return save_plot
 
 
-def save_with_name(name_func: callable):
+def save_with_name(
+        name_func: callable) -> Callable[[plotFunction], plotFunction]:
     return lambda plot_function: save(plot_function, name_func)
 
 
-def _get_caller_file_name():
+def _get_caller_file_name() -> str:
     """
     Returns the name of the file from which the current function is called.
     """

@@ -8,7 +8,7 @@ sys.path.append(parent_dir)
 
 from mass_model.total import TotalModel
 from mass_model.propulsion_system import PropulsionSystemMassModel
-from data.concept_parameters.concepts import concept_C1_5, concept_C2_1, concept_C2_6
+from data.concept_parameters.concepts import concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10
 from mass_model.total import concept_iteration
 
 
@@ -30,7 +30,7 @@ def L(eta: float = 0) -> tuple[float]:
         'wing'] - mass_breakdown['propulsion']['total']  # [kg]
 
     print(M_fus)
-    b = np.sqrt(model.aircraft.wing_area * model.aircraft.aspect_ratio)
+    b = np.sqrt(model.aircraft.wing.area * model.aircraft.wing.aspect_ratio)
     lmbd = 0.4  #TODO: remove hardcoding
 
     V = n_design * M_fus * 9.81 / b * 2 / (1 +
@@ -44,7 +44,7 @@ def L(eta: float = 0) -> tuple[float]:
     return V, M  #N and Nm
 
 
-def W_engine(eta: float = 0) -> tuple[float]:
+def W_engine(eta: np.ndarray = 0) -> tuple[float]:
     """_summary_
 
     Args:
@@ -61,17 +61,29 @@ def W_engine(eta: float = 0) -> tuple[float]:
     l_1 = 0.3
     l_2 = 0.5
 
-    if l_1 > eta:
-        V = 0
-        M = 0
-    elif l_2 > eta > l_1:
-        V = -M_engine * 9.81
-        M = -M_engine * 9.81 * (eta - l_1)
-    if eta > l_2:
-        V = -2 * M_engine * 9.81
-        M = -M_engine * 9.81 * ((eta - l_1) + (eta - l_2))
+    eta1 = eta * (l_1 > eta)
+    V1 = -2 * M_engine * 9.81 * (l_1 > eta)
+    M1 = -((l_1 - eta) + (l_2 - eta)) * M_engine * 9.81 * (l_1 > eta)
+
+    eta2 = eta * (np.logical_and(l_2 > eta, eta >= l_1))
+    V2 = -M_engine * 9.81 * (np.logical_and(l_2 > eta, eta >= l_1))
+    M2 = -M_engine * 9.81 * (l_2 - eta) * (np.logical_and(
+        l_2 > eta, eta >= l_1))
+
+    V3 = 0 * (eta >= l_2)
+    M3 = 0 * (eta >= l_2)
+
+    V = V1 + V2 + V3
+    M = M1 + M2 + M3
 
     return V, M
+
+
+def get_load(eta):
+    eta = np.array([eta])
+    V_L, M_L = L(eta)
+    V_E, M_E = W_engine(eta)
+    return V_L + V_E, M_L + M_E
 
 
 if __name__ == '__main__':
@@ -79,7 +91,8 @@ if __name__ == '__main__':
     from matplotlib import pyplot as plt
 
     eta = np.linspace(0, 1, 100)
-    plt.plot(eta, L(eta)[0], label='Shear')
-    plt.plot(eta, L(eta)[1], label='Moment')
+    plt.plot(eta, L(eta)[0] + W_engine(eta)[0], label='Shear')
+    plt.plot(eta, L(eta)[1] + W_engine(eta)[1], label='Moment')
     plt.legend()
+    print(get_load(0.5))
     plt.show()
