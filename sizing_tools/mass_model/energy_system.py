@@ -27,14 +27,13 @@ class EnergySystemMassModel(MassModel):
     def necessary_parameters(self) -> list[str]:
         return [
             'SoC_min', 'battery_energy_density', 'battery_system_efficiency',
-            'figure_of_merit', 'estimated_CD0', 'wing_area',
-            'propulsion_efficiency'
+            'figure_of_merit', 'estimated_CD0', 'wing', 'propulsion_efficiency'
         ]
 
     def estimate_energy(self) -> float:
         return sum(
             self._power(phase) * phase.duration
-            for phase in self.mission_profile.phases)
+            for phase in self.mission_profile.phases.values())
 
     def total_mass(self, **kwargs) -> float:
         return mass_from_energy(
@@ -76,15 +75,15 @@ class EnergySystemMassModel(MassModel):
     def _climb_power(self, phase: MissionPhase) -> float:
         assert phase.phase == Phase.CLIMB
         C_L = C_L_climb_opt(self.aircraft.estimated_CD0,
-                            self.aircraft.aspect_ratio,
-                            self.aircraft.oswald_efficiency_factor)
+                            self.aircraft.wing.aspect_ratio,
+                            self.aircraft.wing.oswald_efficiency_factor)
         C_D = C_D_from_CL(C_L, self.aircraft.estimated_CD0,
-                          self.aircraft.aspect_ratio,
-                          self.aircraft.oswald_efficiency_factor)
+                          self.aircraft.wing.aspect_ratio,
+                          self.aircraft.wing.oswald_efficiency_factor)
         velocity = phase.horizontal_speed = velocity_from_lift(
             self.initial_total_mass * g,
             Atmosphere(altitude=phase.ending_altitude).density(), C_L,
-            self.aircraft.wing_area)
+            self.aircraft.wing.area)
         return self.initial_total_mass * g * (
             velocity * C_D / C_L +
             phase.vertical_speed) / self.aircraft.propulsion_efficiency
@@ -93,14 +92,14 @@ class EnergySystemMassModel(MassModel):
         assert phase.phase == Phase.CRUISE
         rho = Atmosphere(altitude=phase.ending_altitude).density()
         C_L = C_L_cruise_opt(self.aircraft.estimated_CD0,
-                             self.aircraft.aspect_ratio,
-                             self.aircraft.oswald_efficiency_factor)
+                             self.aircraft.wing.aspect_ratio,
+                             self.aircraft.wing.oswald_efficiency_factor)
         C_D = C_D_from_CL(C_L, self.aircraft.estimated_CD0,
-                          self.aircraft.aspect_ratio,
-                          self.aircraft.oswald_efficiency_factor)
+                          self.aircraft.wing.aspect_ratio,
+                          self.aircraft.wing.oswald_efficiency_factor)
         velocity = phase.horizontal_speed = self.aircraft.cruise_velocity = velocity_from_lift(
-            self.initial_total_mass * g, rho, C_L, self.aircraft.wing_area)
-        D = drag(C_D, rho, velocity, self.aircraft.wing_area)
+            self.initial_total_mass * g, rho, C_L, self.aircraft.wing.area)
+        D = drag(C_D, rho, velocity, self.aircraft.wing.area)
         return power_required(D, velocity, self.aircraft.propulsion_efficiency)
 
     def _cruise_power_fixed_velocity(self, phase: MissionPhase) -> float:
@@ -108,23 +107,23 @@ class EnergySystemMassModel(MassModel):
         rho = Atmosphere(altitude=phase.ending_altitude).density()
         L = self.initial_total_mass * g
         self.C_L = C_L_from_lift(L, rho, phase.horizontal_speed,
-                                 self.aircraft.wing_area)
+                                 self.aircraft.wing.area)
         self.C_D = C_D_from_CL(self.C_L, self.aircraft.estimated_CD0,
-                               self.aircraft.aspect_ratio,
-                               self.aircraft.oswald_efficiency_factor)
+                               self.aircraft.wing.aspect_ratio,
+                               self.aircraft.wing.oswald_efficiency_factor)
         D = drag(self.C_D, rho, phase.horizontal_speed,
-                 self.aircraft.wing_area)
+                 self.aircraft.wing.area)
         return power_required(D, phase.horizontal_speed,
                               self.aircraft.propulsion_efficiency)
 
     def _update_descent_phase(self, phase: MissionPhase) -> None:
         assert phase.phase == Phase.DESCENT
         C_L = C_L_cruise_opt(self.aircraft.estimated_CD0,
-                             self.aircraft.aspect_ratio,
-                             self.aircraft.oswald_efficiency_factor)
+                             self.aircraft.wing.aspect_ratio,
+                             self.aircraft.wing.oswald_efficiency_factor)
         C_D = C_D_from_CL(C_L, self.aircraft.estimated_CD0,
-                          self.aircraft.aspect_ratio,
-                          self.aircraft.oswald_efficiency_factor)
+                          self.aircraft.wing.aspect_ratio,
+                          self.aircraft.wing.oswald_efficiency_factor)
         gamma = atan(C_D / C_L)
         phase.vertical_speed = -phase.horizontal_speed * gamma
         phase.horizontal_speed = self.aircraft.cruise_velocity

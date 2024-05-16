@@ -3,6 +3,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 from data.concept_parameters.aircraft import Aircraft
+from data.concept_parameters.mission_profile import Phase
 from data.literature.evtol_performance import plot_mass_over_payload as plot_mass_over_payload_data, vtol_data
 from data.literature.evtol_performance import plot_range_over_mass as plot_range_over_mass_data
 from sizing_tools.mass_model.total import TotalModel
@@ -29,10 +30,11 @@ class MassEstimation:
         mass = []
         for r in ranges:
             distance = convert_float(r, 'km', 'm')
-            self.initial_aircraft.mission_profile.phases[2].distance = distance
-            self.initial_aircraft.mission_profile.phases[2].duration = distance / \
+            self.initial_aircraft.mission_profile.phases[
+                Phase.CRUISE].distance = distance
+            self.initial_aircraft.mission_profile.phases[Phase.CRUISE].duration = distance / \
                                                                        self.initial_aircraft.mission_profile.phases[
-                                                                           2].horizontal_speed
+                                                                           Phase.CRUISE].horizontal_speed
             model = TotalModel(self.initial_aircraft, self.initial_mass)
             masses = model.mass_breakdown()
             mass.append(masses['total'])
