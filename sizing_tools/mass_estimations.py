@@ -30,11 +30,9 @@ class MassEstimation:
         mass = []
         for r in ranges:
             distance = convert_float(r, 'km', 'm')
-            self.initial_aircraft.mission_profile.phases[
-                Phase.CRUISE].distance = distance
-            self.initial_aircraft.mission_profile.phases[Phase.CRUISE].duration = distance / \
-                                                                       self.initial_aircraft.mission_profile.phases[
-                                                                           Phase.CRUISE].horizontal_speed
+            self.initial_aircraft.mission_profile.CRUISE.distance = distance
+            self.initial_aircraft.mission_profile.CRUISE.duration = distance / \
+                                                                       self.initial_aircraft.mission_profile.CRUISE.horizontal_speed
             model = TotalModel(self.initial_aircraft, self.initial_mass)
             masses = model.mass_breakdown()
             mass.append(masses['total'])

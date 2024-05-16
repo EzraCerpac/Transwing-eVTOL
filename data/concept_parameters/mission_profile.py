@@ -83,6 +83,24 @@ class MissionProfile(BaseModel):
     def energy(self, value):
         self._energy = value
 
+    def __getattr__(self, item):
+        if Phase[item] in self.phases:
+            return self.phases[Phase[item]]
+        else:
+            raise AttributeError(f"No such attribute: {Phase[item]}")
+
+    def __setattr__(self, key, value):
+        try:
+            if Phase[key] in self.phases:
+                self.phases[Phase[key]] = value
+            else:
+                super().__setattr__(key, value)
+        except KeyError:
+            if key in self.phases:
+                self.phases[key] = value
+            else:
+                super().__setattr__(key, value)
+
     @classmethod
     @field_validator('phases')
     def check_phases(cls, v):

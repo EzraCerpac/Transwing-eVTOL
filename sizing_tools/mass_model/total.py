@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 from scipy.optimize import fixed_point
 
 from data.concept_parameters.aircraft import Aircraft
+from data.concept_parameters.aircraft_components import MassObject
 from data.literature.evtols import joby_s4
 from sizing_tools.mass_model.airframe import AirframeMassModel
 from sizing_tools.mass_model.energy_system import EnergySystemMassModel
@@ -16,7 +17,11 @@ from utility.plotting.plot_functions import show, save, save_with_name
 class TotalModel(MassModel):
 
     def __init__(self, aircraft: Aircraft, initial_total_mass: float = None):
-        self.initial_total_mass = initial_total_mass if initial_total_mass else aircraft.payload_mass
+        if aircraft.total_mass is None:
+            self.initial_total_mass = initial_total_mass if initial_total_mass else aircraft.payload_mass
+        else:
+            self.initial_total_mass = aircraft.total_mass
+            aircraft.total_mass = None
         self.energy_system_mass_model = EnergySystemMassModel(
             aircraft, self.initial_total_mass)
         self.airframe_mass_model = AirframeMassModel(aircraft,
@@ -24,8 +29,6 @@ class TotalModel(MassModel):
         self.propulsion_system_mass_model = PropulsionSystemMassModel(
             aircraft, self.initial_total_mass)
         super().__init__(aircraft, self.initial_total_mass)
-        self.climb_power = self.energy_system_mass_model.climb_power
-        self.final_mass = None
 
     @property
     def necessary_parameters(self) -> list[str]:
@@ -34,23 +37,24 @@ class TotalModel(MassModel):
             self.propulsion_system_mass_model.necessary_parameters
 
     def total_mass_estimation(self, initial_total_mass: float) -> float:
-        return (
-            self.energy_system_mass_model.total_mass() +
-            self.airframe_mass_model.total_mass(initial_total_mass) +
-            self.propulsion_system_mass_model.total_mass(self.climb_power) +
-            self.aircraft.payload_mass)
+        return (self.energy_system_mass_model.total_mass() +
+                self.airframe_mass_model.total_mass(initial_total_mass) +
+                self.propulsion_system_mass_model.total_mass() +
+                self.aircraft.payload_mass)
 
     def total_mass(self, **kwargs) -> float:
         # logger.info(f'Initial total_mass: {self.initial_total_mass} kg')
         if kwargs:
             logger.warning(f'Kwargs are given and not expected: {kwargs=}')
-        self.final_mass = fixed_point(self.total_mass_estimation,
-                                      self.initial_total_mass)
-        return self.final_mass
+        self.aircraft.total_mass = fixed_point(self.total_mass_estimation,
+                                               self.initial_total_mass)
+        return self.aircraft.total_mass
 
     def mass_breakdown(self) -> dict[str, float | dict[str, float]]:
-        return {
-            'total': self.final_mass if self.final_mass else self.total_mass(),
+        breakdown = {
+            'total':
+            self.aircraft.total_mass
+            if self.aircraft.total_mass else self.total_mass(),
             'payload': {
                 'total': self.aircraft.payload_mass,
             },
@@ -61,22 +65,25 @@ class TotalModel(MassModel):
                 'total': self.airframe_mass_model.total_mass(),
                 'fuselage': self.airframe_mass_model.fuselage_mass(),
                 'wing': self.airframe_mass_model.wing_mass(),
-                'horizontal tail':
+                'horizontal_tail':
                 self.airframe_mass_model.horizontal_tail_mass(),
-                'vertical tail': self.airframe_mass_model.vertical_tail_mass(),
-                'landing gear': self.airframe_mass_model.landing_gear_mass(),
+                'vertical_tail': self.airframe_mass_model.vertical_tail_mass(),
+                'landing_gear': self.airframe_mass_model.landing_gear_mass(),
             },
             'propulsion': {
                 'total':
-                self.propulsion_system_mass_model.total_mass(self.climb_power),
+                self.propulsion_system_mass_model.total_mass(),
                 'motors':
-                self.propulsion_system_mass_model.motor_mass(self.climb_power)
-                * self.aircraft.motor_prop_count,
+                self.propulsion_system_mass_model.motor_mass() *
+                self.aircraft.motor_prop_count,
                 'propellers':
-                self.propulsion_system_mass_model.propeller_mass(
-                    self.climb_power) * self.aircraft.motor_prop_count,
+                self.propulsion_system_mass_model.propeller_mass() *
+                self.aircraft.motor_prop_count,
             }
         }
+        self.aircraft.mass_breakdown = MassObject.from_mass_dict(
+            'total', breakdown)
+        return breakdown
 
     @staticmethod
     def mass_breakdown_to_str(
@@ -172,14 +179,6 @@ def concept_iteration(concepts: list[Aircraft]):
             f'{concept.name=}\n{TotalModel.mass_breakdown_to_str(mass_breakdown)}'
         )
         model.plot_mass_breakdown()
-
-        logger.info(
-            f'{concept.name} climb power: {model.energy_system_mass_model.climb_power} W'
-        )
-
-        # model.total_mass()
-        # logger.debug(f'{model.aircraft.name}: {model.aircraft.mission_profile.phases[1]}')
-        # logger.debug(f'{model.aircraft.name}: {model.aircraft.mission_profile.phases[2]}')
 
 
 if __name__ == '__main__':
