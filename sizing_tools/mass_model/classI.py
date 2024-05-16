@@ -40,8 +40,13 @@ class WingLoading(Model):
     @property
     def necessary_parameters(self) -> list[str]:
         return [
-            'cruise_velocity', 'wing', 'estimated_CD0', 'propulsion_efficiency',
-            'v_stall', 'cruise_altitude', 'mission_profile', 'total_mass',
+            'cruise_velocity',
+            'wing',
+            'estimated_CD0',
+            'propulsion_efficiency',
+            'v_stall',
+            'cruise_altitude',
+            'mission_profile', 'total_mass',
         ]
 
     def _wp(self, ws: np.ndarray) -> np.ndarray:
