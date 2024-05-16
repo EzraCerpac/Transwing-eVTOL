@@ -1,4 +1,5 @@
 from data.concept_parameters.aircraft import Aircraft
+from data.concept_parameters.aircraft_components import Wing, Fuselage
 from utility.unit_conversion import convert_float
 
 joby_s4 = Aircraft(  # from https://aviationweek.com/aerospace/advanced-air-mobility/joby-aviation-s4-program
@@ -13,11 +14,14 @@ joby_s4 = Aircraft(  # from https://aviationweek.com/aerospace/advanced-air-mobi
     motor_prop_count=6,
     propeller_radius=1.4,  # estimation
     propeller_blade_number=4,
-    # wingspan = 11.8 m (39 ft)
-    aspect_ratio=11.8 / 2,
-    wing_area=11.8 * 2,
+    wing=Wing(
+        span=11.8,  # 39 ft
+        mean_aerodynamic_chord=1.5,  # estimation
+    ),
     # total length = 6.4 m (21 ft)
-    fuselage_length=4,  # estimation
-    fuselage_maximum_section_perimeter=1.4,  # estimation
+    fuselage=Fuselage(
+        length=4,  # estimation
+        maximum_section_perimeter=1.4,  # estimation
+    ),
     estimated_CD0=0.04,  # estimation
 )

@@ -3,6 +3,8 @@ from typing import Optional
 import os
 import sys
 
+from data.concept_parameters.aircraft_components import Wing
+
 curreent_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(curreent_dir)
 sys.path.append(parent_dir)
@@ -39,7 +41,7 @@ class WingLoading:
 
     def _check_input(self):
         for param in [
-                'cruise_velocity', 'aspect_ratio', 'oswald_efficiency_factor',
+                'cruise_velocity', 'wing',
                 'estimated_CD0', 'electric_propulsion_efficiency'
         ]:
             if getattr(self.aircraft, param) is None:
@@ -48,8 +50,8 @@ class WingLoading:
     def W_over_S_cruise(self) -> float:
         W_over_S_opt = 0.5 * self.rho * (
             self.aircraft.cruise_velocity)**2 * math.sqrt(
-                math.pi * self.aircraft.aspect_ratio *
-                self.aircraft.oswald_efficiency_factor *
+                math.pi * self.aircraft.wing.aspect_ratio *
+                self.aircraft.wing.oswald_efficiency_factor *
                 self.aircraft.estimated_CD0)
 
         logger.info(f'{W_over_S_opt=}')
@@ -61,8 +63,8 @@ class WingLoading:
             self.rho / Atmosphere().density())**(
                 3 / 4) * (self.aircraft.estimated_CD0 * 0.5 * self.rho *
                           self.aircraft.cruise_velocity**3 / ws + ws /
-                          (np.pi * self.aircraft.aspect_ratio *
-                           self.aircraft.oswald_efficiency_factor * 0.5 *
+                          (np.pi * self.aircraft.wing.aspect_ratio *
+                           self.aircraft.wing.oswald_efficiency_factor * 0.5 *
                            self.rho * self.aircraft.cruise_velocity))**(-1)
         return wp
 
@@ -99,15 +101,17 @@ class WingLoading:
 if __name__ == '__main__':
     aircraft = Aircraft(
         cruise_velocity=200 / 3.6,
-        aspect_ratio=6,
-        oswald_efficiency_factor=0.8,
+        wing=Wing(
+            aspect_ratio=6,
+            oswald_efficiency_factor=0.8,
+        ),
         estimated_CD0=0.011,
         electric_propulsion_efficiency=0.8,
     )
     wing_loading = WingLoading(aircraft)
     W_over_S_opt = wing_loading.W_over_S_cruise()
     wing_loading.plot_wp_ws(W_over_S_opt)
-    wing_loading.W_over_P_takeoff(aircraft)
+    # wing_loading.W_over_P_takeoff(aircraft)
 
 # Design points:
 # 'w/s'=700

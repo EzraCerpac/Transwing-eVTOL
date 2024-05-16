@@ -30,7 +30,7 @@ def L(eta: float = 0) -> tuple[float]:
         'wing'] - mass_breakdown['propulsion']['total']  # [kg]
 
     print(M_fus)
-    b = np.sqrt(model.aircraft.wing_area * model.aircraft.aspect_ratio)
+    b = np.sqrt(model.aircraft.wing.area * model.aircraft.wing.aspect_ratio)
     lmbd = 0.4  #TODO: remove hardcoding
 
     V = n_design * M_fus * 9.81 / b * 2 / (1 +
