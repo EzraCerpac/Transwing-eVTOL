@@ -120,4 +120,3 @@ class MissionProfile(BaseModel):
             logger.warning(
                 f'number of phases is not 5, but {len(v)}, in {cls.name}')
         return v
-
