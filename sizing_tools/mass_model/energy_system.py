@@ -27,8 +27,7 @@ class EnergySystemMassModel(MassModel):
     def necessary_parameters(self) -> list[str]:
         return [
             'SoC_min', 'battery_energy_density', 'battery_system_efficiency',
-            'figure_of_merit', 'estimated_CD0', 'wing',
-            'propulsion_efficiency'
+            'figure_of_merit', 'estimated_CD0', 'wing', 'propulsion_efficiency'
         ]
 
     def estimate_energy(self) -> float:

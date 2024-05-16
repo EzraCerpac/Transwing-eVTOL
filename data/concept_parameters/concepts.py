@@ -7,7 +7,7 @@ concept_C1_5 = Aircraft(
     motor_wing_count=0,
     propeller_radius=1.25,
     propeller_blade_number=4,
-    wing= Wing(
+    wing=Wing(
         area=20,
         span=8,
     ),

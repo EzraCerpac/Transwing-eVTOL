@@ -67,7 +67,8 @@ class Aircraft(BaseModel):
             Propeller(rotation_speed=self.propeller_rotation_speed,
                       blade_number=self.propeller_blade_number,
                       tension_coefficient=self.tension_coefficient,
-                      radius=self.propeller_radius) for _ in range(self.motor_prop_count)
+                      radius=self.propeller_radius)
+            for _ in range(self.motor_prop_count)
         ]
 
     def initialize_default_mission_profile(self):
@@ -86,7 +87,7 @@ class Aircraft(BaseModel):
                     horizontal_speed=self.
                     cruise_velocity,  # gets adjusted in model
                     distance=self.cruise_velocity * self.cruise_altitude /
-                             self.rate_of_climb,  # gets adjusted in model
+                    self.rate_of_climb,  # gets adjusted in model
                     vertical_speed=self.rate_of_climb,
                     ending_altitude=self.cruise_altitude),
                 MissionPhase(phase=Phase.CRUISE,
@@ -101,7 +102,7 @@ class Aircraft(BaseModel):
                     horizontal_speed=self.
                     cruise_velocity,  # gets adjusted in model
                     distance=self.cruise_velocity * self.cruise_altitude /
-                             self.rate_of_climb,  # gets adjusted in model
+                    self.rate_of_climb,  # gets adjusted in model
                     vertical_speed=self.rate_of_climb,  # weird assumption
                     ending_altitude=1.5),
                 MissionPhase(phase=Phase.LANDING,

@@ -41,8 +41,8 @@ class WingLoading:
 
     def _check_input(self):
         for param in [
-                'cruise_velocity', 'wing',
-                'estimated_CD0', 'electric_propulsion_efficiency'
+                'cruise_velocity', 'wing', 'estimated_CD0',
+                'electric_propulsion_efficiency'
         ]:
             if getattr(self.aircraft, param) is None:
                 raise ValueError(f'{param} is not set in the aircraft object')

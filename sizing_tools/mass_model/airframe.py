@@ -13,7 +13,11 @@ class AirframeMassModel(MassModel):
     @property
     def necessary_parameters(self) -> list[str]:
         return [
-            'fuselage', 'n_pax', 'wing', 'design_load_factor', 'tail',
+            'fuselage',
+            'n_pax',
+            'wing',
+            'design_load_factor',
+            'tail',
         ]
 
     def fuselage_mass(self) -> float:
@@ -27,14 +31,14 @@ class AirframeMassModel(MassModel):
 
     def horizontal_tail_mass(self) -> float:
         return (3.184 * self.initial_total_mass**0.887 *
-                self.aircraft.tail.S_th**0.101 * self.aircraft.tail.AR_th**0.101) / (
-                    174.04 * self.aircraft.tail.t_rh**0.223)
+                self.aircraft.tail.S_th**0.101 * self.aircraft.tail.AR_th**
+                0.101) / (174.04 * self.aircraft.tail.t_rh**0.223)
 
     def vertical_tail_mass(self) -> float:
         return (1.68 * self.initial_total_mass**0.567 *
-                self.aircraft.tail.S_tv**1.249 * self.aircraft.tail.AR_tv**0.482) / (
-                    639.95 * self.aircraft.tail.t_rv**0.747 *
-                    cos(self.aircraft.tail.lambda_quart_tv)**0.882)
+                self.aircraft.tail.S_tv**1.249 * self.aircraft.tail.AR_tv**
+                0.482) / (639.95 * self.aircraft.tail.t_rv**0.747 *
+                          cos(self.aircraft.tail.lambda_quart_tv)**0.882)
 
     def landing_gear_mass(self) -> float:
         return 0.054 * self.aircraft.tail.l_lg**0.501 * (
