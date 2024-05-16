@@ -51,7 +51,7 @@ class TotalModel(MassModel):
         return self.aircraft.total_mass
 
     def mass_breakdown(self) -> dict[str, float | dict[str, float]]:
-        breakdown =  {
+        breakdown = {
             'total':
             self.aircraft.total_mass
             if self.aircraft.total_mass else self.total_mass(),
@@ -81,7 +81,8 @@ class TotalModel(MassModel):
                 self.aircraft.motor_prop_count,
             }
         }
-        self.aircraft.mass_breakdown = MassObject.from_mass_dict('total', breakdown)
+        self.aircraft.mass_breakdown = MassObject.from_mass_dict(
+            'total', breakdown)
         return breakdown
 
     @staticmethod
@@ -178,7 +179,6 @@ def concept_iteration(concepts: list[Aircraft]):
             f'{concept.name=}\n{TotalModel.mass_breakdown_to_str(mass_breakdown)}'
         )
         model.plot_mass_breakdown()
-
 
 
 if __name__ == '__main__':
