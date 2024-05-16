@@ -1,6 +1,5 @@
 from collections import OrderedDict
 
-import numpy as np
 from matplotlib import pyplot as plt
 from scipy.optimize import fixed_point
 
@@ -122,7 +121,7 @@ class TotalModel(MassModel):
         sub_masses.pop('battery')
 
         legend1 = ax.legend(wedges1, [
-            f'{k}:\t{v:.2f} kg'.expandtabs(6) for k, v in major_masses.items()
+            f'{k}:\t{v:>7.2f} kg'.expandtabs(6) for k, v in major_masses.items()
         ],
                             loc="upper left",
                             bbox_to_anchor=(1, 0, 0.5, 1),

@@ -6,8 +6,7 @@ from data.concept_parameters.aircraft import Aircraft
 from data.literature.evtol_performance import plot_mass_over_payload as plot_mass_over_payload_data, vtol_data
 from data.literature.evtol_performance import plot_range_over_mass as plot_range_over_mass_data
 from sizing_tools.mass_model.total import TotalModel
-from utility.plotting import save
-from utility.plotting.plot_functions import show
+from utility.plotting import show, save
 from utility.unit_conversion import convert_float
 
 
