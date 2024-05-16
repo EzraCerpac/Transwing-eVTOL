@@ -41,7 +41,8 @@ engine_data = df_from_markdown("""
 
 # @show
 # @save
-def plot_power_over_mass_data(df: pd.DataFrame = engine_data) -> tuple[plt.Figure, plt.Axes]:
+def plot_power_over_mass_data(
+        df: pd.DataFrame = engine_data) -> tuple[plt.Figure, plt.Axes]:
     fig, ax = plt.subplots(figsize=(10, 6))
 
     for i, row in df.iterrows():

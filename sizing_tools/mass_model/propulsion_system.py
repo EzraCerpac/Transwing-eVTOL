@@ -22,7 +22,9 @@ class PropulsionSystemMassModel(MassModel):
         :param climb_power: power required for climb in W
         :return: mass of the motor in kg
         """
-        return engine_mass(convert_float(climb_power, 'W', 'kW'), self.aircraft.motor_power_margin, self.aircraft.motor_prop_count)
+        return engine_mass(convert_float(climb_power, 'W', 'kW'),
+                           self.aircraft.motor_power_margin,
+                           self.aircraft.motor_prop_count)
 
     def propeller_mass(self, climb_power: float) -> float:
         """

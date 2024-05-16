@@ -1,4 +1,5 @@
-def engine_mass(total_power: float, power_margin: float, number_of_engines: float) -> float:
+def engine_mass(total_power: float, power_margin: float,
+                number_of_engines: float) -> float:
     """
     Calculate the mass of the engine
     :param total_power: Max power of the engine in kW
