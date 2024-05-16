@@ -2,6 +2,7 @@ import math
 import os
 import sys
 import scipy as sc
+from scipy.constants import g
 
 from sizing_tools.model import Model
 
@@ -40,21 +41,25 @@ class WingLoading(Model):
     def necessary_parameters(self) -> list[str]:
         return [
             'cruise_velocity', 'wing', 'estimated_CD0', 'propulsion_efficiency',
-            'v_stall', 'cruise_altitude', 'mission_profile',
+            'v_stall', 'cruise_altitude', 'mission_profile', 'total_mass',
         ]
 
-    def _wp(self, ws: np.ndarray, AR) -> np.ndarray:
+    def _wp(self, ws: np.ndarray) -> np.ndarray:
         ws = self.mtow_setting * ws
         wp = self.power_setting * self.aircraft.propulsion_efficiency * (
             self.rho / Atmosphere().density())**(3 / 4) * (
                 self.aircraft.estimated_CD0 * 0.5 * self.rho *
                 self.aircraft.cruise_velocity**3 / ws + ws /
-                (np.pi * AR * self.aircraft.wing.oswald_efficiency_factor *
+                (np.pi * self.aircraft.wing.aspect_ratio * self.aircraft.wing.oswald_efficiency_factor *
                  0.5 * self.rho * self.aircraft.cruise_velocity))**(-1)
         return wp
 
     def w_s_stall_speed(self):
-        return 0.5 * self.aircraft.v_stall**2 * self.rho * 1.4  #TODO CL value estimation
+        w_s_min = 0.5 * self.aircraft.v_stall**2 * self.rho * 1.4  #TODO CL value estimation
+        self.aircraft.wing.area = self.aircraft.total_mass * g / w_s_min
+        return w_s_min
+
+
 
     def ver_climb(self, T_A, Sref_Sw):
         T_W = 1.2 * (
@@ -86,7 +91,7 @@ class WingLoading(Model):
 
         plt.axvline(x=self.w_s_stall_speed(), label=' Stall Speed')
         plt.plot(xx,
-                 self._wp(xx, (concept.wing.span**2 / concept.wing.area)),
+                 self._wp(xx),
                  label='Cruise')
         plt.plot(xx,
                  self.ver_climb(concept.TA, concept.sref / concept.wing.area),
