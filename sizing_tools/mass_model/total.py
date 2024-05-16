@@ -80,8 +80,8 @@ class TotalModel(MassModel):
         }
 
     @staticmethod
-    def mass_breakdown_to_str(breakdown: dict[str,
-                                             float | dict[str, float]] = None) -> str:
+    def mass_breakdown_to_str(
+            breakdown: dict[str, float | dict[str, float]] = None) -> str:
         text = ''
         for key, value in breakdown.items():
             if isinstance(value, dict):
@@ -168,10 +168,14 @@ def concept_iteration(concepts: list[Aircraft]):
 
         mass_breakdown = model.mass_breakdown()
         estimations[concept] = mass_breakdown
-        logger.debug(f'{concept.name=}\n{TotalModel.mass_breakdown_to_str(mass_breakdown)}')
+        logger.debug(
+            f'{concept.name=}\n{TotalModel.mass_breakdown_to_str(mass_breakdown)}'
+        )
         model.plot_mass_breakdown()
 
-        logger.info(f'{concept.name} climb power: {model.energy_system_mass_model.climb_power} W')
+        logger.info(
+            f'{concept.name} climb power: {model.energy_system_mass_model.climb_power} W'
+        )
 
         # model.total_mass()
         # logger.debug(f'{model.aircraft.name}: {model.aircraft.mission_profile.phases[1]}')
@@ -182,10 +186,7 @@ if __name__ == '__main__':
     from data.concept_parameters.concepts import concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10
 
     concept_iteration(
-        [concept_C1_5,
-         concept_C2_1,
-         concept_C2_6,
-         concept_C2_10])
+        [concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10])
 
     concept_iteration([
         joby_s4,
