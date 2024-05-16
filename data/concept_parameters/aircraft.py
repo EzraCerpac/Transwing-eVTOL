@@ -62,7 +62,7 @@ class Aircraft(BaseModel):
     # for wing loading
     estimated_CD0: Optional[float] = None
     #for hinge loading
-    taper: Optional[float] = Field(0.4,gt=0)
+    taper: Optional[float] = Field(0.4, gt=0)
 
     def __init__(self, **data):
         super().__init__(**data)

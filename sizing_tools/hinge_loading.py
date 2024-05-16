@@ -32,11 +32,16 @@ def L(eta: float = 0) -> tuple[float]:
     print(M_fus)
     b = np.sqrt(model.aircraft.wing_area * model.aircraft.aspect_ratio)
     lmbd = 0.4  #TODO: remove hardcoding
-    
-    V = n_design*M_fus*9.81/b * 2/(1+lmbd) * b/2 * (1 - eta + (lmbd-1)*0.5*(1-eta**2)) 
-    M = n_design*M_fus*9.81/b * 2/(1+lmbd) * (b/2)**2 * (1- eta - 0.5*(1-eta**2) + (lmbd-1)*0.5*(1-eta-1/3*(1-eta**3))) 
-    
-    return V, M #N and Nm
+
+    V = n_design * M_fus * 9.81 / b * 2 / (1 +
+                                           lmbd) * b / 2 * (1 - eta +
+                                                            (lmbd - 1) * 0.5 *
+                                                            (1 - eta**2))
+    M = n_design * M_fus * 9.81 / b * 2 / (1 + lmbd) * (b / 2)**2 * (
+        1 - eta - 0.5 * (1 - eta**2) + (lmbd - 1) * 0.5 * (1 - eta - 1 / 3 *
+                                                           (1 - eta**3)))
+
+    return V, M  #N and Nm
 
 
 def W_engine(eta: np.ndarray = 0) -> tuple[float]:
@@ -51,7 +56,8 @@ def W_engine(eta: np.ndarray = 0) -> tuple[float]:
     model = TotalModel(concept_C1_5, initial_total_mass=1500)
     mass_breakdown = model.mass_breakdown()
 
-    M_engine = mass_breakdown['propulsion']['total'] / 4  #TODO: remove hardcoding
+    M_engine = mass_breakdown['propulsion'][
+        'total'] / 4  #TODO: remove hardcoding
     l_1 = 0.3
     l_2 = 0.5
 
