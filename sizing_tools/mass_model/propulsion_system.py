@@ -43,4 +43,5 @@ class PropulsionSystemMassModel(MassModel):
         Calculate the total mass of the propulsion system
         :return: total mass of the propulsion system in kg
         """
-        return self.aircraft.motor_prop_count * (self.motor_mass() + self.propeller_mass())
+        return self.aircraft.motor_prop_count * (self.motor_mass() +
+                                                 self.propeller_mass())
