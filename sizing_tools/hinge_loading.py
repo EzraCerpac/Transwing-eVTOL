@@ -11,8 +11,9 @@ from mass_model.propulsion_system import PropulsionSystemMassModel
 from data.concept_parameters.concepts import concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10
 from mass_model.total import concept_iteration
 
+
 #todo : After midterm make sure to implement engine position on wing in code;
-def L(concept,eta: float = 0) -> tuple[float]:
+def L(concept, eta: float = 0) -> tuple[float]:
     """_summary_
 
     Args:
@@ -27,7 +28,10 @@ def L(concept,eta: float = 0) -> tuple[float]:
 
     n_design = model.aircraft.design_load_factor  # [-]
     M_fus = mass_breakdown['total'] - mass_breakdown['airframe'][
-        'wing'] - mass_breakdown['propulsion']['total']/model.aircraft.motor_prop_count*(model.aircraft.motor_prop_count-model.aircraft.motor_wing_count) # [kg]
+        'wing'] - mass_breakdown['propulsion'][
+            'total'] / model.aircraft.motor_prop_count * (
+                model.aircraft.motor_prop_count -
+                model.aircraft.motor_wing_count)  # [kg]
 
     print(M_fus)
     b = np.sqrt(model.aircraft.wing.area * model.aircraft.wing.aspect_ratio)
@@ -42,7 +46,7 @@ def L(concept,eta: float = 0) -> tuple[float]:
     return V, M  #N and Nm
 
 
-def W_engine(concept,eta: np.ndarray = 0) -> tuple[float]:
+def W_engine(concept, eta: np.ndarray = 0) -> tuple[float]:
     """_summary_
 
     Args:
@@ -55,7 +59,7 @@ def W_engine(concept,eta: np.ndarray = 0) -> tuple[float]:
     mass_breakdown = model.mass_breakdown()
 
     M_engine = mass_breakdown['propulsion'][
-        'total'] / model.aircraft.motor_prop_count #assume same
+        'total'] / model.aircraft.motor_prop_count  #assume same
     l_1 = 0.3
     l_2 = 0.5
 
@@ -78,10 +82,10 @@ def W_engine(concept,eta: np.ndarray = 0) -> tuple[float]:
     return V, M
 
 
-def get_load(concept,eta):
+def get_load(concept, eta):
     eta = np.array([eta])
-    V_L, M_L = L(concept,eta)
-    V_E, M_E = W_engine(concept,eta)
+    V_L, M_L = L(concept, eta)
+    V_E, M_E = W_engine(concept, eta)
     return V_L + V_E, M_L + M_E
 
 
@@ -90,12 +94,16 @@ if __name__ == '__main__':
     from matplotlib import pyplot as plt
 
     eta = np.linspace(0, 1, 100)
-    concept=concept_C1_5
-    plt.plot(eta, L(concept,eta)[0] + W_engine(concept,eta)[0], label='Shear')
-    plt.plot(eta, L(concept,eta)[1] + W_engine(concept,eta)[1], label='Moment')
+    concept = concept_C1_5
+    plt.plot(eta,
+             L(concept, eta)[0] + W_engine(concept, eta)[0],
+             label='Shear')
+    plt.plot(eta,
+             L(concept, eta)[1] + W_engine(concept, eta)[1],
+             label='Moment')
     plt.legend()
-    print(get_load(concept,0.6))
-    print(get_load(concept_C2_1,0.6))
-    print(get_load(concept_C2_6),0.6)
-    print(get_load(concept_C2_10,0.6))
+    print(get_load(concept, 0.6))
+    print(get_load(concept_C2_1, 0.6))
+    print(get_load(concept_C2_6), 0.6)
+    print(get_load(concept_C2_10, 0.6))
     plt.show()
