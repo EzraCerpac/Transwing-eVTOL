@@ -16,6 +16,7 @@ class Aircraft(BaseModel):
                                              gt=0)  # m/s
     cruise_altitude: Optional[float] = Field(500, gt=0)  # m
     range: Optional[float] = Field(convert_float(100, 'km', 'm'), gt=0)  # m
+    total_mass: Optional[float] = Field(None, gt=0)  # kg
 
     rate_of_climb: Optional[float] = Field(10, gt=0)  # m/s
     electric_propulsion_efficiency: Optional[float] = Field(0.2, gt=0)
@@ -52,7 +53,7 @@ class Aircraft(BaseModel):
 
     # for wing loading
     estimated_CD0: Optional[float] = None
-    #for hinge loading
+    # for hinge loading
     taper: Optional[float] = Field(0.4, gt=0)
 
     def __init__(self, **data):
@@ -74,44 +75,44 @@ class Aircraft(BaseModel):
     def initialize_default_mission_profile(self):
         self.mission_profile = MissionProfile(
             name='default',
-            phases=[
-                MissionPhase(phase=Phase.TAKEOFF,
-                             duration=0.17 * 60,
-                             horizontal_speed=0,
-                             distance=0,
-                             vertical_speed=0 * 60,
-                             ending_altitude=1.5),
-                MissionPhase(
+            phases={
+                Phase.TAKEOFF: MissionPhase(phase=Phase.TAKEOFF,
+                                            duration=0.17 * 60,
+                                            horizontal_speed=0,
+                                            distance=0,
+                                            vertical_speed=0 * 60,
+                                            ending_altitude=1.5),
+                Phase.CLIMB: MissionPhase(
                     phase=Phase.CLIMB,
                     duration=self.cruise_altitude / self.rate_of_climb,
                     horizontal_speed=self.
                     cruise_velocity,  # gets adjusted in model
                     distance=self.cruise_velocity * self.cruise_altitude /
-                    self.rate_of_climb,  # gets adjusted in model
+                             self.rate_of_climb,  # gets adjusted in model
                     vertical_speed=self.rate_of_climb,
                     ending_altitude=self.cruise_altitude),
-                MissionPhase(phase=Phase.CRUISE,
-                             duration=self.range / self.cruise_velocity,
-                             horizontal_speed=self.cruise_velocity,
-                             distance=self.range,
-                             vertical_speed=0,
-                             ending_altitude=self.cruise_altitude),
-                MissionPhase(
+                Phase.CRUISE: MissionPhase(phase=Phase.CRUISE,
+                                           duration=self.range / self.cruise_velocity,
+                                           horizontal_speed=self.cruise_velocity,
+                                           distance=self.range,
+                                           vertical_speed=0,
+                                           ending_altitude=self.cruise_altitude),
+                Phase.DESCENT: MissionPhase(
                     phase=Phase.DESCENT,
                     duration=self.cruise_altitude / self.rate_of_climb,
                     horizontal_speed=self.
                     cruise_velocity,  # gets adjusted in model
                     distance=self.cruise_velocity * self.cruise_altitude /
-                    self.rate_of_climb,  # gets adjusted in model
+                             self.rate_of_climb,  # gets adjusted in model
                     vertical_speed=self.rate_of_climb,  # weird assumption
                     ending_altitude=1.5),
-                MissionPhase(phase=Phase.LANDING,
-                             duration=0.17 * 60,
-                             horizontal_speed=0,
-                             distance=0,
-                             vertical_speed=0 * 60,
-                             ending_altitude=0),
-            ])
+                Phase.LANDING: MissionPhase(phase=Phase.LANDING,
+                                            duration=0.17 * 60,
+                                            horizontal_speed=0,
+                                            distance=0,
+                                            vertical_speed=0 * 60,
+                                            ending_altitude=0),
+            })
 
     @classmethod
     @field_validator('name')

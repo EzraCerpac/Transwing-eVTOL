@@ -33,7 +33,7 @@ class EnergySystemMassModel(MassModel):
     def estimate_energy(self) -> float:
         return sum(
             self._power(phase) * phase.duration
-            for phase in self.mission_profile.phases)
+            for phase in self.mission_profile.phases.values())
 
     def total_mass(self, **kwargs) -> float:
         return mass_from_energy(
