@@ -86,7 +86,8 @@ class WingLoading:
 
     @show
     @save
-    def plot_wp_ws(self, T_A, Sref_Sw, cd_cl_three_over_2, AR) -> tuple[plt.Figure, plt.Axes]:
+    def plot_wp_ws(self, T_A, Sref_Sw, cd_cl_three_over_2,
+                   AR) -> tuple[plt.Figure, plt.Axes]:
         fig, ax = plt.subplots()
         xx = np.arange(1, 2000)
 
@@ -100,7 +101,6 @@ class WingLoading:
         plt.ylabel('W/P')
         plt.legend()
         return fig, ax
-
 
 
 if __name__ == '__main__':
