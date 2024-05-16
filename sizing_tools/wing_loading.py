@@ -3,8 +3,6 @@ from typing import Optional
 import os
 import sys
 
-
-
 curreent_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(curreent_dir)
 sys.path.append(parent_dir)
@@ -51,8 +49,7 @@ class WingLoading:
     def W_over_S_cruise(self, AR) -> float:
         W_over_S_opt = 0.5 * self.rho * (
             self.aircraft.cruise_velocity)**2 * math.sqrt(
-                math.pi * AR *
-                self.aircraft.oswald_efficiency_factor *
+                math.pi * AR * self.aircraft.oswald_efficiency_factor *
                 self.aircraft.estimated_CD0)
 
         logger.info(f'{W_over_S_opt=}')
@@ -73,8 +70,9 @@ class WingLoading:
         return 0.5 * self.V_stall**2 * self.rho * 1.1
 
     def ver_climb(self, T_A, Sref_Sw):
-        T_W = 1.2 * (1 + 1 /
-                     (np.arange(1, 2000)) * self.rho * self.ROC_ver**2 * Sref_Sw)
+        T_W = 1.2 * (
+            1 + 1 /
+            (np.arange(1, 2000)) * self.rho * self.ROC_ver**2 * Sref_Sw)
         P_W = (T_W * (1 / (self.Fom * self.n_prop)) *
                np.sqrt(T_A / (2 * self.rho)))**-1
         return P_W
@@ -84,14 +82,16 @@ class WingLoading:
                              np.sqrt(2 * np.arange(1, 2000) / self.rho))**-1
         return W_P
 
-    def plot_wp_ws(self, T_A, Sref_Sw,cd_cl_three_over_2, AR ):
+    def plot_wp_ws(self, T_A, Sref_Sw, cd_cl_three_over_2, AR):
         xx = np.arange(1, 2000)
         #if W_over_S_opt is not None:
 
         plt.axvline(x=self.w_s_stall_speed(), label=' Stall Speed')
         plt.plot(xx, self._wp(xx, AR), label='Cruise')
         plt.plot(xx, self.ver_climb(T_A, Sref_Sw), label='Vertical Climb')
-        plt.plot(xx, self.steady_climb(cd_cl_three_over_2), label='Cruise Climb')
+        plt.plot(xx,
+                 self.steady_climb(cd_cl_three_over_2),
+                 label='Cruise Climb')
         plt.xlabel('W/S')
         plt.ylabel('W/P')
         plt.legend()
@@ -115,9 +115,9 @@ if __name__ == '__main__':
     AR = [9.9, 7.3, 5.1, 3.2]
     Cd_0 = [0.035, 0.035, 0.035, 0.035]
     cd_cl_three_over_2 = [0.10644, 0.11769, 0.13633, 0.17066]
-    for i in range(0,4):
-        wing_loading.plot_wp_ws(T_A[i], Sref_Sw[i],cd_cl_three_over_2[i], AR[i])
-
+    for i in range(0, 4):
+        wing_loading.plot_wp_ws(T_A[i], Sref_Sw[i], cd_cl_three_over_2[i],
+                                AR[i])
 
 # Design points:
 # 'w/s'=700
