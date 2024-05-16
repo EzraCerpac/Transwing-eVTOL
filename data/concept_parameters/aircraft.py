@@ -29,7 +29,7 @@ class Aircraft(BaseModel):
         0.04, gt=0)  # not used in current mass model
     propulsion_efficiency: Optional[float] = Field(0.85, gt=0, le=1)
     motor_prop_count: Optional[int] = Field(None, gt=0)
-    motor_wing_count: Optional[int] = Field(None, gt=0)
+    motor_wing_count: Optional[int] = Field(None, ge=0)
     motor_power_margin: Optional[float] = Field(0.5, gt=0)
     SoC_min: Optional[float] = Field(0.2, gt=0)
     # specific_energy_density: Optional[float] = None (already included)
