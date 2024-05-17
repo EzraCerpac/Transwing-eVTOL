@@ -6,6 +6,7 @@ from utility.log import logger
 
 
 class Iteration(Model):
+
     def __init__(self, aircraft):
         super().__init__(aircraft)
         self.class1Model = WingLoading(aircraft)
@@ -14,8 +15,14 @@ class Iteration(Model):
     @property
     def necessary_parameters(self) -> list[str]:
         return [
-            'cruise_velocity', 'wing', 'estimated_CD0', 'propulsion_efficiency',
-            'v_stall', 'cruise_altitude', 'mission_profile', 'total_mass',
+            'cruise_velocity',
+            'wing',
+            'estimated_CD0',
+            'propulsion_efficiency',
+            'v_stall',
+            'cruise_altitude',
+            'mission_profile',
+            'total_mass',
         ]
 
     def run(self):
@@ -33,9 +40,7 @@ class Iteration(Model):
         logger.info(f'Surface area: {self.aircraft.wing.area} m^2')
 
 
-
 if __name__ == '__main__':
     concept = concept_C1_5
-    concept.total_mass = 2150 # kg
+    concept.total_mass = 2150  # kg
     model = Iteration(concept).run()
-
