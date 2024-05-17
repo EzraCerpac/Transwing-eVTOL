@@ -116,7 +116,8 @@ def hover_power(rotor_disk_thrust: float, rotor_disk_area: float,
     return rotor_disk_thrust**(3 / 2) / (figure_of_merit *
                                          sqrt(2 * rho * rotor_disk_area))
 
-def hover_velocity(hover_power: float,rotor_disk_thrust: float):
+
+def hover_velocity(hover_power: float, rotor_disk_thrust: float):
     """
         Calculate the velocity required for hovering.
 
@@ -124,7 +125,7 @@ def hover_velocity(hover_power: float,rotor_disk_thrust: float):
         :param hover_power: The power required for hovering in W
         :return: The velocity of the disk required for hovering in m/s
         """
-    return hover_power/rotor_disk_thrust
+    return hover_power / rotor_disk_thrust
 
 
 # Function to calculate the rotor disk area
