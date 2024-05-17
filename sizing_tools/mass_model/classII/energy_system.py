@@ -24,8 +24,13 @@ class EnergySystemMassModel(MassModel):
     @property
     def necessary_parameters(self) -> list[str]:
         return [
-            'SoC_min', 'battery_energy_density', 'battery_system_efficiency',
-            'figure_of_merit', 'estimated_CD0', 'wing', 'propulsion_efficiency',
+            'SoC_min',
+            'battery_energy_density',
+            'battery_system_efficiency',
+            'figure_of_merit',
+            'estimated_CD0',
+            'wing',
+            'propulsion_efficiency',
             'mission_profile',
         ]
 
@@ -71,7 +76,8 @@ class EnergySystemMassModel(MassModel):
         assert phase.phase in (Phase.TAKEOFF, Phase.LANDING, Phase.HOVER_CLIMB)
         rho = Atmosphere(altitude=phase.ending_altitude).density()
         rotor_disk_thrust = self.initial_total_mass * g  # no vertical speed
-        disk_area = rotor_disk_area(self.aircraft.propeller_radius) * self.aircraft.motor_prop_count
+        disk_area = rotor_disk_area(
+            self.aircraft.propeller_radius) * self.aircraft.motor_prop_count
         self.aircraft.TA = rotor_disk_thrust / disk_area
         return hover_power(rotor_disk_thrust, disk_area,
                            self.aircraft.figure_of_merit, rho)
