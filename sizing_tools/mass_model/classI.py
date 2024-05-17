@@ -68,9 +68,12 @@ class ClassIModel(Model):
         self.aircraft.wing.area = self.aircraft.total_mass * g / w_s_min
         return w_s_min
 
-    def ver_climb(self):
+
+
+
+    def ver_climb(self,ws): 
         T_over_W = LOAD_FACTOR * (
-            1 + 1 / (np.arange(1, 2000)) * self.rho *
+            1 + 1 / ws* self.rho *
             self.aircraft.mission_profile.phases[Phase.CLIMB].vertical_speed**2
             * self.aircraft.sref / self.aircraft.wing.area)
         W_over_p = 1 / (T_over_W * (1 /
@@ -94,7 +97,7 @@ class ClassIModel(Model):
 
     def output(self):
         ws_output = self.w_s_stall_speed()
-        wp_output = self.ver_climb(ws_output, concept.TA, concept.sref / concept.wing.area)
+        wp_output = self.ver_climb(ws_output)
         self.aircraft.wing.area = g*self.aircraft.total_mass/ws_output
         logger.debug(self.aircraft.wing.area)
         return self.aircraft.wing.area
@@ -107,7 +110,7 @@ class ClassIModel(Model):
 
         plt.axvline(x=self.w_s_stall_speed(), label=' Stall Speed')
         plt.plot(xx, self._wp(xx), label='Cruise')
-        plt.plot(xx, self.ver_climb(), label='Vertical Climb')
+        plt.plot(xx, self.ver_climb(xx), label='Vertical Climb')
         plt.plot(xx, self.steady_climb(), label='Cruise Climb')
         plt.xlabel('W/S')
         plt.ylabel('W/P')
