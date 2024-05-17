@@ -81,7 +81,6 @@ class Aircraft(BaseModel):
                 text += f'{key}: {value:.2f} kg\n'
         return f'Mass breakdown:\n{text}'
 
-
     def initialize_propellers(self):
         self.propellers = [
             Propeller(rotation_speed=self.propeller_rotation_speed,

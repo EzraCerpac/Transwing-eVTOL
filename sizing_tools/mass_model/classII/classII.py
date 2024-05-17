@@ -49,8 +49,8 @@ class ClassIIModel(MassModel):
     def mass_breakdown(self) -> dict[str, float | dict[str, float]]:
         self.aircraft.mass_breakdown_dict = {
             'total':
-                self.aircraft.total_mass
-                if self.aircraft.total_mass else self.total_mass(),
+            self.aircraft.total_mass
+            if self.aircraft.total_mass else self.total_mass(),
             'payload': {
                 'total': self.aircraft.payload_mass,
             },
@@ -62,19 +62,19 @@ class ClassIIModel(MassModel):
                 'fuselage': self.airframe_mass_model.fuselage_mass(),
                 'wing': self.airframe_mass_model.wing_mass(),
                 'horizontal_tail':
-                    self.airframe_mass_model.horizontal_tail_mass(),
+                self.airframe_mass_model.horizontal_tail_mass(),
                 'vertical_tail': self.airframe_mass_model.vertical_tail_mass(),
                 'landing_gear': self.airframe_mass_model.landing_gear_mass(),
             },
             'propulsion': {
                 'total':
-                    self.propulsion_system_mass_model.total_mass(),
+                self.propulsion_system_mass_model.total_mass(),
                 'motors':
-                    self.propulsion_system_mass_model.motor_mass() *
-                    self.aircraft.motor_prop_count,
+                self.propulsion_system_mass_model.motor_mass() *
+                self.aircraft.motor_prop_count,
                 'propellers':
-                    self.propulsion_system_mass_model.propeller_mass() *
-                    self.aircraft.motor_prop_count,
+                self.propulsion_system_mass_model.propeller_mass() *
+                self.aircraft.motor_prop_count,
             }
         }
         self.aircraft.mass_breakdown = MassObject.from_mass_dict(
