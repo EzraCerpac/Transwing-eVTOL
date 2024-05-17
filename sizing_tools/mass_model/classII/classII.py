@@ -122,7 +122,8 @@ class ClassIIModel(MassModel):
             major_masses.values(),
             labels=major_masses.keys(),
             startangle=0,
-            autopct=lambda pct: pct_func_mass(pct, list(major_masses.values())))
+            autopct=lambda pct: pct_func_mass(pct, list(major_masses.values())
+                                              ))
         wedges2, texts2 = ax.pie(sub_masses.values(), startangle=0, radius=0.5)
         wedges2[0].set_visible(False)
         wedges2[1].set_visible(False)

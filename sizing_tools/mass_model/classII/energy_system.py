@@ -84,8 +84,8 @@ class EnergySystemMassModel(MassModel):
             Atmosphere(altitude=phase.ending_altitude).density(), phase.C_L,
             self.aircraft.wing.area)
         return self.initial_total_mass * g * (
-                velocity * C_D / phase.C_L +
-                phase.vertical_speed) / self.aircraft.propulsion_efficiency
+            velocity * C_D / phase.C_L +
+            phase.vertical_speed) / self.aircraft.propulsion_efficiency
 
     def _cruise_power(self, phase: MissionPhase) -> float:
         assert phase.phase == Phase.CRUISE

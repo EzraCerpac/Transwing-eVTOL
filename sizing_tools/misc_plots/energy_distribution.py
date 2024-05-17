@@ -8,16 +8,25 @@ from utility.plotting.helper import pct_func_energy
 
 
 @show
-def plot_energy_distribution_per_phase(aircraft: Aircraft) -> tuple[plt.Figure, plt.Axes]:
+def plot_energy_distribution_per_phase(
+        aircraft: Aircraft) -> tuple[plt.Figure, plt.Axes]:
     fig, ax = plt.subplots(figsize=(12, 8))
     ax.set_title('Energy distribution per phase')
 
     # Prepare data for pie chart
-    energies = [phase.energy for phase in aircraft.mission_profile.phases.values()]
-    labels = [phase.phase.value for phase in aircraft.mission_profile.phases.values()]
+    energies = [
+        phase.energy for phase in aircraft.mission_profile.phases.values()
+    ]
+    labels = [
+        phase.phase.value
+        for phase in aircraft.mission_profile.phases.values()
+    ]
 
     # Create pie chart
-    wedges, texts, autotexts = ax.pie(energies, labels=labels, autopct=lambda pct: pct_func_energy(pct, energies))
+    wedges, texts, autotexts = ax.pie(
+        energies,
+        labels=labels,
+        autopct=lambda pct: pct_func_energy(pct, energies))
     ax.text(0.5,
             0.5,
             f'Total Energy\n{aircraft.mission_profile.energy/3600:.2f} kWh',

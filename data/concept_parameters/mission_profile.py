@@ -77,8 +77,6 @@ class MissionProfile(BaseModel):
     def energy(self):
         return sum([phase.energy for phase in self.phases.values()])
 
-
-
     def __getattr__(self, item):
         try:
             if Phase[item] in self.phases:
