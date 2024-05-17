@@ -12,6 +12,7 @@ class Aircraft(BaseModel):
     name: Optional[str] = Field('Aircraft', min_length=1)
 
     mass_breakdown: Optional[MassObject] = None
+    mass_breakdown_dict: Optional[dict[str, float | dict[str, float]]] = None
 
     # Default values
     cruise_velocity: Optional[float] = Field(convert_float(200, 'km/h', 'm/s'),

@@ -52,7 +52,7 @@ class ClassIIModel(MassModel):
         return self.aircraft.total_mass
 
     def mass_breakdown(self) -> dict[str, float | dict[str, float]]:
-        breakdown = {
+        self.aircraft.mass_breakdown_dict = {
             'total':
             self.aircraft.total_mass
             if self.aircraft.total_mass else self.total_mass(),
@@ -83,9 +83,9 @@ class ClassIIModel(MassModel):
             }
         }
         self.aircraft.mass_breakdown = MassObject.from_mass_dict(
-            'total', breakdown)
+            'total', self.aircraft.mass_breakdown_dict)
         # self.aircraft.mass_breakdown.set_cg_from_dict(example_cg_dict)
-        return breakdown
+        return self.aircraft.mass_breakdown_dict
 
     @staticmethod
     def mass_breakdown_to_str(
