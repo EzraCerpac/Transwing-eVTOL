@@ -94,5 +94,3 @@ if __name__ == '__main__':
         # iteration.plot_iteration_data()
         ClassIIModel(concept).plot_mass_breakdown()
         logger.info(f"{concept.name}: {concept.total_mass:.2f} kg")
-
-
