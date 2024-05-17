@@ -32,7 +32,7 @@ class ClassIModel(Model):
         super().__init__(aircraft)
         self.atmosphere = Atmosphere(
             altitude=self.aircraft.cruise_altitude if self.aircraft.
-                                                      cruise_altitude is not None else 0)
+            cruise_altitude is not None else 0)
         self.rho = self.atmosphere.density()
         self.power_setting = power_setting
         self.mtow_setting = mtow_setting
@@ -54,24 +54,24 @@ class ClassIModel(Model):
     def _wp(self, ws: np.ndarray) -> np.ndarray:
         ws = self.mtow_setting * ws
         wp = self.power_setting * self.aircraft.propulsion_efficiency * (
-                self.rho / Atmosphere().density()) ** (
-                     3 / 4) * (self.aircraft.estimated_CD0 * 0.5 * self.rho *
-                               self.aircraft.cruise_velocity ** 3 / ws + ws /
-                               (np.pi * self.aircraft.wing.aspect_ratio *
-                                self.aircraft.wing.oswald_efficiency_factor * 0.5 *
-                                self.rho * self.aircraft.cruise_velocity)) ** (-1)
+            self.rho / Atmosphere().density())**(
+                3 / 4) * (self.aircraft.estimated_CD0 * 0.5 * self.rho *
+                          self.aircraft.cruise_velocity**3 / ws + ws /
+                          (np.pi * self.aircraft.wing.aspect_ratio *
+                           self.aircraft.wing.oswald_efficiency_factor * 0.5 *
+                           self.rho * self.aircraft.cruise_velocity))**(-1)
         return wp
 
     def w_s_stall_speed(self):
-        w_s_min = 0.5 * self.aircraft.v_stall ** 2 * self.rho * C_L_STALL  # TODO CL value estimation
+        w_s_min = 0.5 * self.aircraft.v_stall**2 * self.rho * C_L_STALL  # TODO CL value estimation
         self.aircraft.wing.area = self.aircraft.total_mass * g / w_s_min
         return w_s_min
 
     def ver_climb(self, ws):
         T_over_W = LOAD_FACTOR * (
-                1 + 1 / ws * self.rho *
-                self.aircraft.mission_profile.phases[Phase.CLIMB].vertical_speed ** 2 *
-                (self.aircraft.s_fus + self.aircraft.wing.area) /
+            1 + 1 / ws * self.rho * self.aircraft.mission_profile.phases[
+                Phase.CLIMB].vertical_speed**2 *
+            (self.aircraft.s_fus + self.aircraft.wing.area) /
             self.aircraft.wing.area)
         W_over_p = 1 / (T_over_W * (1 /
                                     (self.aircraft.figure_of_merit *
@@ -86,10 +86,10 @@ class ClassIModel(Model):
         c_d = C_D_from_CL(c_l_opt, self.aircraft.estimated_CD0,
                           self.aircraft.wing.aspect_ratio,
                           self.aircraft.wing.oswald_efficiency_factor)
-        cd_cl_three_over_2 = c_d / c_l_opt ** (3 / 2)
+        cd_cl_three_over_2 = c_d / c_l_opt**(3 / 2)
         W_P = self.aircraft.propulsion_efficiency * (
-                self.aircraft.rate_of_climb + cd_cl_three_over_2 *
-                np.sqrt(2 * np.arange(1, 2000) / self.rho)) ** -1
+            self.aircraft.rate_of_climb + cd_cl_three_over_2 *
+            np.sqrt(2 * np.arange(1, 2000) / self.rho))**-1
         return W_P
 
     def output(self) -> tuple[float, float]:
