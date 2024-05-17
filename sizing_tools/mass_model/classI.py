@@ -70,9 +70,10 @@ class ClassIModel(Model):
 
     def ver_climb(self, ws):
         T_over_W = LOAD_FACTOR * (
-            1 + 1 / ws * self.rho *
-            self.aircraft.mission_profile.phases[Phase.CLIMB].vertical_speed**2
-            * (self.aircraft.s_fus +self.aircraft.wing.area) / self.aircraft.wing.area)
+            1 + 1 / ws * self.rho * self.aircraft.mission_profile.phases[
+                Phase.CLIMB].vertical_speed**2 *
+            (self.aircraft.s_fus + self.aircraft.wing.area) /
+            self.aircraft.wing.area)
         W_over_p = 1 / (T_over_W * (1 /
                                     (self.aircraft.figure_of_merit *
                                      self.aircraft.propulsion_efficiency)) *
@@ -95,8 +96,8 @@ class ClassIModel(Model):
     def output(self) -> tuple[float, float]:
         ws_output = self.w_s_stall_speed()
         wp_output = self.ver_climb(ws_output)
-        self.aircraft.wing.area = g*self.aircraft.total_mass/ws_output
-        self.aircraft.mission_profile.TAKEOFF.power = g*self.aircraft.total_mass/wp_output
+        self.aircraft.wing.area = g * self.aircraft.total_mass / ws_output
+        self.aircraft.mission_profile.TAKEOFF.power = g * self.aircraft.total_mass / wp_output
         return self.aircraft.wing.area, self.aircraft.mission_profile.TAKEOFF.power
 
     @show
