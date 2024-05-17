@@ -6,7 +6,7 @@ curreent_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(curreent_dir)
 sys.path.append(parent_dir)
 
-from sizing_tools.mass_model.classII.total import TotalModel
+from sizing_tools.mass_model.classII.classII import ClassIIModel
 from data.concept_parameters.concepts import concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10
 
 
@@ -20,7 +20,7 @@ def L(concept, eta: float = 0) -> tuple[float]:
     Returns:
         tuple[float]: _description_
     """
-    model = TotalModel(concept, initial_total_mass=1500)
+    model = ClassIIModel(concept, initial_total_mass=1500)
     mass_breakdown = model.mass_breakdown()
     print(mass_breakdown)
 
@@ -53,7 +53,7 @@ def W_engine(concept, eta: np.ndarray = 0) -> tuple[float]:
     Returns:
         tuple[float]: _description_
     """
-    model = TotalModel(concept, initial_total_mass=1500)
+    model = ClassIIModel(concept, initial_total_mass=1500)
     mass_breakdown = model.mass_breakdown()
 
     M_engine = mass_breakdown['propulsion'][

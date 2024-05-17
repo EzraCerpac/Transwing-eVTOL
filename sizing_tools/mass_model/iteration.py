@@ -1,6 +1,6 @@
 from data.concept_parameters.concepts import concept_C1_5
-from sizing_tools.mass_model.classI import WingLoading
-from sizing_tools.mass_model.classII.total import TotalModel
+from sizing_tools.mass_model.classI import ClassIModel
+from sizing_tools.mass_model.classII.classII import ClassIIModel
 from sizing_tools.model import Model
 from utility.log import logger
 
@@ -9,7 +9,7 @@ class Iteration(Model):
 
     def __init__(self, aircraft):
         super().__init__(aircraft)
-        self.class1Model = WingLoading(aircraft)
+        self.class1Model = ClassIModel(aircraft)
         self.class2Model = None
 
     @property
@@ -31,11 +31,11 @@ class Iteration(Model):
         self.class1Model.w_s_stall_speed()
         logger.info(f'Mass: {self.aircraft.total_mass} kg')
         logger.info(f'Surface area: {self.aircraft.wing.area} m^2')
-        self.class2Model = TotalModel(self.aircraft).total_mass()
+        self.class2Model = ClassIIModel(self.aircraft).total_mass()
         logger.info(f'Mass: {self.aircraft.total_mass} kg')
         logger.info(f'Surface area: {self.aircraft.wing.area} m^2')
-        self.class1Model = WingLoading(self.aircraft).w_s_stall_speed()
-        self.class2Model = TotalModel(self.aircraft).total_mass()
+        self.class1Model = ClassIModel(self.aircraft).w_s_stall_speed()
+        self.class2Model = ClassIIModel(self.aircraft).total_mass()
         logger.info(f'Mass: {self.aircraft.total_mass} kg')
         logger.info(f'Surface area: {self.aircraft.wing.area} m^2')
 

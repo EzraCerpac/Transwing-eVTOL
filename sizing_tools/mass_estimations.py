@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 from data.concept_parameters.aircraft import Aircraft
 from data.literature.evtol_performance import plot_mass_over_payload as plot_mass_over_payload_data, vtol_data
 from data.literature.evtol_performance import plot_range_over_mass as plot_range_over_mass_data
-from sizing_tools.mass_model.classII.total import TotalModel
+from sizing_tools.mass_model.classII.classII import ClassIIModel
 from utility.plotting import show, save
 from utility.unit_conversion import convert_float
 
@@ -20,7 +20,7 @@ class MassEstimation:
         mass = []
         for payload in payloads:
             self.initial_aircraft.payload_mass = payload
-            model = TotalModel(self.initial_aircraft, self.initial_mass)
+            model = ClassIIModel(self.initial_aircraft, self.initial_mass)
             masses = model.mass_breakdown()
             mass.append(masses['total'])
         return np.array(mass)
@@ -32,7 +32,7 @@ class MassEstimation:
             self.initial_aircraft.mission_profile.CRUISE.distance = distance
             self.initial_aircraft.mission_profile.CRUISE.duration = distance / \
                                                                        self.initial_aircraft.mission_profile.CRUISE.horizontal_speed
-            model = TotalModel(self.initial_aircraft, self.initial_mass)
+            model = ClassIIModel(self.initial_aircraft, self.initial_mass)
             masses = model.mass_breakdown()
             mass.append(masses['total'])
         return np.array(mass)

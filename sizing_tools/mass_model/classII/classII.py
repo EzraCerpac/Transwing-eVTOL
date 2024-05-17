@@ -14,7 +14,7 @@ from utility.log import logger
 from utility.plotting.plot_functions import show, save_with_name
 
 
-class TotalModel(MassModel):
+class ClassIIModel(MassModel):
 
     def __init__(self, aircraft: Aircraft, initial_total_mass: float = None):
         if aircraft.total_mass is None:
@@ -172,12 +172,12 @@ def concept_iteration(concepts: list[Aircraft]):
     estimations = {key: {} for key in concepts}
 
     for concept in concepts:
-        model = TotalModel(concept, initial_total_mass=1500.)
+        model = ClassIIModel(concept, initial_total_mass=1500.)
 
         mass_breakdown = model.mass_breakdown()
         estimations[concept] = mass_breakdown
         logger.debug(
-            f'{concept.name=}\n{TotalModel.mass_breakdown_to_str(mass_breakdown)}'
+            f'{concept.name=}\n{ClassIIModel.mass_breakdown_to_str(mass_breakdown)}'
         )
         model.plot_mass_breakdown()
 
