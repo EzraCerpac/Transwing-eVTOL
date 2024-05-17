@@ -24,7 +24,9 @@ class Iteration(Model):
             'total_mass',
         ]
 
-    def fixed_point_iteration(self, tolerance: float = 1e-6, max_iterations: int = 100) -> Aircraft:
+    def fixed_point_iteration(self,
+                              tolerance: float = 1e-6,
+                              max_iterations: int = 100) -> Aircraft:
         logger.info('Starting fixed point iteration')
         for i in range(max_iterations):
             logger.info(f'Iteration {i}')
