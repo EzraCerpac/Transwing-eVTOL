@@ -109,8 +109,8 @@ class ClassIModel(Model):
         plt.plot(xx, self._wp(xx), label='Cruise')
         plt.plot(xx, self.ver_climb(xx), label='Vertical Climb')
         plt.plot(xx, self.steady_climb(), label='Cruise Climb')
-        plt.xlabel('W/S')
-        plt.ylabel('W/P')
+        plt.xlabel('W/S [N/m^2]' )
+        plt.ylabel('W/P [N/W]')
         plt.legend()
         return fig, ax
 
