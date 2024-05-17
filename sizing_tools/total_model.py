@@ -40,7 +40,7 @@ class TotalModel(Model):
 def main():
     for concept in all_concepts:
         model = TotalModel(concept)
-        model.print_results(mass_breakdown=True, energy_breakdown=True)
+        model.print_results(mass_breakdown=True, energy_breakdown=False)
 
 
 if __name__ == '__main__':
