@@ -94,8 +94,9 @@ class ClassIModel(Model):
 
     def output(self):
         ws_output = self.w_s_stall_speed()
-        wp_output = self.ver_climb(ws_output, concept.TA, concept.sref / concept.wing.area)
-        self.aircraft.wing.area = g*self.aircraft.total_mass/ws_output
+        wp_output = self.ver_climb(ws_output, concept.TA,
+                                   concept.sref / concept.wing.area)
+        self.aircraft.wing.area = g * self.aircraft.total_mass / ws_output
         logger.debug(self.aircraft.wing.area)
         return self.aircraft.wing.area
 
@@ -122,5 +123,3 @@ if __name__ == '__main__':
         concept.total_mass = 2150
         wing_loading = ClassIModel(concept)
         wing_loading.plot_wp_ws(concept)
-
-    
