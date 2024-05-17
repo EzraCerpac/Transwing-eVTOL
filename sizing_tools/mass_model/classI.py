@@ -70,7 +70,7 @@ class ClassIModel(Model):
     def ver_climb(self, ws):
         T_over_W = LOAD_FACTOR * (
                 1 + 1 / ws * self.rho *
-                self.aircraft.mission_profile.phases[Phase.CLIMB].vertical_speed ** 2*
+                self.aircraft.mission_profile.phases[Phase.CLIMB].vertical_speed ** 2 *
                 (self.aircraft.s_fus + self.aircraft.wing.area) /
             self.aircraft.wing.area)
         W_over_p = 1 / (T_over_W * (1 /
