@@ -15,7 +15,7 @@ concept_C1_5 = Aircraft(name="Concept C1.5 (Fixed Wing)",
                             maximum_section_perimeter=3,
                         ),
                         estimated_CD0=0.04,
-                        sref=25,
+                        s_fus=12.5,
                         TA=400)
 
 concept_C2_1 = Aircraft(name="Concept C2.1 (Pterodynamics)",
@@ -32,7 +32,7 @@ concept_C2_1 = Aircraft(name="Concept C2.1 (Pterodynamics)",
                             maximum_section_perimeter=2.5,
                         ),
                         estimated_CD0=0.03,
-                        sref=12.5,
+                        s_fus=12.5,
                         TA=400)
 
 concept_C2_6 = Aircraft(name="Concept C2.6 (Folding Wing)",
@@ -49,7 +49,7 @@ concept_C2_6 = Aircraft(name="Concept C2.6 (Folding Wing)",
                             maximum_section_perimeter=2.5,
                         ),
                         estimated_CD0=0.035,
-                        sref=25,
+                        s_fus=12.5,
                         TA=400)
 
 concept_C2_10 = Aircraft(
@@ -68,7 +68,7 @@ concept_C2_10 = Aircraft(
         maximum_section_perimeter=2.5,
     ),
     estimated_CD0=0.04,
-    sref=20,
+    s_fus=12.5,
     TA=400)
 
 all_concepts = [concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10]
