@@ -4,12 +4,9 @@ import sys
 import scipy as sc
 from scipy.constants import g
 
-
-
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
-
 
 from sizing_tools.model import Model
 from data.concept_parameters.aircraft_components import Wing
