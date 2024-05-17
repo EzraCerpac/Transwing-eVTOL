@@ -1,16 +1,15 @@
-from data.concept_parameters.concepts import concept_C1_5
-from sizing_tools.mass_model.classI import WingLoading
-from sizing_tools.mass_model.classII.total import TotalModel
+from data.concept_parameters.aircraft import Aircraft
+from data.concept_parameters.concepts import concept_C1_5, concept_C2_1
+from sizing_tools.mass_model.classI import ClassIModel
+from sizing_tools.mass_model.classII.classII import ClassIIModel
 from sizing_tools.model import Model
 from utility.log import logger
 
 
 class Iteration(Model):
 
-    def __init__(self, aircraft):
+    def __init__(self, aircraft: Aircraft):
         super().__init__(aircraft)
-        self.class1Model = WingLoading(aircraft)
-        self.class2Model = None
 
     @property
     def necessary_parameters(self) -> list[str]:
@@ -25,22 +24,23 @@ class Iteration(Model):
             'total_mass',
         ]
 
-    def run(self):
-        logger.info(f'Starting mass: {self.aircraft.total_mass} kg')
-        logger.info(f'Surface area: {self.aircraft.wing.area} m^2')
-        self.class1Model.w_s_stall_speed()
-        logger.info(f'Mass: {self.aircraft.total_mass} kg')
-        logger.info(f'Surface area: {self.aircraft.wing.area} m^2')
-        self.class2Model = TotalModel(self.aircraft).total_mass()
-        logger.info(f'Mass: {self.aircraft.total_mass} kg')
-        logger.info(f'Surface area: {self.aircraft.wing.area} m^2')
-        self.class1Model = WingLoading(self.aircraft).w_s_stall_speed()
-        self.class2Model = TotalModel(self.aircraft).total_mass()
-        logger.info(f'Mass: {self.aircraft.total_mass} kg')
-        logger.info(f'Surface area: {self.aircraft.wing.area} m^2')
+    def fixed_point_iteration(self,
+                              tolerance: float = 1e-6,
+                              max_iterations: int = 100) -> Aircraft:
+        logger.info('Starting fixed point iteration')
+        for i in range(max_iterations):
+            logger.info(f'Iteration {i}')
+            old_total_mass = self.aircraft.total_mass
+            ClassIModel(self.aircraft).w_s_stall_speed()
+            ClassIIModel(self.aircraft).total_mass()
+            if abs(self.aircraft.total_mass - old_total_mass) < tolerance:
+                ClassIIModel(self.aircraft).mass_breakdown()
+                break
+        return self.aircraft
 
 
 if __name__ == '__main__':
-    concept = concept_C1_5
+    concept = concept_C2_1
     concept.total_mass = 2150  # kg
-    model = Iteration(concept).run()
+    concept = Iteration(concept).fixed_point_iteration()
+    logger.info(concept.mass_breakdown)

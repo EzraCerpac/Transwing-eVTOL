@@ -178,12 +178,12 @@ class Fuselage(BaseModel):
 class MassObject(BaseModel):
     name: str
     mass: Optional[float] = Field(None, gt=0)
-    cg: Optional[float] = Field(None, ge=0)
+    cg: Optional[float] = Field(None, ge=0, le=1)
     submasses: dict[str, 'MassObject'] = Field({})
 
     def __init__(self, **data):
         super().__init__(**data)
-        self.set_cg()
+        self.calc_cg()
 
     @classmethod
     def from_mass_dict(cls, name: str, data: dict) -> 'MassObject':
@@ -196,12 +196,19 @@ class MassObject(BaseModel):
                 submasses[key] = cls(name=key, mass=value)
         return cls(name=name, mass=mass, submasses=submasses)
 
-    def set_cg(self):
+    def set_cg_from_dict(self, data: dict):
+        if self.name in data:
+            self.cg = data[self.name]
+        for value in self.submasses.values():
+            value.set_cg_from_dict(data)
+        self.calc_cg()
+
+    def calc_cg(self):
         if not self.submasses and self.cg is not None:
             return
         cg = 0
         for value in self.submasses.values():
-            value.set_cg()
+            value.calc_cg()
             cg += value.mass * value.cg
         assert self.mass > 0, f"Mass must be greater than zero. Got {self.mass}"
         self.cg = cg / self.mass
@@ -219,4 +226,4 @@ class MassObject(BaseModel):
             super().__setattr__(key, value)
 
     def __repr__(self):
-        return f"MassObject(name={self.name}, mass={self.mass}, cg={self.cg}, submasses={self.submasses})"
+        return f"MassObject(name={self.name}, mass={self.mass}, cg={self.cg}, submasses=\n{self.submasses})"

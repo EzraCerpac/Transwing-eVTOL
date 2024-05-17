@@ -24,7 +24,7 @@ from data.concept_parameters.aircraft import Aircraft
 from utility.log import logger
 
 
-class WingLoading(Model):
+class ClassIModel(Model):
 
     def __init__(self,
                  aircraft: Aircraft,
@@ -112,5 +112,5 @@ if __name__ == '__main__':
     from data.concept_parameters.concepts import concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10
 
     for concept in [concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10]:
-        wing_loading = WingLoading(concept)
+        wing_loading = ClassIModel(concept)
         wing_loading.plot_wp_ws(concept)

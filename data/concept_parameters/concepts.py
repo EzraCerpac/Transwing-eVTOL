@@ -70,3 +70,15 @@ concept_C2_10 = Aircraft(
     estimated_CD0=0.04,
     sref=20,
     TA=400)
+
+example_cg_dict = {
+    'payload': 0.5,
+    'battery': 0.5,
+    'fuselage': 0.5,
+    'wing': 0.4,
+    'horizontal_tail': 1,
+    'vertical_tail': 1,
+    'landing_gear': 0.5,
+    'motors': 0.4,
+    'propellers': 0.4,
+}
