@@ -19,8 +19,7 @@ from utility.plotting import show, save
 from data.concept_parameters.aircraft import Aircraft
 from utility.log import logger
 
-LOAD_FACTOR = 1.2
-C_L_STALL = 1.1
+C_L_MAX = 1.1
 
 
 class ClassIModel(Model):
@@ -62,12 +61,12 @@ class ClassIModel(Model):
         return wp
 
     def w_s_stall_speed(self):
-        w_s_min = 0.5 * self.aircraft.v_stall**2 * self.rho * C_L_STALL  # TODO CL value estimation
+        w_s_min = 0.5 * self.aircraft.v_stall ** 2 * self.rho * C_L_MAX
         self.aircraft.wing.area = self.aircraft.total_mass * g / w_s_min
         return w_s_min
 
     def ver_climb(self, ws):
-        T_over_W = LOAD_FACTOR * (
+        T_over_W = self.aircraft.takeoff_load_factor * (
             1 + 1 / ws * self.rho * self.aircraft.mission_profile.phases[
                 Phase.CLIMB].vertical_speed**2 *
             (self.aircraft.s_fus + self.aircraft.wing.area) /

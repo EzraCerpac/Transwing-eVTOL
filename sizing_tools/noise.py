@@ -1,5 +1,8 @@
 from functools import cache
-from math import log10
+from math import log10, sqrt
+
+from aerosandbox import Atmosphere
+from scipy.constants import g
 
 from data.concept_parameters.aircraft import Aircraft
 from sizing_tools.formula.sound import SPL_1_max, tip_mach_number
@@ -18,6 +21,7 @@ class NoiseModel(Model):
             'motor_prop_count',
             'propeller_radius',
             'propeller_blade_number',
+            # 'mission_profile.TAKEOFF.power',
         ]
 
     @cache
@@ -28,11 +32,12 @@ class NoiseModel(Model):
         :return: Sound pressure level in dB
         """
         return SPL_1_max(
-            convert_float(power, 'W',
+            convert_float(power / self.aircraft.motor_prop_count, 'W',
                           'kW'), self.aircraft.propeller_radius * 2,
             tip_mach_number(self.aircraft.propeller_radius * 2,
                             self.aircraft.propeller_rotation_speed),
             self.aircraft.propeller_blade_number)
+
 
     def sound_pressure_level_1m(
         self, power: float
@@ -49,4 +54,4 @@ class NoiseModel(Model):
 if __name__ == '__main__':
     from data.literature.evtols import joby_s4
     noise_model = NoiseModel(joby_s4)
-    print(noise_model.sound_pressure_level_1m(242160))
+    print(noise_model.sound_pressure_level_1m_1engine(242160))

@@ -43,6 +43,7 @@ class Aircraft(BaseModel):
     wing: Optional[Wing] = None
 
     design_load_factor: Optional[float] = Field(1.5, ge=1)
+    takeoff_load_factor: Optional[float] = Field(1.2, ge=1)
     tail: Optional[Tail] = Field(Tail())
     fuselage: Optional[Fuselage] = Field(Fuselage())
     # propeller parameters
@@ -55,7 +56,7 @@ class Aircraft(BaseModel):
 
     # for wing loading
     estimated_CD0: Optional[float] = None
-    v_stall: Optional[float] = Field(40, gt=0)  # m/s
+    v_stall: Optional[float] = Field(21, gt=0)  # m/s
     TA: Optional[float] = None
     s_fus: Optional[float] = None
     # for hinge loading

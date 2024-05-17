@@ -18,7 +18,7 @@ def SPL_1_max(engine_power: float,
     :return: Sound pressure level in dB
     """
     return (+83.4 + 15.3 * log10(engine_power) - 20.0 * log10(prop_diameter) +
-            38.5 * log10(tip_mach_number) - 3 * (propeller_blade_number - 2) +
+            38.5 * tip_mach_number - 3 * (propeller_blade_number - 2) +
             10 * log10(propeller_number))
 
 

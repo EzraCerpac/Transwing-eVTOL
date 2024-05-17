@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from data.concept_parameters.aircraft import Aircraft
 from data.concept_parameters.concepts import all_concepts
 from sizing_tools.mass_model.iteration import Iteration
+from sizing_tools.noise import NoiseModel
 from utility.plotting import show
 from utility.plotting.helper import pct_func_energy
 
@@ -48,3 +49,4 @@ if __name__ == '__main__':
     for concept in all_concepts:
         concept = Iteration(concept).fixed_point_iteration()
         plot_energy_distribution_per_phase(concept)
+

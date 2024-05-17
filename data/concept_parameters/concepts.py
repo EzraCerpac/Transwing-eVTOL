@@ -15,7 +15,7 @@ concept_C1_5 = Aircraft(name="Concept C1.5 (Fixed Wing)",
                             maximum_section_perimeter=1.5,
                         ),
                         estimated_CD0=0.04,
-                        s_fus=12.5,
+                        s_fus=6,
                         TA=400)
 
 concept_C2_1 = Aircraft(name="Concept C2.1 (Pterodynamics)",
@@ -42,14 +42,14 @@ concept_C2_6 = Aircraft(name="Concept C2.6 (Folding Wing)",
                         propeller_blade_number=5,
                         wing=Wing(
                             area=20,
-                            span=10,
+                            span=12,
                         ),
                         fuselage=Fuselage(
-                            length=8,
-                            maximum_section_perimeter=2.5,
+                            length=4,
+                            maximum_section_perimeter=1.5,
                         ),
                         estimated_CD0=0.035,
-                        s_fus=12.5,
+                        s_fus=6,
                         TA=400)
 
 concept_C2_10 = Aircraft(
@@ -64,11 +64,11 @@ concept_C2_10 = Aircraft(
         span=8,
     ),
     fuselage=Fuselage(
-        length=8.5,
-        maximum_section_perimeter=2.5,
+        length=8,
+        maximum_section_perimeter=1.5,
     ),
     estimated_CD0=0.04,
-    s_fus=12.5,
+    s_fus=12,
     TA=400)
 
 all_concepts = [concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10]
