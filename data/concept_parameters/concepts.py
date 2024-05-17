@@ -4,7 +4,7 @@ from data.concept_parameters.aircraft_components import Fuselage, Wing
 concept_C1_5 = Aircraft(name="Concept C1.5 (Fixed Wing)",
                         motor_prop_count=4,
                         motor_wing_count=0,
-                        propeller_radius=1.25,
+                        propeller_radius=1,
                         propeller_blade_number=4,
                         wing=Wing(
                             area=20,
@@ -21,7 +21,7 @@ concept_C1_5 = Aircraft(name="Concept C1.5 (Fixed Wing)",
 concept_C2_1 = Aircraft(name="Concept C2.1 (Pterodynamics)",
                         motor_prop_count=4,
                         motor_wing_count=4,
-                        propeller_radius=1.25,
+                        propeller_radius=0.75,
                         propeller_blade_number=4,
                         wing=Wing(
                             area=20,
@@ -36,10 +36,10 @@ concept_C2_1 = Aircraft(name="Concept C2.1 (Pterodynamics)",
                         TA=400)
 
 concept_C2_6 = Aircraft(name="Concept C2.6 (Folding Wing)",
-                        motor_prop_count=6,
+                        motor_prop_count=4,
                         motor_wing_count=4,
                         propeller_radius=0.75,
-                        propeller_blade_number=4,
+                        propeller_blade_number=5,
                         wing=Wing(
                             area=20,
                             span=10,
@@ -55,7 +55,7 @@ concept_C2_6 = Aircraft(name="Concept C2.6 (Folding Wing)",
 concept_C2_10 = Aircraft(
     # modeled as a 3 prop aircraft, but model doesn't account for this design yet
     name="Concept C2.10 (Tomaso)",
-    motor_prop_count=3,
+    motor_prop_count=4,
     motor_wing_count=0,
     propeller_radius=1,
     propeller_blade_number=2,
@@ -70,6 +70,8 @@ concept_C2_10 = Aircraft(
     estimated_CD0=0.04,
     sref=20,
     TA=400)
+
+all_concepts = [concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10]
 
 example_cg_dict = {
     'payload': 0.5,
