@@ -14,7 +14,8 @@ from utility.plotting import show
 
 class Iteration(Model):
 
-    def __init__(self, aircraft: Aircraft):
+    def __init__(self, aircraft: Aircraft, initial_guess: float = 1500):
+        aircraft.total_mass = initial_guess
         super().__init__(aircraft)
         self.aircraft_list = []
 
@@ -50,7 +51,7 @@ class Iteration(Model):
             if abs(self.aircraft.total_mass - old_total_mass) < tolerance:
                 ClassIIModel(self.aircraft).mass_breakdown()
                 break
-        return self.aircraft, class1_powers, class2_powers
+        return self.aircraft
 
     @show
     def plot_iteration_data(self) -> tuple[plt.Figure, plt.Axes]:
@@ -75,7 +76,6 @@ class Iteration(Model):
 if __name__ == '__main__':
     # all_concepts.append(joby_s4)
     for concept in all_concepts:
-        concept.total_mass = 2150  # kg
         iteration = Iteration(concept)
         concept, powers1, powers2 = iteration.fixed_point_iteration()
         #

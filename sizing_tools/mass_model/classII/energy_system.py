@@ -30,7 +30,6 @@ class EnergySystemMassModel(MassModel):
         for phase in self.mission_profile.phases.values():
             phase.energy = self._power(phase) * phase.duration
             total_energy += phase.energy
-        self.mission_profile.energy = total_energy
         return total_energy
 
     def total_mass(self, **kwargs) -> float:

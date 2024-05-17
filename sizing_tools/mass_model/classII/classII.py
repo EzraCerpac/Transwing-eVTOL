@@ -10,6 +10,7 @@ from sizing_tools.mass_model.classII.airframe import AirframeMassModel
 from sizing_tools.mass_model.classII.energy_system import EnergySystemMassModel
 from sizing_tools.mass_model.mass_model import MassModel
 from sizing_tools.mass_model.classII.propulsion_system import PropulsionSystemMassModel
+from utility.plotting.helper import pct_func_mass
 from utility.log import logger
 from utility.plotting.plot_functions import show, save_with_name
 
@@ -121,7 +122,8 @@ class ClassIIModel(MassModel):
             major_masses.values(),
             labels=major_masses.keys(),
             startangle=0,
-            autopct=lambda pct: _func(pct, list(major_masses.values())))
+            autopct=lambda pct: pct_func_mass(pct, list(major_masses.values())
+                                              ))
         wedges2, texts2 = ax.pie(sub_masses.values(), startangle=0, radius=0.5)
         wedges2[0].set_visible(False)
         wedges2[1].set_visible(False)
@@ -161,11 +163,6 @@ class ClassIIModel(MassModel):
         plt.setp(autotexts1, size=8, weight="bold")
         ax.set_title(f'Mass Breakdown of {self.aircraft.name}')
         return fig, ax
-
-
-def _func(pct, allvalues: list[float]) -> str:
-    mass = pct / 100. * sum(allvalues)
-    return "{:.1f}%\n({:.1f} kg)".format(pct, mass)
 
 
 def concept_iteration(concepts: list[Aircraft]):
