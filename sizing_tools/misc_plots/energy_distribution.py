@@ -49,4 +49,3 @@ if __name__ == '__main__':
     for concept in all_concepts:
         concept = Iteration(concept).fixed_point_iteration()
         plot_energy_distribution_per_phase(concept)
-
