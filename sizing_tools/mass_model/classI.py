@@ -6,6 +6,7 @@ from scipy.constants import g
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
+parent_dir = os.path.dirname(parent_dir)
 sys.path.append(parent_dir)
 
 from sizing_tools.model import Model
@@ -65,9 +66,9 @@ class ClassIModel(Model):
         self.aircraft.wing.area = self.aircraft.total_mass * g / w_s_min
         return w_s_min
 
-    def ver_climb(self, T_A, Sref_Sw):
+    def ver_climb(self, ws, T_A, Sref_Sw):
         T_W = 1.2 * (
-            1 + 1 / (np.arange(1, 2000)) * self.rho * self.aircraft.
+            1 + 1 / ws * self.rho * self.aircraft.
             mission_profile.phases[Phase.CLIMB].vertical_speed**2 * Sref_Sw)
         P_W = (T_W * (1 / (self.aircraft.figure_of_merit *
                            self.aircraft.propulsion_efficiency)) *
@@ -87,6 +88,13 @@ class ClassIModel(Model):
             np.sqrt(2 * np.arange(1, 2000) / self.rho))**-1
         return W_P
 
+    def output(self):
+        ws_output = self.w_s_stall_speed()
+        wp_output = self.ver_climb(ws_output, concept.TA, concept.sref / concept.wing.area)
+        self.aircraft.wing.area = g*self.aircraft.total_mass/ws_output
+        logger.debug(self.aircraft.wing.area)
+        return self.aircraft.wing.area
+
     @show
     @save
     def plot_wp_ws(self, concept) -> tuple[plt.Figure, plt.Axes]:
@@ -96,7 +104,7 @@ class ClassIModel(Model):
         plt.axvline(x=self.w_s_stall_speed(), label=' Stall Speed')
         plt.plot(xx, self._wp(xx), label='Cruise')
         plt.plot(xx,
-                 self.ver_climb(concept.TA, concept.sref / concept.wing.area),
+                 self.ver_climb((np.arange(1, 2000)),concept.TA, concept.sref / concept.wing.area),
                  label='Vertical Climb')
         plt.plot(xx, self.steady_climb(), label='Cruise Climb')
         plt.xlabel('W/S')
@@ -109,5 +117,8 @@ if __name__ == '__main__':
     from data.concept_parameters.concepts import concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10
 
     for concept in [concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10]:
+        concept.total_mass = 2150
         wing_loading = ClassIModel(concept)
         wing_loading.plot_wp_ws(concept)
+
+    
