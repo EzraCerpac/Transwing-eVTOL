@@ -21,6 +21,8 @@ from utility.plotting import show, save
 from data.concept_parameters.aircraft import Aircraft
 from utility.log import logger
 
+LOAD_FACTOR = 1.2
+
 
 class ClassIModel(Model):
 
@@ -66,14 +68,16 @@ class ClassIModel(Model):
         self.aircraft.wing.area = self.aircraft.total_mass * g / w_s_min
         return w_s_min
 
-    def ver_climb(self, ws, T_A, Sref_Sw):
-        T_W = 1.2 * (
-            1 + 1 / ws * self.rho * self.aircraft.
-            mission_profile.phases[Phase.CLIMB].vertical_speed**2 * Sref_Sw)
-        P_W = (T_W * (1 / (self.aircraft.figure_of_merit *
-                           self.aircraft.propulsion_efficiency)) *
-               np.sqrt(T_A / (2 * self.rho)))**(-1)
-        return P_W
+    def ver_climb(self):
+        T_over_W = LOAD_FACTOR * (
+            1 + 1 / (np.arange(1, 2000)) * self.rho *
+            self.aircraft.mission_profile.phases[Phase.CLIMB].vertical_speed**2
+            * self.aircraft.sref / self.aircraft.wing.area)
+        W_over_p = 1 / (T_over_W * (1 /
+                                    (self.aircraft.figure_of_merit *
+                                     self.aircraft.propulsion_efficiency)) *
+                        np.sqrt(self.aircraft.TA / (2 * self.rho)))
+        return W_over_p
 
     def steady_climb(self):
         c_l_opt = C_L_climb_opt(self.aircraft.estimated_CD0,
@@ -97,15 +101,13 @@ class ClassIModel(Model):
 
     @show
     @save
-    def plot_wp_ws(self, concept) -> tuple[plt.Figure, plt.Axes]:
+    def plot_wp_ws(self, concept: Aircraft) -> tuple[plt.Figure, plt.Axes]:
         fig, ax = plt.subplots()
         xx = np.arange(1, 2000)
 
         plt.axvline(x=self.w_s_stall_speed(), label=' Stall Speed')
         plt.plot(xx, self._wp(xx), label='Cruise')
-        plt.plot(xx,
-                 self.ver_climb((np.arange(1, 2000)),concept.TA, concept.sref / concept.wing.area),
-                 label='Vertical Climb')
+        plt.plot(xx, self.ver_climb(), label='Vertical Climb')
         plt.plot(xx, self.steady_climb(), label='Cruise Climb')
         plt.xlabel('W/S')
         plt.ylabel('W/P')
