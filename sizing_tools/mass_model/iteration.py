@@ -44,3 +44,4 @@ if __name__ == '__main__':
     concept.total_mass = 2150  # kg
     concept = Iteration(concept).fixed_point_iteration()
     logger.info(concept.mass_breakdown)
+    logger.info(ClassIModel(concept).w_s_stall_speed())
