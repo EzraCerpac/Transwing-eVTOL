@@ -125,5 +125,3 @@ if __name__ == '__main__':
         concept.total_mass = 2150
         wing_loading = ClassIModel(concept)
         wing_loading.plot_wp_ws(concept)
-
-    
