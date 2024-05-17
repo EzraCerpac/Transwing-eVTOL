@@ -36,7 +36,6 @@ class ClassIModel(Model):
         self.rho = self.atmosphere.density()
         self.power_setting = power_setting
         self.mtow_setting = mtow_setting
-        self.ROC_ver = 5  # vertical rate of climb
 
     @property
     def necessary_parameters(self) -> list[str]:

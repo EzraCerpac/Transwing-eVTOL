@@ -92,8 +92,7 @@ class Aircraft(BaseModel):
                 MissionPhase(
                     phase=Phase.HOVER_CLIMB,
                     duration=self.cruise_altitude / self.rate_of_climb,
-                    horizontal_speed=self.
-                    cruise_velocity,  # gets adjusted in model
+                    horizontal_speed=self.cruise_velocity,  # gets adjusted in model
                     distance=self.cruise_velocity * self.cruise_altitude /
                     self.rate_of_climb,  # gets adjusted in model
                     vertical_speed=self.rate_of_climb,
@@ -122,11 +121,11 @@ class Aircraft(BaseModel):
                     cruise_velocity,  # gets adjusted in model
                     distance=self.cruise_velocity * self.cruise_altitude /
                     self.rate_of_climb,  # gets adjusted in model
-                    vertical_speed=self.rate_of_climb,  # weird assumption
+                    vertical_speed=-self.rate_of_climb,  # weird assumption
                     ending_altitude=1.5),
                 Phase.LANDING:
                 MissionPhase(phase=Phase.LANDING,
-                             duration=0.17 * 60,
+                             duration=1 * 60,
                              horizontal_speed=0,
                              distance=0,
                              vertical_speed=0 * 60,
