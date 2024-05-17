@@ -22,6 +22,7 @@ from utility.log import logger
 
 LOAD_FACTOR = 1.2
 
+
 class ClassIModel(Model):
 
     def __init__(self,
@@ -68,10 +69,12 @@ class ClassIModel(Model):
 
     def ver_climb(self):
         T_over_W = LOAD_FACTOR * (
-                1 + 1 / (np.arange(1, 2000)) * self.rho * self.aircraft.
-                mission_profile.phases[Phase.CLIMB].vertical_speed ** 2 * self.aircraft.sref / self.aircraft.wing.area)
-        W_over_p = 1 / (T_over_W * (1 / (self.aircraft.figure_of_merit *
-                                         self.aircraft.propulsion_efficiency)) *
+            1 + 1 / (np.arange(1, 2000)) * self.rho *
+            self.aircraft.mission_profile.phases[Phase.CLIMB].vertical_speed**2
+            * self.aircraft.sref / self.aircraft.wing.area)
+        W_over_p = 1 / (T_over_W * (1 /
+                                    (self.aircraft.figure_of_merit *
+                                     self.aircraft.propulsion_efficiency)) *
                         np.sqrt(self.aircraft.TA / (2 * self.rho)))
         return W_over_p
 
@@ -96,9 +99,7 @@ class ClassIModel(Model):
 
         plt.axvline(x=self.w_s_stall_speed(), label=' Stall Speed')
         plt.plot(xx, self._wp(xx), label='Cruise')
-        plt.plot(xx,
-                 self.ver_climb(),
-                 label='Vertical Climb')
+        plt.plot(xx, self.ver_climb(), label='Vertical Climb')
         plt.plot(xx, self.steady_climb(), label='Cruise Climb')
         plt.xlabel('W/S')
         plt.ylabel('W/P')
