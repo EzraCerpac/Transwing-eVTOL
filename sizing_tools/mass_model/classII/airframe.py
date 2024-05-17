@@ -33,7 +33,7 @@ class AirframeMassModel(MassModel):
     def horizontal_tail_mass(self) -> float:
         return convert_float((3.184 * convert_float(self.initial_total_mass, 'kg', 'lbs') ** 0.887 *
                              convert_float(self.aircraft.tail.S_th, 'm^2', 'ft^2') ** 0.101 * self.aircraft.tail.AR_th **
-                             0.101) / (174.04 * convert_float(self.aircraft.tail.t_rh, 'm', 'ft') ** 0.223), 'lbs', 'kg')
+                             0.138) / (174.04 * convert_float(self.aircraft.tail.t_rh, 'm', 'ft') ** 0.223), 'lbs', 'kg')
 
     def vertical_tail_mass(self) -> float:
         return convert_float((1.68 * convert_float(self.initial_total_mass, 'kg', 'lbs') ** 0.567 *
