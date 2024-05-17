@@ -79,20 +79,6 @@ if __name__ == '__main__':
     for concept in all_concepts:
         iteration = Iteration(concept)
         concept = iteration.fixed_point_iteration()
-        #
-        # fig, ax = plt.subplots()
-        #
-        # ax.plot(powers1, label='Class I Power')
-        # ax.plot(powers2, label='Class II Power')
-        #
-        #
-        # ax.set_title(f'Iteration Data of {concept.name}')
-        # ax.set_xlabel('Iteration')
-        # ax.legend()
-        #
-        # plt.show()
-
-        # iteration.plot_iteration_data()
-        ClassIIModel(concept).plot_mass_breakdown()
+        plot_mass_breakdown(concept)
         logger.info(f"{concept.name}: {concept.total_mass:.2f} kg")
         logger.info(f"{concept.name}: {concept.wing.area:.2f} m^2")

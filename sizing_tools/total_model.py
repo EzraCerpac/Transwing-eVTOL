@@ -33,6 +33,8 @@ class TotalModel(Model):
 
 
 def main():
+    from data.literature.evtols import joby_s4
+    all_concepts.append(joby_s4)
     for concept in all_concepts:
         model = TotalModel(concept)
         model.print_results(

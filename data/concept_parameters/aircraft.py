@@ -70,6 +70,18 @@ class Aircraft(BaseModel):
         if self.propellers is None and self.motor_prop_count is not None:
             self.initialize_propellers()
 
+    def mass_breakdown_to_str(self) -> str:
+        text = ''
+        for key, value in self.mass_breakdown_dict.items():
+            if isinstance(value, dict):
+                text += f'{key.capitalize()}:\n'
+                for sub_key, sub_value in value.items():
+                    text += f'    {sub_key}: {sub_value:.2f} kg\n'
+            else:
+                text += f'{key}: {value:.2f} kg\n'
+        return f'Mass breakdown:\n{text}'
+
+
     def initialize_propellers(self):
         self.propellers = [
             Propeller(rotation_speed=self.propeller_rotation_speed,
