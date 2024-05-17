@@ -4,12 +4,13 @@ from data.concept_parameters.aircraft import Aircraft
 from data.concept_parameters.concepts import all_concepts
 from sizing_tools.mass_model.iteration import Iteration
 from sizing_tools.noise import NoiseModel
-from utility.plotting import show
+from utility.plotting import show, save_with_name
 from utility.plotting.helper import pct_func_energy
 
 
 @show
-def plot_energy_distribution_per_phase(
+@save_with_name(lambda aircraft: aircraft.name.replace(' ', '_') + '_energy_breakdown')
+def plot_energy_breakdown_per_phase(
         aircraft: Aircraft) -> tuple[plt.Figure, plt.Axes]:
     fig, ax = plt.subplots(figsize=(12, 8))
     ax.set_title('Energy distribution per phase')
@@ -48,4 +49,4 @@ def plot_energy_distribution_per_phase(
 if __name__ == '__main__':
     for concept in all_concepts:
         concept = Iteration(concept).fixed_point_iteration()
-        plot_energy_distribution_per_phase(concept)
+        plot_energy_breakdown_per_phase(concept)
