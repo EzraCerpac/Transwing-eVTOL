@@ -19,7 +19,8 @@ class EnergySystemMassModel(MassModel):
         super().__init__(aircraft, initial_total_mass)
         self.mission_profile = aircraft.mission_profile
         if self.aircraft.mission_profile.TAKEOFF.power is None:
-            self.aircraft.mission_profile.TAKEOFF.power = self._hover_power(self.aircraft.mission_profile.TAKEOFF)
+            self.aircraft.mission_profile.TAKEOFF.power = self._hover_power(
+                self.aircraft.mission_profile.TAKEOFF)
 
     @property
     def necessary_parameters(self) -> list[str]:
