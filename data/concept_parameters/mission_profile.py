@@ -8,6 +8,7 @@ from utility.unit_conversion import convert_float
 
 class Phase(Enum):
     TAKEOFF = 'takeoff'
+    HOVER_CLIMB = 'hover_climb'
     CLIMB = 'climb'
     CRUISE = 'cruise'
     DESCENT = 'descent'
