@@ -52,11 +52,11 @@ class Iteration(Model):
     def plot_iteration_data(self) -> tuple[plt.Figure, plt.Axes]:
         fig, ax = plt.subplots()
 
-        total_masses = [aircraft.total_mass for aircraft in self.aircraft_list]
-        ax.plot(total_masses, label='Total Mass [kg]')
+        # total_masses = [aircraft.total_mass for aircraft in self.aircraft_list]
+        # ax.plot(total_masses, label='Total Mass [kg]')
         #
-        # wing_areas = [aircraft.wing.area for aircraft in self.aircraft_list]
-        # ax.plot(wing_areas, label='Wing Area [m$^2$]')
+        wing_areas = [aircraft.wing.area for aircraft in self.aircraft_list]
+        ax.plot(wing_areas, label='Wing Area [m$^2$]')
 
         # takeoff_power = [aircraft.mission_profile.TAKEOFF.power for aircraft in self.aircraft_list]
         # ax.plot(takeoff_power, label='Takeoff Power [W]')
@@ -73,6 +73,6 @@ if __name__ == '__main__':
         concept.total_mass = 2150  # kg
         iteration = Iteration(concept)
         concept = iteration.fixed_point_iteration()
-        # iteration.plot_iteration_data()
-        ClassIIModel(concept).plot_mass_breakdown()
+        iteration.plot_iteration_data()
+        # ClassIIModel(concept).plot_mass_breakdown()
         logger.info(f"{concept.name}: {concept.total_mass:.2f} kg")

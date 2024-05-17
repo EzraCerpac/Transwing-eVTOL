@@ -55,7 +55,7 @@ class Aircraft(BaseModel):
 
     # for wing loading
     estimated_CD0: Optional[float] = None
-    v_stall: Optional[float] = Field(31.889, gt=0)
+    v_stall: Optional[float] = Field(40, gt=0)  # m/s
     TA: Optional[float] = None
     s_fus: Optional[float] = None
     # for hinge loading
