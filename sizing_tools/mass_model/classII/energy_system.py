@@ -44,7 +44,7 @@ class EnergySystemMassModel(MassModel):
     def _power(self, phase: MissionPhase) -> float:
         match phase.phase:
             case Phase.TAKEOFF:
-                power = self._hover_power(phase)
+                power = self.aircraft.mission_profile.TAKEOFF.power  # from Class I model
             case Phase.HOVER_CLIMB:
                 power = self._climb_power(phase)
             case Phase.CLIMB:
@@ -65,18 +65,17 @@ class EnergySystemMassModel(MassModel):
         return power
 
     def _hover_power(self, phase: MissionPhase) -> float:
-        assert phase.phase in (Phase.TAKEOFF, Phase.LANDING)
+        assert phase.phase in (Phase.TAKEOFF, Phase.LANDING, Phase.HOVER_CLIMB)
         rho = Atmosphere(altitude=phase.ending_altitude).density()
         rotor_disk_thrust = self.initial_total_mass * g  # no vertical speed
         disk_area = rotor_disk_area(self.aircraft.propeller_radius)
         self.aircraft.TA = rotor_disk_thrust / disk_area
-        return self.aircraft.mission_profile.TAKEOFF.power  # from Class I model
         return hover_power(rotor_disk_thrust, disk_area,
                            self.aircraft.figure_of_merit, rho)
 
     def _climb_power(self, phase: MissionPhase) -> float:
         assert phase.phase == Phase.HOVER_CLIMB
-        Ph = self._hover_power(self, phase)
+        Ph = self._hover_power(phase)
         roc = phase.vertical_speed
         rotor_disk_thrust = self.initial_total_mass * g
         vh = hover_velocity(Ph, rotor_disk_thrust)

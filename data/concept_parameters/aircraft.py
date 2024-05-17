@@ -90,7 +90,7 @@ class Aircraft(BaseModel):
                              ending_altitude=1.5),
                 Phase.HOVER_CLIMB:
                 MissionPhase(
-                    phase=Phase.CLIMB,
+                    phase=Phase.HOVER_CLIMB,
                     duration=self.cruise_altitude / self.rate_of_climb,
                     horizontal_speed=self.
                     cruise_velocity,  # gets adjusted in model
