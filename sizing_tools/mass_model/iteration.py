@@ -7,6 +7,7 @@ from data.concept_parameters.concepts import concept_C1_5, concept_C2_1, concept
 from data.literature.evtols import joby_s4
 from sizing_tools.mass_model.classI import ClassIModel
 from sizing_tools.mass_model.classII.classII import ClassIIModel
+from sizing_tools.misc_plots.mass_breakdown import plot_mass_breakdown
 from sizing_tools.model import Model
 from utility.log import logger
 from utility.plotting import show
@@ -93,5 +94,5 @@ if __name__ == '__main__':
 
         # iteration.plot_iteration_data()
         ClassIIModel(concept).plot_mass_breakdown()
-        # logger.info(f"{concept.name}: {concept.total_mass:.2f} kg")
-        # logger.info(f"{concept.name}: {concept.wing.mean_aerodynamic_chord:.2f} m^2")
+        logger.info(f"{concept.name}: {concept.total_mass:.2f} kg")
+        logger.info(f"{concept.name}: {concept.wing.area:.2f} m^2")

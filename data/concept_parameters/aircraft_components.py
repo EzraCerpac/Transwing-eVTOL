@@ -2,8 +2,6 @@ from typing import Optional
 
 from pydantic import BaseModel, field_validator, Field, PrivateAttr
 
-from utility.log import logger
-
 
 class Propeller(BaseModel):
     id: Optional[int | str] = None
@@ -68,7 +66,8 @@ class Aerofoil(BaseModel):
 class Wing(BaseModel):
     aerofoil: Optional[Aerofoil] = None
     oswald_efficiency_factor: Optional[float] = Field(0.85, gt=0, le=1)
-    max_area: Optional[float] = Field(30, gt=0)  # m^2
+    max_area: Optional[float] = Field(300, gt=0)  # m^2
+    max_chord: Optional[float] = Field(2, gt=0)  # m^2
 
     _area: float = PrivateAttr(None)
     _aspect_ratio: float = PrivateAttr(None)
@@ -84,15 +83,15 @@ class Wing(BaseModel):
         if value is None:
             return
         self._area = min(value, self.max_area)
+        if self._span is not None:
+            self.mean_aerodynamic_chord = self._area / self._span
+            self._aspect_ratio = self._span ** 2 / self._area
         if self._aspect_ratio is not None:
-            self._span = (self._area * self._aspect_ratio)**0.5
-            self._mean_aerodynamic_chord = self._area / self._span
+            self._span = (self._area * self._aspect_ratio) ** 0.5
+            self.mean_aerodynamic_chord = self._area / self._span
         if self._mean_aerodynamic_chord is not None:
             self._span = self._area / self._mean_aerodynamic_chord
-            self._aspect_ratio = self._span**2 / self._area
-        if self._span is not None:
-            self._mean_aerodynamic_chord = self._area / self._span
-            self._aspect_ratio = self._span**2 / self._area
+            self._aspect_ratio = self._span ** 2 / self._area
 
     @property
     def aspect_ratio(self):
@@ -104,14 +103,14 @@ class Wing(BaseModel):
             return
         self._aspect_ratio = value
         if self._area is not None:
-            self._span = (self._area * self._aspect_ratio)**0.5
-            self._mean_aerodynamic_chord = self._area / self._span
+            self._span = (self._area * self._aspect_ratio) ** 0.5
+            self.mean_aerodynamic_chord = self._area / self._span
         if self._mean_aerodynamic_chord is not None:
             self._span = self._area / self._mean_aerodynamic_chord
-            self._aspect_ratio = self._span**2 / self._area
+            self._aspect_ratio = self._span ** 2 / self._area
         if self._span is not None:
-            self._mean_aerodynamic_chord = self._area / self._span
-            self._aspect_ratio = self._span**2 / self._area
+            self.mean_aerodynamic_chord = self._area / self._span
+            self._aspect_ratio = self._span ** 2 / self._area
 
     @property
     def mean_aerodynamic_chord(self):
@@ -121,16 +120,16 @@ class Wing(BaseModel):
     def mean_aerodynamic_chord(self, value):
         if value is None:
             return
-        self._mean_aerodynamic_chord = value
+        self._mean_aerodynamic_chord = min(value, self.max_chord)
         if self._span is not None:
             self._area = self._mean_aerodynamic_chord * self._span
-            self._aspect_ratio = self._span**2 / self._area
+            self._aspect_ratio = self._span ** 2 / self._area
         if self._area is not None:
             self._span = self._area / self._mean_aerodynamic_chord
-            self._aspect_ratio = self._span**2 / self._area
+            self._aspect_ratio = self._span ** 2 / self._area
         if self._aspect_ratio is not None:
-            self._span = (self._area * self._aspect_ratio)**0.5
-            self._mean_aerodynamic_chord = self._area / self._span
+            self._span = (self._area * self._aspect_ratio) ** 0.5
+            self._area = self._mean_aerodynamic_chord * self._span
 
     @property
     def span(self):
@@ -143,13 +142,13 @@ class Wing(BaseModel):
         self._span = value
         if self._mean_aerodynamic_chord is not None:
             self._area = self._mean_aerodynamic_chord * self._span
-            self._aspect_ratio = self._span**2 / self._area
+            self._aspect_ratio = self._span ** 2 / self._area
         if self._area is not None:
-            self._mean_aerodynamic_chord = self._area / self._span
-            self._aspect_ratio = self._span**2 / self._area
+            self.mean_aerodynamic_chord = self._area / self._span
+            self._aspect_ratio = self._span ** 2 / self._area
         if self._aspect_ratio is not None:
-            self._area = self._span**2 / self._aspect_ratio
-            self._mean_aerodynamic_chord = self._area / self._span
+            self._area = self._span ** 2 / self._aspect_ratio
+            self.mean_aerodynamic_chord = self._area / self._span
 
     def __init__(self, **data):
         super().__init__(**data)
