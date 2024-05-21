@@ -27,11 +27,11 @@ def L(concept, eta: float = 0) -> tuple[float]:
     model = iteration.run()
     mass_breakdown = model.mass_breakdown
     n_design = model.design_load_factor  # [-]
-    M_fus = (mass_breakdown.mass - mass_breakdown.submasses['airframe'].submasses['wing'].mass -
-             mass_breakdown.submasses['propulsion'].mass/
-             model.motor_prop_count * (
-                model.motor_prop_count -
-                model.motor_wing_count))  # [kg]
+    M_fus = (
+        mass_breakdown.mass -
+        mass_breakdown.submasses['airframe'].submasses['wing'].mass -
+        mass_breakdown.submasses['propulsion'].mass / model.motor_prop_count *
+        (model.motor_prop_count - model.motor_wing_count))  # [kg]
     b = np.sqrt(model.wing.area * model.wing.aspect_ratio)
     lmbd = model.taper
     V = n_design * M_fus * 9.81 / b * 2 / (1 +
@@ -57,9 +57,10 @@ def W_engine(concept, eta: np.ndarray = 0) -> tuple[float]:
     model = iteration.run()
     mass_breakdown = model.mass_breakdown
 
-    M_engine = mass_breakdown.submasses['propulsion'].mass / model.motor_prop_count  #assume same
-    nr_engine_wing=model.motor_wing_count
-    if(nr_engine_wing==4):
+    M_engine = mass_breakdown.submasses[
+        'propulsion'].mass / model.motor_prop_count  #assume same
+    nr_engine_wing = model.motor_wing_count
+    if (nr_engine_wing == 4):
         l_1 = 0.3
         l_2 = 0.8
         eta1 = eta * (l_1 > eta)
@@ -76,18 +77,18 @@ def W_engine(concept, eta: np.ndarray = 0) -> tuple[float]:
 
         V = V1 + V2 + V3
         M = M1 + M2 + M3
-    elif(nr_engine_wing==2):
+    elif (nr_engine_wing == 2):
         l_1 = 0.3
         eta1 = eta * (l_1 > eta)
         V1 = -M_engine * 9.81 * (l_1 > eta)
         M1 = -((l_1 - eta)) * M_engine * 9.81 * (l_1 > eta)
         V2 = 0
         M2 = 0
-        V=V1+V2
-        M=M1+M2
+        V = V1 + V2
+        M = M1 + M2
     else:
-        V=0
-        M=0
+        V = 0
+        M = 0
     #assumption :engine contribution small so neglected. Hinge mechanism after engine so no influence on shear
 
     return V, M
@@ -119,19 +120,24 @@ if __name__ == '__main__':
     # print(get_load(concept_C2_10, 0)[0]*2, 0)
     # plt.show()
 
+
 def engine_load(concept):
     iteration = Iteration(concept)
     model = iteration.run()
     mass_breakdown = model.mass_breakdown
     n_design = model.design_load_factor  # [-]
-    M_tot=mass_breakdown.mass
-    nr_prop=model.motor_prop_count
-    V_hinge=M_tot*9.81*n_design/nr_prop
-    if concept==concept_C2_1:
-        V_hinge=(V_hinge*2-mass_breakdown.submasses['airframe'].submasses['wing'].mass*9.81/2
-                 -mass_breakdown.submasses['propulsion'].mass*9.81/2
-                 -mass_breakdown.submasses['battery'].mass*9.81/2)
+    M_tot = mass_breakdown.mass
+    nr_prop = model.motor_prop_count
+    V_hinge = M_tot * 9.81 * n_design / nr_prop
+    if concept == concept_C2_1:
+        V_hinge = (
+            V_hinge * 2 -
+            mass_breakdown.submasses['airframe'].submasses['wing'].mass *
+            9.81 / 2 - mass_breakdown.submasses['propulsion'].mass * 9.81 / 2 -
+            mass_breakdown.submasses['battery'].mass * 9.81 / 2)
     return V_hinge
+
+
 # print(engine_load(concept_C1_5))
 # print("Concept C1_5 has no moment due to hinge")
 # print(engine_load(concept_C2_6))
