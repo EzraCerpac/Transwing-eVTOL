@@ -27,6 +27,7 @@ class TotalModel(Model):
         mass_breakdown: bool = False,
         energy_breakdown: bool = False,
         hinge_loading: bool = False,
+        class1_diagram: bool = False,
     ):
         print(f"Concept: {self.aircraft.name}")
         print(f"Total Mass: {self.class_I_II_iteration():.2f} kg")
@@ -40,6 +41,8 @@ class TotalModel(Model):
         print(f"Hinge Load: {self.aircraft.hinge_load:.2f} N")
         print(f"Hinge Moment: {self.aircraft.hinge_moment:.2f} Nm")
         print("\n")
+        if class1_diagram:
+            ClassIModel(self.aircraft).plot_wp_ws()
         if mass_breakdown:
             plot_mass_breakdown(self.aircraft)
         if energy_breakdown:
@@ -53,7 +56,8 @@ def main():
         model = TotalModel(concept)
         model.print_results(mass_breakdown=False,
                             energy_breakdown=False,
-                            hinge_loading=True)
+                            hinge_loading=False,
+                            class1_diagram=True)
 
 
 if __name__ == '__main__':

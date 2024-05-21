@@ -99,7 +99,7 @@ class ClassIModel(Model):
 
     @show
     @save
-    def plot_wp_ws(self, concept: Aircraft) -> tuple[plt.Figure, plt.Axes]:
+    def plot_wp_ws(self) -> tuple[plt.Figure, plt.Axes]:
         fig, ax = plt.subplots()
         xx = np.arange(1, 2000)
 
