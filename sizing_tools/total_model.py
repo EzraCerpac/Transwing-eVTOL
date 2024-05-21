@@ -30,6 +30,7 @@ class TotalModel(Model):
         print(
             f"Takeoff Power: {self.aircraft.mission_profile.TAKEOFF.power/1000:.2f} kW"
         )
+        # print(f"Cruise Velocity: {self.aircraft.mission_profile.CRUISE.horizontal_speed:.2f} m/s")
         print("\n")
         if mass_breakdown:
             plot_mass_breakdown(self.aircraft)

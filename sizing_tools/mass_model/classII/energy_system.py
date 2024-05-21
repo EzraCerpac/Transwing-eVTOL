@@ -123,8 +123,9 @@ class EnergySystemMassModel(MassModel):
         D = drag(C_D, rho, velocity, self.aircraft.wing.area)
         return power_required(D, velocity, self.aircraft.propulsion_efficiency)
 
-    def _cruise_power_fixed_velocity(self, phase: MissionPhase) -> float:
+    def _cruise_power_fixed_velocity(self, phase: MissionPhase, velocity: float = None) -> float:
         assert phase.phase == Phase.CRUISE
+        phase.horizontal_speed = velocity if velocity else self.aircraft.cruise_velocity
         rho = Atmosphere(altitude=phase.ending_altitude).density()
         L = self.initial_total_mass * g
         self.C_L = phase.C_L = C_L_from_lift(L, rho, phase.horizontal_speed,
