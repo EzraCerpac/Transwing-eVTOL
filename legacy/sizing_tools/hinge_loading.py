@@ -144,8 +144,17 @@ def engine_load(concept):
 # print("Concept C2_6 moment max is " ,engine_load(concept_C2_6))
 # print("Load in VTOL phase on hinge is " ,engine_load(concept_C2_1))
 # print("Concept C2_10 has no hinges on engines")
-concept=concept_C1_5
-logger.info([max(get_load(concept,0.66)[0],engine_load(concept_C1_5)),get_load(concept,0.66)[1]])
-logger.info([max(get_load(concept_C2_1,0.15)[0],engine_load(concept_C2_1)),get_load(concept_C2_1,0.15)[1]])
-logger.info([max(get_load(concept_C2_6,0.66)[0],engine_load(concept_C2_6)),max(get_load(concept_C2_6,0.66)[1],engine_load(concept_C2_6))])
-logger.info([max(get_load(concept_C2_10,0)[0]*2,0),0])
+concept = concept_C1_5
+logger.info([
+    max(get_load(concept, 0.66)[0], engine_load(concept_C1_5)),
+    get_load(concept, 0.66)[1]
+])
+logger.info([
+    max(get_load(concept_C2_1, 0.15)[0], engine_load(concept_C2_1)),
+    get_load(concept_C2_1, 0.15)[1]
+])
+logger.info([
+    max(get_load(concept_C2_6, 0.66)[0], engine_load(concept_C2_6)),
+    max(get_load(concept_C2_6, 0.66)[1], engine_load(concept_C2_6))
+])
+logger.info([max(get_load(concept_C2_10, 0)[0] * 2, 0), 0])

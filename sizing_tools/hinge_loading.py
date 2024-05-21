@@ -9,6 +9,7 @@ from utility.log import logger
 
 
 class HingeLoadingModel(Model):
+
     def __init__(self, aircraft: Aircraft):
         super().__init__(aircraft)
 
@@ -32,15 +33,17 @@ class HingeLoadingModel(Model):
                             self.aircraft.mass_breakdown.propulsion.mass / self.aircraft.motor_prop_count * (
                                     self.aircraft.motor_prop_count - self.aircraft.motor_wing_count)
         V = self.aircraft.design_load_factor * mass_without_wing * g / self.aircraft.wing.span * 2 / (
-                1 + self.aircraft.taper) * self.aircraft.wing.span / 2 * (1 - eta + (self.aircraft.taper - 1) * 0.5 *
-                                                                          (1 - eta ** 2))
+            1 + self.aircraft.taper) * self.aircraft.wing.span / 2 * (
+                1 - eta + (self.aircraft.taper - 1) * 0.5 * (1 - eta**2))
         M = self.aircraft.design_load_factor * mass_without_wing * g / self.aircraft.wing.span * 2 / (
-                1 + self.aircraft.taper) * (self.aircraft.wing.span / 2) ** 2 * (
-                    1 - eta - 0.5 * (1 - eta ** 2) + (self.aircraft.taper - 1) * 0.5 * (
-                    1 - eta - 1 / 3 * (1 - eta ** 3)))
+            1 + self.aircraft.taper) * (self.aircraft.wing.span / 2)**2 * (
+                1 - eta - 0.5 * (1 - eta**2) +
+                (self.aircraft.taper - 1) * 0.5 * (1 - eta - 1 / 3 *
+                                                   (1 - eta**3)))
         return V, M
 
-    def W_engine(self, eta: float | np.ndarray = 0) -> tuple[float | np.ndarray]:
+    def W_engine(self,
+                 eta: float | np.ndarray = 0) -> tuple[float | np.ndarray]:
         """
 
         :param eta:
@@ -55,7 +58,8 @@ class HingeLoadingModel(Model):
 
         if self.aircraft.motor_wing_count == 4:
             V1 = -2 * mass_engine_and_prop * g * (l_1 > eta)
-            M1 = -((l_1 - eta) + (l_2 - eta)) * mass_engine_and_prop * g * (l_1 > eta)
+            M1 = -((l_1 - eta) +
+                   (l_2 - eta)) * mass_engine_and_prop * g * (l_1 > eta)
 
             V2 = -mass_engine_and_prop * g * l__
             M2 = -mass_engine_and_prop * g * (l_2 - eta) * l__
@@ -80,20 +84,23 @@ class HingeLoadingModel(Model):
             V = 0
             M = 0
         else:
-            logger.error(f"Unsupported number of engines on wing: {self.aircraft.motor_wing_count}")
+            logger.error(
+                f"Unsupported number of engines on wing: {self.aircraft.motor_wing_count}"
+            )
         return V, M
 
-    def engine_load(self) -> float:  # no idea why this is different from W_engine
+    def engine_load(
+            self) -> float:  # no idea why this is different from W_engine
         V_hinge = self.aircraft.total_mass * g * self.aircraft.design_load_factor / self.aircraft.motor_prop_count
         if self.aircraft == concept_C2_1:
             V_hinge = V_hinge * 2 - (
-                    self.aircraft.mass_breakdown.airframe.wing.mass
-                    + self.aircraft.mass_breakdown.propulsion.mass
-                    + self.aircraft.mass_breakdown.battery.mass
-            ) * g / 2
+                self.aircraft.mass_breakdown.airframe.wing.mass +
+                self.aircraft.mass_breakdown.propulsion.mass +
+                self.aircraft.mass_breakdown.battery.mass) * g / 2
         return V_hinge
 
-    def get_load(self, eta: float | np.ndarray = None) -> tuple[float | np.ndarray]:
+    def get_load(self,
+                 eta: float | np.ndarray = None) -> tuple[float | np.ndarray]:
         """
 
         :param eta:
