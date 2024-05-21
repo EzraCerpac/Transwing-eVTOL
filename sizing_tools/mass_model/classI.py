@@ -99,8 +99,8 @@ class ClassIModel(Model):
 
     @show
     @save
-    def plot_wp_ws(self, concept: Aircraft) -> tuple[plt.Figure, plt.Axes]:
-        fig, ax = plt.subplots()
+    def plot_wp_ws(self) -> tuple[plt.Figure, plt.Axes]:
+        fig, ax = plt.subplots(figsize=(10, 6))
         xx = np.arange(1, 2000)
 
         plt.axvline(x=self.w_s_stall_speed(), label=' Stall Speed')
