@@ -22,11 +22,12 @@ class TotalModel(Model):
     def class_I_II_iteration(self) -> float:
         return Iteration(self.aircraft).run().total_mass
 
-    def print_results(self,
-                      mass_breakdown: bool = False,
-                      energy_breakdown: bool = False,
-                      hinge_loading: bool = False,
-                      ):
+    def print_results(
+        self,
+        mass_breakdown: bool = False,
+        energy_breakdown: bool = False,
+        hinge_loading: bool = False,
+    ):
         print(f"Concept: {self.aircraft.name}")
         print(f"Total Mass: {self.class_I_II_iteration():.2f} kg")
         print(
@@ -50,11 +51,9 @@ class TotalModel(Model):
 def main():
     for concept in all_concepts:
         model = TotalModel(concept)
-        model.print_results(
-            mass_breakdown=False,
-            energy_breakdown=False,
-            hinge_loading=True
-        )
+        model.print_results(mass_breakdown=False,
+                            energy_breakdown=False,
+                            hinge_loading=True)
 
 
 if __name__ == '__main__':
