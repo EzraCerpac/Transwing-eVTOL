@@ -62,6 +62,9 @@ class Aircraft(BaseModel):
     s_fus: Optional[float] = None
     # for hinge loading
     taper: Optional[float] = Field(0.4, gt=0)
+    hinge_location: Optional[float] = Field(None, ge=0)
+    hinge_load: Optional[float] = None
+    hinge_moment: Optional[float] = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -165,8 +168,11 @@ class Aircraft(BaseModel):
             raise ValueError('Parameter must be less than 1')
         return v
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'Aircraft(name={self.name})'
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.name)
+
+    def __eq__(self, other) -> bool:
+        return self.name == other.name

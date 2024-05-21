@@ -2,6 +2,8 @@ import numpy as np
 import os
 import sys
 
+from utility.log import logger
+
 curreent_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(curreent_dir)
 sys.path.append(parent_dir)
@@ -22,7 +24,7 @@ def L(concept, eta: float = 0) -> tuple[float]:
         tuple[float]: _description_
     """
     iteration = Iteration(concept)
-    model = iteration.fixed_point_iteration()
+    model = iteration.run()
     mass_breakdown = model.mass_breakdown
     n_design = model.design_load_factor  # [-]
     M_fus = (mass_breakdown.mass - mass_breakdown.submasses['airframe'].submasses['wing'].mass -
@@ -52,7 +54,7 @@ def W_engine(concept, eta: np.ndarray = 0) -> tuple[float]:
         tuple[float]: _description_
     """
     iteration = Iteration(concept)
-    model = iteration.fixed_point_iteration()
+    model = iteration.run()
     mass_breakdown = model.mass_breakdown
 
     M_engine = mass_breakdown.submasses['propulsion'].mass / model.motor_prop_count  #assume same
@@ -119,7 +121,7 @@ if __name__ == '__main__':
 
 def engine_load(concept):
     iteration = Iteration(concept)
-    model = iteration.fixed_point_iteration()
+    model = iteration.run()
     mass_breakdown = model.mass_breakdown
     n_design = model.design_load_factor  # [-]
     M_tot=mass_breakdown.mass
@@ -137,7 +139,7 @@ def engine_load(concept):
 # print("Load in VTOL phase on hinge is " ,engine_load(concept_C2_1))
 # print("Concept C2_10 has no hinges on engines")
 concept=concept_C1_5
-print([max(get_load(concept,0.66)[0],engine_load(concept_C1_5)),get_load(concept,0.66)[1]])
-print([max(get_load(concept_C2_1,0.15)[0],engine_load(concept_C2_1)),get_load(concept_C2_1,0.15)[1]])
-print([max(get_load(concept_C2_6,0.66)[0],engine_load(concept_C2_6)),max(get_load(concept_C2_6,0.66)[1],engine_load(concept_C2_6))])
-print([max(get_load(concept_C2_10,0)[0]*2,0),0])
+logger.info([max(get_load(concept,0.66)[0],engine_load(concept_C1_5)),get_load(concept,0.66)[1]])
+logger.info([max(get_load(concept_C2_1,0.15)[0],engine_load(concept_C2_1)),get_load(concept_C2_1,0.15)[1]])
+logger.info([max(get_load(concept_C2_6,0.66)[0],engine_load(concept_C2_6)),max(get_load(concept_C2_6,0.66)[1],engine_load(concept_C2_6))])
+logger.info([max(get_load(concept_C2_10,0)[0]*2,0),0])

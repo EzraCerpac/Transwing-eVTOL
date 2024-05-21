@@ -33,9 +33,9 @@ class Iteration(Model):
             'total_mass',
         ]
 
-    def fixed_point_iteration(self,
-                              tolerance: float = 1e-6,
-                              max_iterations: int = 100) -> Aircraft:
+    def run(self,
+            tolerance: float = 1e-6,
+            max_iterations: int = 100) -> Aircraft:
         logger.debug('Starting fixed point iteration')
         self.aircraft_list = []
         class1_powers = []
@@ -78,7 +78,7 @@ if __name__ == '__main__':
     # all_concepts.append(joby_s4)
     for concept in all_concepts:
         iteration = Iteration(concept)
-        concept = iteration.fixed_point_iteration()
+        concept = iteration.run()
         plot_mass_breakdown(concept)
         logger.info(f"{concept.name}: {concept.total_mass:.2f} kg")
         logger.info(f"{concept.name}: {concept.wing.area:.2f} m^2")

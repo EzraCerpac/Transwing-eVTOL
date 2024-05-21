@@ -49,5 +49,5 @@ def plot_energy_breakdown_per_phase(
 
 if __name__ == '__main__':
     for concept in all_concepts:
-        concept = Iteration(concept).fixed_point_iteration()
+        concept = Iteration(concept).run()
         plot_energy_breakdown_per_phase(concept)
