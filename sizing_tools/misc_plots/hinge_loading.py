@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from data.concept_parameters.aircraft import Aircraft
-from sizing_tools.hinge_loading_model import HingeLoadingModel
+from sizing_tools.hinge_loading import HingeLoadingModel
 from utility.plotting import show, save_with_name
 
 

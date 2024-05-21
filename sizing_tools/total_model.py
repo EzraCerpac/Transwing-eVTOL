@@ -1,6 +1,6 @@
 from data.concept_parameters.aircraft import Aircraft
 from data.concept_parameters.concepts import all_concepts
-from sizing_tools.hinge_loading_model import HingeLoadingModel
+from sizing_tools.hinge_loading import HingeLoadingModel
 from sizing_tools.mass_model.classI import ClassIModel
 from sizing_tools.mass_model.iteration import Iteration
 from sizing_tools.misc_plots.energy_distribution import plot_energy_breakdown_per_phase
