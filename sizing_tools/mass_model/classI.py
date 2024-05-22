@@ -103,7 +103,7 @@ class ClassIModel(Model):
         fig, ax = plt.subplots(figsize=(10, 6))
         xx = np.arange(1, 2000)
 
-        plt.axvline(x=self.w_s_stall_speed(), label=' Stall Speed')
+        plt.axvline(x=self.w_s_stall_speed(), label='Stall Speed')
         plt.plot(xx, self._wp(xx), label='Cruise')
         plt.plot(xx, self.ver_climb(xx), label='Vertical Climb')
         plt.plot(xx, self.steady_climb(), label='Cruise Climb')
