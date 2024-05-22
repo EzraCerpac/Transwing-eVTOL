@@ -9,8 +9,7 @@ from utility.plotting.helper import pct_func_energy
 
 
 @show
-@save_with_name(
-    lambda aircraft: aircraft.name + '_energy_breakdown')
+@save_with_name(lambda aircraft: aircraft.name + '_energy_breakdown')
 def plot_energy_breakdown_per_phase(
         aircraft: Aircraft) -> tuple[plt.Figure, plt.Axes]:
     fig, ax = plt.subplots(figsize=(12, 8))

@@ -8,8 +8,7 @@ from utility.plotting.helper import pct_func_mass
 
 
 @show
-@save_with_name(
-    lambda aircraft: aircraft.name + '_mass_breakdown')
+@save_with_name(lambda aircraft: aircraft.name + '_mass_breakdown')
 def plot_mass_breakdown(aircraft: Aircraft) -> tuple[plt.Figure, plt.Axes]:
     fig, ax = plt.subplots(figsize=(10, 8))
     breakdown = aircraft.mass_breakdown_dict
