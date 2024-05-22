@@ -61,7 +61,7 @@ class ClassIModel(Model):
         return wp
 
     def w_s_stall_speed(self):
-        w_s_min = 0.5 * self.aircraft.v_stall ** 2 * self.rho * C_L_MAX
+        w_s_min = 0.5 * self.aircraft.v_stall**2 * self.rho * C_L_MAX
         self.aircraft.wing.area = self.aircraft.total_mass * g / w_s_min
         return w_s_min
 
@@ -99,8 +99,8 @@ class ClassIModel(Model):
 
     @show
     @save
-    def plot_wp_ws(self, concept: Aircraft) -> tuple[plt.Figure, plt.Axes]:
-        fig, ax = plt.subplots()
+    def plot_wp_ws(self) -> tuple[plt.Figure, plt.Axes]:
+        fig, ax = plt.subplots(figsize=(10, 6))
         xx = np.arange(1, 2000)
 
         plt.axvline(x=self.w_s_stall_speed(), label=' Stall Speed')

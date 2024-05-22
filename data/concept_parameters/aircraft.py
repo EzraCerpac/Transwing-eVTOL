@@ -12,6 +12,7 @@ class Aircraft(BaseModel):
     name: Optional[str] = Field('Aircraft', min_length=1)
 
     mass_breakdown: Optional[MassObject] = None
+    mass_breakdown_dict: Optional[dict[str, float | dict[str, float]]] = None
 
     # Default values
     cruise_velocity: Optional[float] = Field(convert_float(200, 'km/h', 'm/s'),
@@ -56,11 +57,14 @@ class Aircraft(BaseModel):
 
     # for wing loading
     estimated_CD0: Optional[float] = None
-    v_stall: Optional[float] = Field(21, gt=0)  # m/s
+    v_stall: Optional[float] = Field(30, gt=0)  # m/s
     TA: Optional[float] = None
     s_fus: Optional[float] = None
     # for hinge loading
     taper: Optional[float] = Field(0.4, gt=0)
+    hinge_location: Optional[float] = Field(None, ge=0)
+    hinge_load: Optional[float] = None
+    hinge_moment: Optional[float] = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -68,6 +72,17 @@ class Aircraft(BaseModel):
             self.initialize_default_mission_profile()
         if self.propellers is None and self.motor_prop_count is not None:
             self.initialize_propellers()
+
+    def mass_breakdown_to_str(self) -> str:
+        text = ''
+        for key, value in self.mass_breakdown_dict.items():
+            if isinstance(value, dict):
+                text += f'{key.capitalize()}:\n'
+                for sub_key, sub_value in value.items():
+                    text += f'    {sub_key}: {sub_value:.2f} kg\n'
+            else:
+                text += f'{key}: {value:.2f} kg\n'
+        return f'Mass breakdown:\n{text}'
 
     def initialize_propellers(self):
         self.propellers = [
@@ -153,8 +168,11 @@ class Aircraft(BaseModel):
             raise ValueError('Parameter must be less than 1')
         return v
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'Aircraft(name={self.name})'
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.name)
+
+    def __eq__(self, other) -> bool:
+        return self.name == other.name

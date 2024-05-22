@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import Mock
-from sizing_tools.battery_mass import BatterySizing
+from legacy.sizing_tools.battery_mass import BatterySizing
 
 
 class TestBatterySizing(unittest.TestCase):

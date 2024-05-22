@@ -38,7 +38,6 @@ class NoiseModel(Model):
                             self.aircraft.propeller_rotation_speed),
             self.aircraft.propeller_blade_number)
 
-
     def sound_pressure_level_1m(
         self, power: float
     ) -> float:  # can be adapted to account for multiple engine sizes

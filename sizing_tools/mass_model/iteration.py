@@ -7,6 +7,7 @@ from data.concept_parameters.concepts import concept_C1_5, concept_C2_1, concept
 from data.literature.evtols import joby_s4
 from sizing_tools.mass_model.classI import ClassIModel
 from sizing_tools.mass_model.classII.classII import ClassIIModel
+from sizing_tools.misc_plots.mass_breakdown import plot_mass_breakdown
 from sizing_tools.model import Model
 from utility.log import logger
 from utility.plotting import show
@@ -32,9 +33,9 @@ class Iteration(Model):
             'total_mass',
         ]
 
-    def fixed_point_iteration(self,
-                              tolerance: float = 1e-6,
-                              max_iterations: int = 100) -> Aircraft:
+    def run(self,
+            tolerance: float = 1e-6,
+            max_iterations: int = 100) -> Aircraft:
         logger.debug('Starting fixed point iteration')
         self.aircraft_list = []
         class1_powers = []
@@ -77,21 +78,7 @@ if __name__ == '__main__':
     # all_concepts.append(joby_s4)
     for concept in all_concepts:
         iteration = Iteration(concept)
-        concept = iteration.fixed_point_iteration()
-        #
-        # fig, ax = plt.subplots()
-        #
-        # ax.plot(powers1, label='Class I Power')
-        # ax.plot(powers2, label='Class II Power')
-        #
-        #
-        # ax.set_title(f'Iteration Data of {concept.name}')
-        # ax.set_xlabel('Iteration')
-        # ax.legend()
-        #
-        # plt.show()
-
-        # iteration.plot_iteration_data()
-        ClassIIModel(concept).plot_mass_breakdown()
-        # logger.info(f"{concept.name}: {concept.total_mass:.2f} kg")
-        # logger.info(f"{concept.name}: {concept.wing.mean_aerodynamic_chord:.2f} m^2")
+        concept = iteration.run()
+        plot_mass_breakdown(concept)
+        logger.info(f"{concept.name}: {concept.total_mass:.2f} kg")
+        logger.info(f"{concept.name}: {concept.wing.area:.2f} m^2")
