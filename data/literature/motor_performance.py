@@ -50,9 +50,9 @@ def plot_power_over_mass_data(
 
     ax.set_xlabel("Mass (kg)")
     ax.set_ylabel("Power (kW)")
-    ax.set_title("Power vs Mass for Electric Motors")
-    ax.set_xlim(left=0)
-    ax.set_ylim(bottom=0)
+    # ax.set_title("Power vs Mass for Electric Motors")
+    ax.set_xlim(left=0, right=120)
+    ax.set_ylim(bottom=0, top=500)
     # ax.legend()
     return fig, ax
 
