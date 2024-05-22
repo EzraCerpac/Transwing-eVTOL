@@ -35,22 +35,20 @@ class Iteration(Model):
 
     def run(self,
             tolerance: float = 1e-6,
-            max_iterations: int = 100) -> Aircraft:
+            max_iterations: int = 100,
+            tol_classII: float = 1e-8,
+            max_iterations_classII: int = 500
+            ) -> Aircraft:
         logger.debug('Starting fixed point iteration')
-        self.aircraft_list = []
-        class1_powers = []
-        class2_powers = []
+        if self.aircraft.total_mass is None:
+            logger.warning(f"Total mass is not defined for {self.aircraft.id}")
+            self.aircraft.total_mass = 1500
         for i in range(max_iterations):
             logger.debug(f'Iteration {i}')
             old_total_mass = self.aircraft.total_mass
-            class1_powers.append(ClassIModel(self.aircraft).output())
-            ClassIIModel(self.aircraft).total_mass()
-            class2_powers.append(self.aircraft.mission_profile.TAKEOFF.power)
-            temp_aircraft = copy.deepcopy(self.aircraft)
-            temp_aircraft.name = f'{self.aircraft.name}, Iteration {i}'
-            self.aircraft_list.append(temp_aircraft)
+            ClassIIModel(self.aircraft).total_mass(xtol=tol_classII, maxiter=max_iterations_classII)
             if abs(self.aircraft.total_mass - old_total_mass) < tolerance:
-                ClassIIModel(self.aircraft).mass_breakdown()
+                # ClassIIModel(self.aircraft).mass_breakdown()
                 break
         return self.aircraft
 
@@ -67,7 +65,7 @@ class Iteration(Model):
         # takeoff_power = [aircraft.mission_profile.TAKEOFF.power for aircraft in self.aircraft_list]
         # ax.plot(takeoff_power, label='Takeoff Power [W]')
 
-        ax.set_title(f'Iteration Data of {self.aircraft.name}')
+        ax.set_title(f'Iteration Data of {self.aircraft.id}')
         ax.set_xlabel('Iteration')
         ax.legend()
 
@@ -80,5 +78,5 @@ if __name__ == '__main__':
         iteration = Iteration(concept)
         concept = iteration.run()
         plot_mass_breakdown(concept)
-        logger.info(f"{concept.name}: {concept.total_mass:.2f} kg")
-        logger.info(f"{concept.name}: {concept.wing.area:.2f} m^2")
+        logger.info(f"{concept.id}: {concept.total_mass:.2f} kg")
+        logger.info(f"{concept.id}: {concept.wing.area:.2f} m^2")

@@ -29,10 +29,10 @@ def plot_range_over_mass(
     fig, ax = plt.subplots(figsize=(10, 6))
 
     for i, row in df.iterrows():
-        ax.scatter(row["Mass (kg)"], row["Range (km)"], label=row["Name"])
+        ax.scatter(row["Range (km)"], row["Mass (kg)"], label=row["Name"])
 
-    ax.set_xlabel("Mass (kg)")
-    ax.set_ylabel("Range (km)")
+    ax.set_xlabel("Range (km)")
+    ax.set_ylabel("Mass (kg)")
     # ax.set_title("Range over Mass")
     # ax.legend()
     # plt.show()

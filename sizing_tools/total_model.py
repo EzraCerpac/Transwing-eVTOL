@@ -29,7 +29,7 @@ class TotalModel(Model):
         hinge_loading: bool = False,
         class1_diagram: bool = False,
     ):
-        print(f"Concept: {self.aircraft.name}")
+        print(f"Concept: {self.aircraft.id}")
         print(f"Total Mass: {self.class_I_II_iteration():.2f} kg")
         print(
             f"Total Energy: {convert_float(self.aircraft.mission_profile.energy, 'J', 'kWh'):.2f} kWh"

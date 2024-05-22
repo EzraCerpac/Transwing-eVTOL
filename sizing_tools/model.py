@@ -18,5 +18,5 @@ class Model(ABC):
         for param in self.necessary_parameters:
             if getattr(self.aircraft, param, None) is None:
                 raise ValueError(
-                    f'{param} is not set in the aircraft object, {self.aircraft.name}'
+                    f'{param} is not set in the aircraft object, {self.aircraft.id}'
                 )

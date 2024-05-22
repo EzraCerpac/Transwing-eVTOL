@@ -10,7 +10,7 @@ from utility.unit_conversion import convert_float
 
 
 @show
-@save_with_name(lambda aircraft: aircraft.name + '_energy_breakdown')
+@save_with_name(lambda aircraft: aircraft.id + '_energy_breakdown')
 def plot_energy_breakdown_per_phase(
         aircraft: Aircraft) -> tuple[plt.Figure, plt.Axes]:
     fig, ax = plt.subplots(figsize=(7, 6))

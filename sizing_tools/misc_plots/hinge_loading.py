@@ -7,7 +7,7 @@ from utility.plotting import show, save_with_name
 
 
 @show
-@save_with_name(lambda aircraft: aircraft.name + '_loading_diagram')
+@save_with_name(lambda aircraft: aircraft.id + '_loading_diagram')
 def plot_load(aircraft: Aircraft) -> tuple[plt.Figure, plt.Axes]:
     fig, ax = plt.subplots(figsize=(10, 6))
     xx = np.linspace(0, 1, 101)
