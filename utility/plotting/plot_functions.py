@@ -52,7 +52,7 @@ def save(plot_function: plotFunction,
                 )
             filename = filename.strip('plot').strip('_')
         else:
-            filename = f"{name_func(args[0])}.pdf"
+            filename = f"{name_func(args[0]).replace(' ', '_')}.pdf"
 
         full_path = file_path / filename
         fig.savefig(full_path, bbox_inches="tight")

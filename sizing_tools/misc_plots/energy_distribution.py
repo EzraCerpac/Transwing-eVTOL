@@ -6,23 +6,24 @@ from sizing_tools.mass_model.iteration import Iteration
 from sizing_tools.noise import NoiseModel
 from utility.plotting import show, save_with_name
 from utility.plotting.helper import pct_func_energy
+from utility.unit_conversion import convert_float
 
 
 @show
-@save_with_name(
-    lambda aircraft: aircraft.name.replace(' ', '_') + '_energy_breakdown')
+@save_with_name(lambda aircraft: aircraft.name + '_energy_breakdown')
 def plot_energy_breakdown_per_phase(
         aircraft: Aircraft) -> tuple[plt.Figure, plt.Axes]:
-    fig, ax = plt.subplots(figsize=(12, 8))
-    ax.set_title('Energy distribution per phase')
+    fig, ax = plt.subplots(figsize=(7, 6))
 
     # Prepare data for pie chart
     energies = [
         phase.energy for phase in aircraft.mission_profile.phases.values()
+        if phase.energy > 0
     ]
     labels = [
-        phase.phase.value
+        phase.phase.value.replace('_', ' ').capitalize()
         for phase in aircraft.mission_profile.phases.values()
+        if phase.energy > 0
     ]
 
     # Create pie chart
@@ -30,19 +31,20 @@ def plot_energy_breakdown_per_phase(
         energies,
         labels=labels,
         autopct=lambda pct: pct_func_energy(pct, energies))
-    ax.text(0.5,
-            0.5,
-            f'Total Energy\n{aircraft.mission_profile.energy/3600:.2f} kWh',
-            horizontalalignment='center',
-            verticalalignment='center',
-            transform=ax.transAxes,
-            bbox=dict(facecolor='white',
-                      edgecolor='black',
-                      boxstyle='round,pad=0.5',
-                      alpha=0.8))
+    ax.text(
+        0.5,
+        0.5,
+        f'Total Energy\n{convert_float(aircraft.mission_profile.energy, "J", "kWh"):.2f} kWh',
+        horizontalalignment='center',
+        verticalalignment='center',
+        transform=ax.transAxes,
+        bbox=dict(facecolor='white',
+                  edgecolor='black',
+                  boxstyle='round,pad=0.5',
+                  alpha=0.8))
     plt.setp(texts, size=10, weight="bold")
     plt.setp(autotexts, size=8, weight="bold")
-    ax.set_title(f'Energy Breakdown of {aircraft.name}')
+    # ax.set_title(f'Energy Breakdown of {aircraft.name}')
 
     return fig, ax
 

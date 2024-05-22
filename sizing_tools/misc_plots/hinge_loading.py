@@ -7,8 +7,7 @@ from utility.plotting import show, save_with_name
 
 
 @show
-@save_with_name(
-    lambda aircraft: aircraft.name.replace(' ', '_') + '_loading_diagram')
+@save_with_name(lambda aircraft: aircraft.name + '_loading_diagram')
 def plot_load(aircraft: Aircraft) -> tuple[plt.Figure, plt.Axes]:
     fig, ax = plt.subplots(figsize=(10, 6))
     xx = np.linspace(0, 1, 101)
@@ -17,5 +16,5 @@ def plot_load(aircraft: Aircraft) -> tuple[plt.Figure, plt.Axes]:
     ax.plot(xx, yy[1], label='Moment [Nm]')
     ax.set_xlabel('Hinge location')
     ax.set_ylabel('Shear force and Moment')
-    ax.legend()
+    ax.legend(loc='upper right')
     return fig, ax
