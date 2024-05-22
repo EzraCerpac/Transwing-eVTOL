@@ -127,7 +127,6 @@ class MassEstimation:
 
 def reduced_vtol_data() -> pd.DataFrame:
     df = vtol_data.copy()
-    df = df[df['Primary Class'] != 'WL']
     return df
 
 
