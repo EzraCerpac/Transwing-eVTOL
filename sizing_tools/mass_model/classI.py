@@ -3,6 +3,8 @@ import sys
 
 from scipy.constants import g
 
+from utility.plotting.plot_functions import save_with_name
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 parent_dir = os.path.dirname(parent_dir)
@@ -97,19 +99,20 @@ class ClassIModel(Model):
         self.aircraft.mission_profile.TAKEOFF.power = g * self.aircraft.total_mass / wp_output
         return self.aircraft.wing.area, self.aircraft.mission_profile.TAKEOFF.power
 
-    @show
-    @save
+    # @show
+    @save_with_name(lambda self: self.aircraft.name)
     def plot_wp_ws(self) -> tuple[plt.Figure, plt.Axes]:
-        fig, ax = plt.subplots(figsize=(10, 6))
+        fig, ax = plt.subplots(figsize=(6, 6))
         xx = np.arange(1, 2000)
 
-        plt.axvline(x=self.w_s_stall_speed(), label=' Stall Speed')
-        plt.plot(xx, self._wp(xx), label='Cruise')
+        plt.axvline(x=self.w_s_stall_speed(), label=' Stall Speed', color = 'red')
+        plt.plot(xx, self._wp(xx), label='Cruise', )
         plt.plot(xx, self.ver_climb(xx), label='Vertical Climb')
         plt.plot(xx, self.steady_climb(), label='Cruise Climb')
-        plt.xlabel('W/S [N/m^2]')
+        plt.xlabel('W/S [N/m$^2$]')
         plt.ylabel('W/P [N/W]')
-        plt.legend()
+        # plt.title(f"Concept: {self.aircraft.name}")
+        plt.legend(loc='upper right')
         return fig, ax
 
 
