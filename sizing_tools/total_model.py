@@ -54,9 +54,9 @@ class TotalModel(Model):
 def main():
     for concept in all_concepts:
         model = TotalModel(concept)
-        model.print_results(mass_breakdown=False,
-                            energy_breakdown=False,
-                            hinge_loading=False,
+        model.print_results(mass_breakdown=True,
+                            energy_breakdown=True,
+                            hinge_loading=True,
                             class1_diagram=True)
 
 
