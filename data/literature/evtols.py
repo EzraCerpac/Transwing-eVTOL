@@ -15,8 +15,9 @@ joby_s4 = Aircraft(  # from https://aviationweek.com/aerospace/advanced-air-mobi
     propeller_radius=1.4,  # estimation
     propeller_blade_number=4,
     wing=Wing(
+        area=11.8 * 1.5,
         span=11.8,  # 39 ft
-        mean_aerodynamic_chord=1.5,  # estimation
+        # mean_aerodynamic_chord=1.5,  # estimation
     ),
     # total length = 6.4 m (21 ft)
     fuselage=Fuselage(
@@ -24,4 +25,6 @@ joby_s4 = Aircraft(  # from https://aviationweek.com/aerospace/advanced-air-mobi
         maximum_section_perimeter=1.4,  # estimation
     ),
     estimated_CD0=0.04,  # estimation
+    s_fus=6,  # estimation
+    TA=450,
 )

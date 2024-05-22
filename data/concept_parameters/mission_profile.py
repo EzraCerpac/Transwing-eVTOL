@@ -8,6 +8,7 @@ from utility.unit_conversion import convert_float
 
 class Phase(Enum):
     TAKEOFF = 'takeoff'
+    HOVER_CLIMB = 'hover_climb'
     CLIMB = 'climb'
     CRUISE = 'cruise'
     DESCENT = 'descent'
@@ -73,19 +74,17 @@ class MissionProfile(BaseModel):
     name: str = 'unnamed'
     phases: dict[Phase, MissionPhase]
 
-    _energy: float = PrivateAttr(None)
-
     @property
     def energy(self):
-        return self._energy
-
-    @energy.setter
-    def energy(self, value):
-        self._energy = value
+        return sum([phase.energy for phase in self.phases.values()])
 
     def __getattr__(self, item):
-        if Phase[item] in self.phases:
-            return self.phases[Phase[item]]
+        try:
+            if Phase[item] in self.phases:
+                return self.phases[Phase[item]]
+        except KeyError:
+            if item in self.phases:
+                return self.phases[item]
         else:
             raise AttributeError(f"No such attribute: {Phase[item]}")
 

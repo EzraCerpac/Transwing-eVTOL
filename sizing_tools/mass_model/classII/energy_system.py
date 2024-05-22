@@ -5,7 +5,8 @@ from scipy.constants import g
 
 from data.concept_parameters.aircraft import Aircraft
 from data.concept_parameters.mission_profile import MissionPhase, Phase
-from sizing_tools.formula.aero import C_L_from_lift, hover_power, rotor_disk_area, C_D_from_CL, drag, power_required, \
+from sizing_tools.formula.aero import C_L_from_lift, hover_power, hover_velocity, rotor_disk_area, C_D_from_CL, drag, \
+    power_required, \
     C_L_climb_opt, velocity_from_lift, C_L_cruise_opt
 from sizing_tools.formula.battery import mass_from_energy
 from sizing_tools.mass_model.mass_model import MassModel
@@ -17,12 +18,21 @@ class EnergySystemMassModel(MassModel):
     def __init__(self, aircraft: Aircraft, initial_total_mass: float):
         super().__init__(aircraft, initial_total_mass)
         self.mission_profile = aircraft.mission_profile
+        if self.aircraft.mission_profile.TAKEOFF.power is None:
+            self.aircraft.mission_profile.TAKEOFF.power = self._hover_power(
+                self.aircraft.mission_profile.TAKEOFF)
 
     @property
     def necessary_parameters(self) -> list[str]:
         return [
-            'SoC_min', 'battery_energy_density', 'battery_system_efficiency',
-            'figure_of_merit', 'estimated_CD0', 'wing', 'propulsion_efficiency'
+            'SoC_min',
+            'battery_energy_density',
+            'battery_system_efficiency',
+            'figure_of_merit',
+            'estimated_CD0',
+            'wing',
+            'propulsion_efficiency',
+            'mission_profile',
         ]
 
     def estimate_energy(self) -> float:
@@ -30,7 +40,6 @@ class EnergySystemMassModel(MassModel):
         for phase in self.mission_profile.phases.values():
             phase.energy = self._power(phase) * phase.duration
             total_energy += phase.energy
-        self.mission_profile.energy = total_energy
         return total_energy
 
     def total_mass(self, **kwargs) -> float:
@@ -44,9 +53,11 @@ class EnergySystemMassModel(MassModel):
     def _power(self, phase: MissionPhase) -> float:
         match phase.phase:
             case Phase.TAKEOFF:
-                power = self._hover_power(phase)
-            case Phase.CLIMB:
+                power = self.aircraft.mission_profile.TAKEOFF.power  # from Class I model
+            case Phase.HOVER_CLIMB:
                 power = self._climb_power(phase)
+            case Phase.CLIMB:
+                power = self._climb_power_cruise_config(phase)
             case Phase.CRUISE:
                 # power = self._cruise_power(phase)
                 power = self._cruise_power_fixed_velocity(phase)
@@ -63,15 +74,25 @@ class EnergySystemMassModel(MassModel):
         return power
 
     def _hover_power(self, phase: MissionPhase) -> float:
-        assert phase.phase in (Phase.TAKEOFF, Phase.LANDING)
+        assert phase.phase in (Phase.TAKEOFF, Phase.LANDING, Phase.HOVER_CLIMB)
         rho = Atmosphere(altitude=phase.ending_altitude).density()
         rotor_disk_thrust = self.initial_total_mass * g  # no vertical speed
-        disk_area = rotor_disk_area(self.aircraft.propeller_radius)
+        disk_area = rotor_disk_area(
+            self.aircraft.propeller_radius) * self.aircraft.motor_prop_count
         self.aircraft.TA = rotor_disk_thrust / disk_area
         return hover_power(rotor_disk_thrust, disk_area,
                            self.aircraft.figure_of_merit, rho)
 
     def _climb_power(self, phase: MissionPhase) -> float:
+        assert phase.phase == Phase.HOVER_CLIMB
+        Ph = self._hover_power(phase)
+        roc = phase.vertical_speed
+        rotor_disk_thrust = self.initial_total_mass * g
+        vh = hover_velocity(Ph, rotor_disk_thrust)
+        Ratio = roc / (2 * vh) + ((roc / (2 * vh))**2 + 1)**(0.5)
+        return Ph * Ratio
+
+    def _climb_power_cruise_config(self, phase: MissionPhase) -> float:
         assert phase.phase == Phase.CLIMB
         phase.C_L = C_L_climb_opt(self.aircraft.estimated_CD0,
                                   self.aircraft.wing.aspect_ratio,

@@ -68,6 +68,7 @@ class Aerofoil(BaseModel):
 class Wing(BaseModel):
     aerofoil: Optional[Aerofoil] = None
     oswald_efficiency_factor: Optional[float] = Field(0.85, gt=0, le=1)
+    max_area: Optional[float] = Field(30, gt=0)  # m^2
 
     _area: float = PrivateAttr(None)
     _aspect_ratio: float = PrivateAttr(None)
@@ -82,7 +83,7 @@ class Wing(BaseModel):
     def area(self, value):
         if value is None:
             return
-        self._area = value
+        self._area = min(value, self.max_area)
         if self._aspect_ratio is not None:
             self._span = (self._area * self._aspect_ratio)**0.5
             self._mean_aerodynamic_chord = self._area / self._span

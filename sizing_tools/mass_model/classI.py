@@ -1,7 +1,6 @@
-import math
 import os
 import sys
-import scipy as sc
+
 from scipy.constants import g
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -10,7 +9,6 @@ parent_dir = os.path.dirname(parent_dir)
 sys.path.append(parent_dir)
 
 from sizing_tools.model import Model
-from data.concept_parameters.aircraft_components import Wing
 from sizing_tools.formula.aero import C_D_from_CL, C_L_climb_opt
 
 import matplotlib.pyplot as plt
@@ -21,7 +19,7 @@ from utility.plotting import show, save
 from data.concept_parameters.aircraft import Aircraft
 from utility.log import logger
 
-LOAD_FACTOR = 1.2
+C_L_MAX = 1.1
 
 
 class ClassIModel(Model):
@@ -37,7 +35,6 @@ class ClassIModel(Model):
         self.rho = self.atmosphere.density()
         self.power_setting = power_setting
         self.mtow_setting = mtow_setting
-        self.ROC_ver = 5  # vertical rate of climb
 
     @property
     def necessary_parameters(self) -> list[str]:
@@ -64,15 +61,16 @@ class ClassIModel(Model):
         return wp
 
     def w_s_stall_speed(self):
-        w_s_min = 0.5 * self.aircraft.v_stall**2 * self.rho * 1.4  #TODO CL value estimation
+        w_s_min = 0.5 * self.aircraft.v_stall ** 2 * self.rho * C_L_MAX
         self.aircraft.wing.area = self.aircraft.total_mass * g / w_s_min
         return w_s_min
 
     def ver_climb(self, ws):
-        T_over_W = LOAD_FACTOR * (
-            1 + 1 / ws * self.rho *
-            self.aircraft.mission_profile.phases[Phase.CLIMB].vertical_speed**2
-            * (self.aircraft.s_fus +self.aircraft.wing.area) / self.aircraft.wing.area)
+        T_over_W = self.aircraft.takeoff_load_factor * (
+            1 + 1 / ws * self.rho * self.aircraft.mission_profile.phases[
+                Phase.CLIMB].vertical_speed**2 *
+            (self.aircraft.s_fus + self.aircraft.wing.area) /
+            self.aircraft.wing.area)
         W_over_p = 1 / (T_over_W * (1 /
                                     (self.aircraft.figure_of_merit *
                                      self.aircraft.propulsion_efficiency)) *
@@ -95,8 +93,8 @@ class ClassIModel(Model):
     def output(self) -> tuple[float, float]:
         ws_output = self.w_s_stall_speed()
         wp_output = self.ver_climb(ws_output)
-        self.aircraft.wing.area = g*self.aircraft.total_mass/ws_output
-        self.aircraft.mission_profile.TAKEOFF.power = g*self.aircraft.total_mass/wp_output
+        self.aircraft.wing.area = g * self.aircraft.total_mass / ws_output
+        self.aircraft.mission_profile.TAKEOFF.power = g * self.aircraft.total_mass / wp_output
         return self.aircraft.wing.area, self.aircraft.mission_profile.TAKEOFF.power
 
     @show

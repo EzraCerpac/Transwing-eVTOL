@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 
 from data.concept_parameters.aircraft import Aircraft
 from data.concept_parameters.concepts import concept_C1_5, concept_C2_1, concept_C2_6, all_concepts
+from data.literature.evtols import joby_s4
 from sizing_tools.mass_model.classI import ClassIModel
 from sizing_tools.mass_model.classII.classII import ClassIIModel
 from sizing_tools.model import Model
@@ -13,7 +14,8 @@ from utility.plotting import show
 
 class Iteration(Model):
 
-    def __init__(self, aircraft: Aircraft):
+    def __init__(self, aircraft: Aircraft, initial_guess: float = 1500):
+        aircraft.total_mass = initial_guess
         super().__init__(aircraft)
         self.aircraft_list = []
 
@@ -35,11 +37,14 @@ class Iteration(Model):
                               max_iterations: int = 100) -> Aircraft:
         logger.debug('Starting fixed point iteration')
         self.aircraft_list = []
+        class1_powers = []
+        class2_powers = []
         for i in range(max_iterations):
             logger.debug(f'Iteration {i}')
             old_total_mass = self.aircraft.total_mass
-            ClassIModel(self.aircraft).w_s_stall_speed()
+            class1_powers.append(ClassIModel(self.aircraft).output())
             ClassIIModel(self.aircraft).total_mass()
+            class2_powers.append(self.aircraft.mission_profile.TAKEOFF.power)
             temp_aircraft = copy.deepcopy(self.aircraft)
             temp_aircraft.name = f'{self.aircraft.name}, Iteration {i}'
             self.aircraft_list.append(temp_aircraft)
@@ -69,10 +74,24 @@ class Iteration(Model):
 
 
 if __name__ == '__main__':
+    # all_concepts.append(joby_s4)
     for concept in all_concepts:
-        concept.total_mass = 2150  # kg
         iteration = Iteration(concept)
         concept = iteration.fixed_point_iteration()
+        #
+        # fig, ax = plt.subplots()
+        #
+        # ax.plot(powers1, label='Class I Power')
+        # ax.plot(powers2, label='Class II Power')
+        #
+        #
+        # ax.set_title(f'Iteration Data of {concept.name}')
+        # ax.set_xlabel('Iteration')
+        # ax.legend()
+        #
+        # plt.show()
+
         # iteration.plot_iteration_data()
         ClassIIModel(concept).plot_mass_breakdown()
-        logger.info(f"{concept.name}: {concept.total_mass:.2f} kg")
+        # logger.info(f"{concept.name}: {concept.total_mass:.2f} kg")
+        # logger.info(f"{concept.name}: {concept.wing.mean_aerodynamic_chord:.2f} m^2")
