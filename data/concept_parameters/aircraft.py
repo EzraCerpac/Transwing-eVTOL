@@ -9,7 +9,9 @@ from utility.unit_conversion import convert_float
 
 
 class Aircraft(BaseModel):
-    name: Optional[str] = Field('Aircraft', min_length=1)
+    id: Optional[str] = Field('Aircraft', min_length=1)
+    name: Optional[str] = Field('Unnamed', min_length=1)
+    full_name: Optional[str] = None
 
     mass_breakdown: Optional[MassObject] = None
     mass_breakdown_dict: Optional[dict[str, float | dict[str, float]]] = None
@@ -68,6 +70,7 @@ class Aircraft(BaseModel):
 
     def __init__(self, **data):
         super().__init__(**data)
+        self.full_name = f'Concept {self.id} ({self.name})'
         if self.mission_profile is None:
             self.initialize_default_mission_profile()
         if self.propellers is None and self.motor_prop_count is not None:
@@ -149,7 +152,7 @@ class Aircraft(BaseModel):
             })
 
     @classmethod
-    @field_validator('name')
+    @field_validator('id')
     def check_name(cls, v):
         if not isinstance(v, str):
             logger.error('Name must be a string')
@@ -169,10 +172,10 @@ class Aircraft(BaseModel):
         return v
 
     def __repr__(self) -> str:
-        return f'Aircraft(name={self.name})'
+        return f'Aircraft(id={self.id})'
 
     def __hash__(self) -> int:
-        return hash(self.name)
+        return hash(self.id)
 
     def __eq__(self, other) -> bool:
-        return self.name == other.name
+        return self.id == other.id
