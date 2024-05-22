@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
+import pandas as pd
 from pandas import DataFrame
 
 from utility.data_management.df_generation import df_from_markdown
-from utility.plotting import save
 
 vtol_data = df_from_markdown("""
     | Name | Developer | Country Code | Primary Class | Range (km) | Payload (kg) | Mass (kg) | Source |
@@ -21,6 +21,24 @@ vtol_data = df_from_markdown("""
     | Voyager X2 | XPeng | CN | WL | 76.0 | 200.0 | 560.2 | [80] |
     | VTOL | Napoleon Aero | RU | PL | 100.0 | 400.0 | 1500.0 | [81] |
     """)
+
+data_from_philip = pd.DataFrame({
+    "Name": [
+        "CityAirbus NextGen", "Prosperity 1 (V1500M)", "Joby S4",
+        "Jaunt Air Mobility Journey", "Archer Aviation Midnight",
+        "Volocopter VoloCity", "Lilium Jet", "Ehang 216-S"
+    ],
+    "Range (km)": [80, 250, 161, 129, 161, 45, 250, 35],
+    "Mass (kg)": [2200, 1500, 2404, 2722, 3175, 900, 3175, 600],
+    "Payload (kg)": [250, 410, 453, 400, 450, 200, 700, 220]
+})
+
+vtol_data = pd.concat([vtol_data, data_from_philip], ignore_index=True)
+vtol_data["Primary Class"] = vtol_data["Primary Class"].fillna("PL")
+vtol_data = vtol_data[vtol_data['Name'] != 'VTOL']
+vtol_data = vtol_data[vtol_data['Name'] != 'Lilium Jet']
+vtol_data = vtol_data[vtol_data['Name'] != 'Joby eVTOL']
+vtol_data = vtol_data.sort_values(by='Mass (kg)', ascending=True)
 
 
 # @save

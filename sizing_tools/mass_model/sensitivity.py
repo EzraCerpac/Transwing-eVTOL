@@ -90,7 +90,7 @@ class MassEstimation:
                               vmin=600,
                               vmax=2400)
         df = reduced_vtol_data()
-        df = df.sort_values(by='Mass (kg)', ascending=False)
+        # df = df.sort_values(by='Mass (kg)', ascending=False)
         for i, row in df.iterrows():
             if ranges[0] < row["Range (km)"] < ranges[-1] and payloads[
                     0] < row["Payload (kg)"] < payloads[-1]:
@@ -127,8 +127,7 @@ class MassEstimation:
 
 def reduced_vtol_data() -> pd.DataFrame:
     df = vtol_data.copy()
-    df = df[df['Primary Class'] == 'PL']
-    df = df[df['Name'] != 'Joby eVTOL']
+    df = df[df['Primary Class'] != 'WL']
     return df
 
 
