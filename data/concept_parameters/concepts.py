@@ -2,7 +2,7 @@ from data.concept_parameters.aircraft import Aircraft
 from data.concept_parameters.aircraft_components import Fuselage, Wing
 
 concept_C1_5 = Aircraft(id='C1.5',
-    name="Winged Rotorcraft",
+                        name="Winged Rotorcraft",
                         motor_prop_count=4,
                         motor_wing_count=0,
                         propeller_radius=1,
@@ -21,7 +21,7 @@ concept_C1_5 = Aircraft(id='C1.5',
                         TA=400)
 
 concept_C2_1 = Aircraft(id='C2.1',
-    name="Rotating Wing",
+                        name="Rotating Wing",
                         motor_prop_count=4,
                         motor_wing_count=4,
                         propeller_radius=0.75,
@@ -40,7 +40,7 @@ concept_C2_1 = Aircraft(id='C2.1',
                         TA=400)
 
 concept_C2_6 = Aircraft(id='C2.6',
-    name="Folding Wing",
+                        name="Folding Wing",
                         motor_prop_count=4,
                         motor_wing_count=4,
                         propeller_radius=0.75,

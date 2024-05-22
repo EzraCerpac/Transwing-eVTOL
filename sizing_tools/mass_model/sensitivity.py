@@ -19,10 +19,15 @@ class MassEstimation:
     def __init__(self, initial_aircraft: Aircraft):
         self.initial_aircraft = initial_aircraft
 
-    def mass_over(self, array: np.ndarray, ac_func: Callable[[float], Aircraft]) -> np.ndarray:
+    def mass_over(self, array: np.ndarray,
+                  ac_func: Callable[[float], Aircraft]) -> np.ndarray:
         Iteration(self.initial_aircraft).run()
         with ThreadPoolExecutor() as executor:
-            mass = list(executor.map(lambda val: Iteration(ac_func(*val if isinstance(val, tuple) else (val,))).run(tolerance=1e-5, tol_classII=1e-6).total_mass, array))
+            mass = list(
+                executor.map(
+                    lambda val: Iteration(
+                        ac_func(*val if isinstance(val, tuple) else (val, ))).
+                    run(tolerance=1e-5, tol_classII=1e-6).total_mass, array))
         return np.array(mass)
 
     @show
@@ -58,7 +63,8 @@ class MassEstimation:
         return ax
 
     @show
-    @save_with_name(lambda self: f'{self.initial_aircraft.id}_mass_over_payload_and_range')
+    @save_with_name(
+        lambda self: f'{self.initial_aircraft.id}_mass_over_payload_and_range')
     def plot_mass_over_payload_and_range(self) -> tuple[plt.Figure, plt.Axes]:
         fig, ax = plt.subplots(figsize=(10, 6))
         payloads = np.linspace(80, 500, 11)  # kg
@@ -68,19 +74,28 @@ class MassEstimation:
         payload_grid, range_grid = np.meshgrid(payloads, ranges)
 
         # Calculate the corresponding mass for each pair of payload and range
-        mass_grid = self.mass_over([(payload, r) for payload, r in zip(np.ravel(payload_grid), np.ravel(range_grid))],
-                                   self.ac_func_payload_range)
+        mass_grid = self.mass_over([
+            (payload, r)
+            for payload, r in zip(np.ravel(payload_grid), np.ravel(range_grid))
+        ], self.ac_func_payload_range)
 
         # Reshape the mass values to match the shape of the payload and range grids
         mass_grid = mass_grid.reshape(payload_grid.shape)
 
         # Create a contour plot
-        contour = ax.contourf(payload_grid, range_grid, mass_grid, cmap='viridis', vmin=600, vmax=2400)
+        contour = ax.contourf(payload_grid,
+                              range_grid,
+                              mass_grid,
+                              cmap='viridis',
+                              vmin=600,
+                              vmax=2400)
         df = reduced_vtol_data()
         df = df.sort_values(by='Mass (kg)', ascending=False)
         for i, row in df.iterrows():
-            if ranges[0] < row["Range (km)"] < ranges[-1] and payloads[0] < row["Payload (kg)"] < payloads[-1]:
-                ax.scatter(row["Payload (kg)"], row["Range (km)"],
+            if ranges[0] < row["Range (km)"] < ranges[-1] and payloads[
+                    0] < row["Payload (kg)"] < payloads[-1]:
+                ax.scatter(row["Payload (kg)"],
+                           row["Range (km)"],
                            label=f'{row["Name"]}: {row["Mass (kg)"]:.1f} kg')
         ax.set_xlabel('Payload [kg]')
         ax.set_ylabel('Range [km]')

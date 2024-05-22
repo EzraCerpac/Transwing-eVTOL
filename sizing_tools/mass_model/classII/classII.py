@@ -43,7 +43,8 @@ class ClassIIModel(MassModel):
         self.aircraft.total_mass = fixed_point(self.total_mass_estimation,
                                                self.initial_total_mass,
                                                xtol=kwargs.get('xtol', 1e-8),
-                                               maxiter=kwargs.get('maxiter', 500))
+                                               maxiter=kwargs.get(
+                                                   'maxiter', 500))
         return self.aircraft.total_mass
 
     def mass_breakdown(self) -> dict[str, float | dict[str, float]]:
