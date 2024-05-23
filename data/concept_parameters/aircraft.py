@@ -171,8 +171,31 @@ class Aircraft(BaseModel):
             raise ValueError('Parameter must be less than 1')
         return v
 
+    def save(self, verbose: bool = True) -> None:
+        from utility.data_management.save_and_load_object import save
+        save(self,
+             name=self.full_name.replace(' ', '_').replace('.', '_'),
+             verbose=verbose)
+
+    @classmethod
+    def load(cls, id: str = 'C2.1', directory: str = 'aircraft') -> 'Aircraft':
+        from utility.data_management.save_and_load_object import load
+        full_name = {
+            'C1.5': 'Concept_C1_5_(Winged_Rotorcraft)',
+            'C2.1': 'Concept_C2_1_(Rotating_Wing)',
+            'C2.6': 'Concept_C2_6_(Folding_Wing)',
+            'C2.10': 'Concept_C2_10_(Variable_Skew_QuadPlane)',
+        }
+        ac = load(f'{directory}/{full_name[id]}')
+        assert isinstance(ac, Aircraft)
+        assert ac.id == id
+        return ac
+
     def __repr__(self) -> str:
         return f'Aircraft(id={self.id})'
+
+    def __str__(self) -> str:
+        return self.full_name
 
     def __hash__(self) -> int:
         return hash(self.id)
