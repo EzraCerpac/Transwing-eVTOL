@@ -9,11 +9,12 @@ from utility.misc import get_caller_file_name
 SAVE_DIRECTORY = Path(__file__).resolve().parents[2] / "save"
 
 
-def save(data: object,
-         name: str = None,
-         verbose: bool = True,
-         automatically_add_extension: bool = True,
-         ) -> None:
+def save(
+    data: object,
+    name: str = None,
+    verbose: bool = True,
+    automatically_add_extension: bool = True,
+) -> None:
     """
     Saves the object to a binary file, using the `dill` library.
 

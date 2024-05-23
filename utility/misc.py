@@ -15,7 +15,6 @@ def get_caller_file_name(n_back: int = 2, n_dirs: int = 1) -> str:
     if 'plot_functions' in file_name:
         file_name = frame.f_back.f_globals["__file__"]
 
-
     last_slash = file_name.rfind("/")
     for _ in range(n_dirs):
         last_slash = file_name.rfind("/", 0, last_slash)
