@@ -49,7 +49,7 @@ def operating_cost_per_pax_mile(aircraft: Aircraft, production_cost_single_ac: f
 
 
 if __name__ == '__main__':
-    ac = Aircraft.load('C2.1', directory='end_off_trade-off_concepts')
+    ac = Aircraft.load('C2.1', directory='end_of_trade-off_concepts')
     n_planes = 100
     prod_cost = production_cost_per_ac(ac, n_planes)
     op_cost = operating_cost_per_pax_mile(ac, prod_cost)
