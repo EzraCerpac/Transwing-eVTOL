@@ -67,5 +67,3 @@ def save(plot_function: plotFunction,
 def save_with_name(
         name_func: callable) -> Callable[[plotFunction], plotFunction]:
     return lambda plot_function: save(plot_function, name_func)
-
-
