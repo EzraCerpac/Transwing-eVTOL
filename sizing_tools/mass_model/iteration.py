@@ -48,7 +48,7 @@ class Iteration(Model):
             ClassIIModel(self.aircraft).total_mass(
                 xtol=tol_classII, maxiter=max_iterations_classII)
             if abs(self.aircraft.total_mass - old_total_mass) < tolerance:
-                # ClassIIModel(self.aircraft).mass_breakdown()
+                ClassIIModel(self.aircraft).mass_breakdown()
                 break
         return self.aircraft
 
