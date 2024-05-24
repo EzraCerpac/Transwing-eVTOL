@@ -11,7 +11,11 @@ from utility.plotting import show
 
 
 class Aero:
-    def __init__(self, airplane: asb.Airplane, velocity: float = 55, alpha: float | np.ndarray = np.linspace(-20, 20, 500)):
+
+    def __init__(self,
+                 airplane: asb.Airplane,
+                 velocity: float = 55,
+                 alpha: float | np.ndarray = np.linspace(-20, 20, 500)):
         self.airplane = airplane
         self.velocity = velocity
         self.alpha = alpha
@@ -19,13 +23,11 @@ class Aero:
     @property
     @cache
     def aero_data(self) -> dict:
-        return asb.AeroBuildup(
-            airplane=self.airplane,
-            op_point=asb.OperatingPoint(
-                velocity=self.velocity,
-                alpha=self.alpha,
-            )
-        ).run()
+        return asb.AeroBuildup(airplane=self.airplane,
+                               op_point=asb.OperatingPoint(
+                                   velocity=self.velocity,
+                                   alpha=self.alpha,
+                               )).run()
 
     @property
     def glide_ratio(self) -> float:
