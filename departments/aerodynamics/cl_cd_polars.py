@@ -5,8 +5,8 @@ import aerosandbox.numpy as np
 import aerosandbox.tools.pretty_plots as p
 import matplotlib.pyplot as plt
 
-from model.airplane_models.cessna152 import cessna
-from model.airplane_models.rotating_wing import airplane
+from model.airplane_models.cessna152 import parametric
+from model.airplane_models.rotating_wing import parametric
 from utility.plotting import show
 
 
@@ -61,6 +61,6 @@ class Aero:
 
 
 if __name__ == '__main__':
-    aero = Aero(airplane)
+    aero = Aero(parametric)
     print(aero.glide_ratio)
     aero.plot_cl_cd_polars()

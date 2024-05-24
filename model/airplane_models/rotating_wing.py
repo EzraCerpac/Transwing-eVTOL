@@ -1,14 +1,14 @@
 from aerosandbox import Airplane, Propulsor, Wing, Fuselage, WingXSec, FuselageXSec, Airfoil
 import aerosandbox.numpy as np
 
-from data.concept_parameters.aircraft import Aircraft
+from data.concept_parameters.aircraft import Aircraft, AC
 
 ac = Aircraft.load('C2.1', directory='end_of_trade-off_concepts')
 
 wing_airfoil = Airfoil("naca0012")
 tail_airfoil = Airfoil("naca0012")
 
-airplane = Airplane(
+parametric = Airplane(
     name=ac.full_name,
     xyz_ref=None,  # CG location
     wings=[
@@ -64,11 +64,17 @@ airplane = Airplane(
     ],
 )
 
+rot_wing = AC(
+    name=ac.full_name,
+    data=ac,
+    parametric=parametric,
+)
+
 if __name__ == '__main__':
     import aerosandbox as asb
-    airplane.draw()
+    parametric.draw()
     vlm = asb.VortexLatticeMethod(
-        airplane=airplane,
+        airplane=parametric,
         op_point=asb.OperatingPoint(
             velocity=ac.cruise_velocity,  # m/s
             alpha=5,  # degree

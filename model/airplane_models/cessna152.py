@@ -2,12 +2,14 @@ import aerosandbox as asb
 import aerosandbox.numpy as np
 from aerosandbox.tools import units as u
 
+from data.concept_parameters.aircraft import AC, Aircraft
+
 
 def ft(feet, inches=0.):  # Converts feet (and inches) to meters
     return feet * u.foot + inches * u.inch
 
 
-cessna = asb.Airplane(
+parametric = asb.Airplane(
     name="Cessna 152",
     wings=[
         asb.Wing(
@@ -110,5 +112,18 @@ cessna = asb.Airplane(
     ]
 )
 
+cessna = AC(
+    name="Cessna 152",
+    data=Aircraft(
+        id='152',
+        name="Cessna 152",
+        cruise_velocity=110 * u.knot,
+        cruise_altitude=10000 * u.foot,
+        range=480 * u.mile,
+        total_mass=1670 * u.pound,
+    ),
+    parametric=parametric
+)
+
 if __name__ == '__main__':
-    cessna.draw_three_view()
+    parametric.draw_three_view()
