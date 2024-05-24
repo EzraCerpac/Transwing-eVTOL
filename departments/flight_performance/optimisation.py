@@ -10,6 +10,7 @@ from utility.plotting import show
 
 
 class TrajectoryOptimisation:
+
     def __init__(self, aircraft: AC):
         self.aircraft_data = aircraft.data
         self.airplane = aircraft.parametric
@@ -33,9 +34,8 @@ class TrajectoryOptimisation:
 
         self.time = np.cosspace(
             0,
-            opti.variable(init_guess=self.time_final_guess, log_transform=True),
-            100
-        )
+            opti.variable(init_guess=self.time_final_guess,
+                          log_transform=True), 100)
         N = np.length(self.time)
 
         time_guess = np.linspace(0, self.time_final_guess, N)
@@ -53,37 +53,37 @@ class TrajectoryOptimisation:
             x_e=opti.variable(init_state["speed"] * time_guess),
             z_e=opti.variable(np.linspace(init_state["z_e"], 0, N)),
             speed=opti.variable(init_guess=init_state["speed"], n_vars=N),
-            gamma=opti.variable(init_guess=0, n_vars=N, lower_bound=-np.pi / 2, upper_bound=np.pi / 2),
-            alpha=opti.variable(init_guess=5, n_vars=N, lower_bound=-5, upper_bound=15),
+            gamma=opti.variable(init_guess=0,
+                                n_vars=N,
+                                lower_bound=-np.pi / 2,
+                                upper_bound=np.pi / 2),
+            alpha=opti.variable(init_guess=5,
+                                n_vars=N,
+                                lower_bound=-5,
+                                upper_bound=15),
         )
         # Constrain the initial state
         for k in self.dynamic_point.state.keys():
-            opti.subject_to(
-                self.dynamic_point.state[k][0] == init_state[k]
-            )
+            opti.subject_to(self.dynamic_point.state[k][0] == init_state[k])
 
         ### Add in forces
         self.dynamic_point.add_gravity_force()
 
-        aero = asb.AeroBuildup(
-            airplane=self.airplane,
-            op_point=self.dynamic_point.op_point
-        ).run()
+        aero = asb.AeroBuildup(airplane=self.airplane,
+                               op_point=self.dynamic_point.op_point).run()
 
-        self.dynamic_point.add_force(
-            *aero["F_w"],
-            axes="wind"
-        )
+        self.dynamic_point.add_force(*aero["F_w"], axes="wind")
 
         ### Constrain the altitude to be above ground at all times
-        opti.subject_to(
-            self.dynamic_point.altitude > 0
-        )
+        opti.subject_to(self.dynamic_point.altitude > 0)
 
         ### Finalize the problem
-        self.dynamic_point.constrain_derivatives(opti, self.time)  # Apply the dynamics constraints created up to this point
+        self.dynamic_point.constrain_derivatives(
+            opti, self.time
+        )  # Apply the dynamics constraints created up to this point
 
-        opti.minimize(-self.dynamic_point.x_e[-1])  # Go as far downrange as you can
+        opti.minimize(
+            -self.dynamic_point.x_e[-1])  # Go as far downrange as you can
 
         ### Solve it
         self.sol = opti.solve()
@@ -95,10 +95,8 @@ class TrajectoryOptimisation:
     def plot_3D(self):
         if self.dynamic_point is None:
             self.optimise_distance_maximising_glide()
-        plotter = self.dynamic_point.draw(
-            vehicle_model=self.airplane,
-            show=False
-        )
+        plotter = self.dynamic_point.draw(vehicle_model=self.airplane,
+                                          show=False)
         plotter.camera.enable_parallel_projection()
         plotter.camera_position = 'xz'
         plotter.camera.roll = 180

@@ -82,18 +82,16 @@ parametric = asb.Airplane(
         ]).translate([ft(-5), 0, ft(-3)]).subdivide_sections(2)
     ])
 
-cessna = AC(
-    name="Cessna 152",
-    data=Aircraft(
-        id='152',
-        name="Cessna 152",
-        cruise_velocity=110 * u.knot,
-        cruise_altitude=10000 * u.foot,
-        range=480 * u.mile,
-        total_mass=1670 * u.pound,
-    ),
-    parametric=parametric
-)
+cessna = AC(name="Cessna 152",
+            data=Aircraft(
+                id='152',
+                name="Cessna 152",
+                cruise_velocity=110 * u.knot,
+                cruise_altitude=10000 * u.foot,
+                range=480 * u.mile,
+                total_mass=1670 * u.pound,
+            ),
+            parametric=parametric)
 
 if __name__ == '__main__':
     parametric.draw_three_view()

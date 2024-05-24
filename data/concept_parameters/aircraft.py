@@ -179,7 +179,9 @@ class Aircraft(BaseModel):
              verbose=verbose)
 
     @classmethod
-    def load(cls, id: str = 'C2.1', directory: str = 'end_of_trade-off_concepts') -> 'Aircraft':
+    def load(cls,
+             id: str = 'C2.1',
+             directory: str = 'end_of_trade-off_concepts') -> 'Aircraft':
         from utility.data_management.save_and_load_object import load
         full_name = {
             'C1.5': 'Concept_C1_5_(Winged_Rotorcraft)',
