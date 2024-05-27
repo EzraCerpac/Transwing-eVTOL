@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 
 # Define Standard Units
 fsize = 14
-tsize = 10
+tsize = 12
 tdir = 'in'
 major = 5.0
 minor = 3.0

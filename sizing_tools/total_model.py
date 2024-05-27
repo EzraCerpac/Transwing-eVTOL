@@ -22,6 +22,10 @@ class TotalModel(Model):
     def class_I_II_iteration(self) -> float:
         return Iteration(self.aircraft).run().total_mass
 
+    def run(self):
+        self.class_I_II_iteration()
+        self.aircraft.save()
+
     def print_results(
         self,
         mass_breakdown: bool = False,
