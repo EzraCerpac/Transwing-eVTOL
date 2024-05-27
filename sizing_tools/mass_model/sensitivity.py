@@ -127,6 +127,7 @@ class MassEstimation:
 
 def reduced_vtol_data() -> pd.DataFrame:
     df = vtol_data.copy()
+    df = df[df["Primary Class"] == "PL"]
     return df
 
 
@@ -140,7 +141,7 @@ def plot_concepts_mass_over_payload(
         ax = mass_estimation.plot_mass_over_payload(ax)
     ax.set_xlabel('Payload [kg]')
     ax.set_ylabel('Total mass [kg]')
-    ax.legend()
+    # ax.legend()
     return fig, ax
 
 
@@ -154,7 +155,14 @@ def plot_concepts_range_over_mass(
         ax = mass_estimation.plot_range_over_mass(ax)
     ax.set_xlabel('Range [km]')
     ax.set_ylabel('Total mass [kg]')
-    ax.legend()
+    fig_leg = plt.figure(figsize=(3, 2))
+    ax_leg = fig_leg.add_subplot(111)
+
+    # Add the legend from the original plot to the new figure
+    ax_leg.legend(*ax.get_legend_handles_labels())
+    ax_leg.axis('off')
+
+    fig_leg.savefig('legend.png', bbox_inches='tight')  # Save the legend figure to 'legend.png'
     return fig, ax
 
 
@@ -166,5 +174,5 @@ if __name__ == '__main__':
     plot_concepts_mass_over_payload(concepts)
     plot_concepts_range_over_mass(concepts)
 
-    for concept in concepts:
-        MassEstimation(concept).plot_mass_over_payload_and_range()
+    # for concept in concepts:
+    #     MassEstimation(concept).plot_mass_over_payload_and_range()
