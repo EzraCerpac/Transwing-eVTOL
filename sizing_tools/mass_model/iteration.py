@@ -38,7 +38,7 @@ class Iteration(Model):
             max_iterations: int = 100,
             tol_classII: float = 1e-8,
             max_iterations_classII: int = 500) -> Aircraft:
-        logger.info('Starting fixed point iteration')
+        logger.debug('Starting fixed point iteration of ' + self.aircraft.id)
         if self.aircraft.total_mass is None:
             logger.warning(f"Total mass is not defined for {self.aircraft.id}")
             self.aircraft.total_mass = 1500
