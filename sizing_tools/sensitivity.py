@@ -128,14 +128,14 @@ class SensitivityAnalysis:
 
     def __str__(self) -> str:
         txt = 'Sensitivity Analysis Results\n'
-        for parameter, sensitivity in self.dict().items():
+        for parameter, sensitivity in sorted(self.dict().items(), key=lambda item: -abs(item[1])):
             txt += f"{parameter.replace('_', ' ')} & {sensitivity}\n"
         return txt
 
 
 if __name__ == '__main__':
     # Define the range of variations for the sensitivity analysis
-    variation_range = np.linspace(-0.1, 0.1, 11)  # Vary each parameter by ±10%
+    variation_range = np.linspace(-0.01, 0.01, 11)  # Vary each parameter by ±10%
 
     # Conduct the sensitivity analysis for each parameter of interest
     parameters_of_interest = [
@@ -150,7 +150,7 @@ if __name__ == '__main__':
         'fuselage.maximum_section_perimeter',
         # 's_fus',
         'estimated_CD0',
-        'electric_propulsion_efficiency',
+        # 'electric_propulsion_efficiency',
         'battery_energy_density',
         'battery_system_efficiency',
         'figure_of_merit',
