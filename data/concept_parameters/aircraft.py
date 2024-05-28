@@ -1,6 +1,8 @@
-from typing import Optional
+import typing
+from typing import Optional, Any
 
 from pydantic import BaseModel, field_validator, Field
+from pydantic.main import IncEx
 
 from data.concept_parameters.aircraft_components import Propeller, Tail, Fuselage, Wing, MassObject
 from data.concept_parameters.mission_profile import MissionProfile, MissionPhase, Phase
@@ -179,3 +181,23 @@ class Aircraft(BaseModel):
 
     def __eq__(self, other) -> bool:
         return self.id == other.id
+
+    def dict(self, *args, **kwargs) -> dict[str, Any]:
+        base_dict = super().dict(*args, exclude={
+            'mass_breakdown_dict',
+            'mass_breakdown',
+            'mission_profile',
+            'wing',
+            'tail',
+            'fuselage',
+            'propellers'
+        }, **kwargs)
+        base_dict.update({
+            'Mass Breakdown': self.mass_breakdown.dict(),
+            'Mission Profile': self.mission_profile.dict(),
+            'Wing': self.wing.dict(),
+            'Tail': self.tail.dict(),
+            'Fuselage': self.fuselage.dict(),
+            'Propellers': [propeller.dict() for propeller in self.propellers],
+        })
+        return base_dict
