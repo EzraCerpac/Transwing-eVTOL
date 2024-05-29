@@ -43,14 +43,14 @@ engine_data = df_from_markdown("""
 # @save
 def plot_power_over_mass_data(
         df: pd.DataFrame = engine_data) -> tuple[plt.Figure, plt.Axes]:
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(8, 5))
 
     for i, row in df.iterrows():
-        ax.scatter(row["Mass (kg)"], row["Power (kW)"], label=row["Motor(s)"])
+        ax.scatter(row["Mass (kg)"], row["Power (kW)"], label=row["Motor(s)"], marker="x", color="black")
 
     ax.set_xlabel("Mass [kg]")
     ax.set_ylabel("Power [kW]")
-    ax.set_title("Power over Mass for Electric Engines")
+    # ax.set_title("Power over Mass for Electric Engines")
     ax.set_xlim(left=0, right=120)
     ax.set_ylim(bottom=0, top=500)
     # ax.legend()
