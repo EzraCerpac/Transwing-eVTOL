@@ -7,7 +7,7 @@ import departments.flight_performance.power_calculations
 from data.concept_parameters.aircraft import Aircraft
 from data.concept_parameters.mission_profile import MissionPhase, Phase
 from sizing_tools.formula.aero import C_L_from_lift, hover_power, hover_velocity, rotor_disk_area, C_D_from_CL, drag, \
-    power_required, \
+    cruise_power_required, \
     C_L_climb_opt, velocity_from_lift, C_L_cruise_opt
 from sizing_tools.formula.battery import mass_from_energy
 from sizing_tools.mass_model.mass_model import MassModel
@@ -122,7 +122,7 @@ class EnergySystemMassModel(MassModel):
             self.initial_total_mass * g, rho, phase.C_L,
             self.aircraft.wing.area)
         D = drag(C_D, rho, velocity, self.aircraft.wing.area)
-        return power_required(D, velocity, self.aircraft.propulsion_efficiency)
+        return cruise_power_required(D, velocity, self.aircraft.propulsion_efficiency)
 
     def _cruise_power_fixed_velocity(self,
                                      phase: MissionPhase,
@@ -138,8 +138,7 @@ class EnergySystemMassModel(MassModel):
                                self.aircraft.wing.oswald_efficiency_factor)
         D = drag(self.C_D, rho, phase.horizontal_speed,
                  self.aircraft.wing.area)
-        return power_required(D, phase.horizontal_speed,
-                              self.aircraft.propulsion_efficiency)
+        return cruise_power_required(D, phase.horizontal_speed, self.aircraft.propulsion_efficiency)
 
     def _update_descent_phase(self, phase: MissionPhase) -> None:
         assert phase.phase == Phase.DESCENT
