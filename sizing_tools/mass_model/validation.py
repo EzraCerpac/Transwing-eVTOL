@@ -51,12 +51,14 @@ class MassEstimation:
         ax.legend()
         return fig, ax
 
-    def plot_mass_over_payload(self, ax: plt.Axes, payloads=np.linspace(150, 500, 15)) -> plt.Axes:
+    def plot_mass_over_payload(
+        self, ax: plt.Axes, payloads=np.linspace(150, 500, 15)) -> plt.Axes:
         masses = self.mass_over(payloads, self.ac_func_payload)
         ax.plot(payloads, masses, label='Concept ' + self.initial_aircraft.id)
         return ax
 
-    def plot_range_over_mass(self, ax: plt.Axes, ranges=np.linspace(50, 210, 15)) -> plt.Axes:
+    def plot_range_over_mass(
+        self, ax: plt.Axes, ranges=np.linspace(50, 210, 15)) -> plt.Axes:
         masses = self.mass_over(ranges, self.ac_func_range)
         ax.plot(ranges, masses, label='Concept ' + self.initial_aircraft.id)
         return ax

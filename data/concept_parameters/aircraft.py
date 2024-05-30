@@ -207,21 +207,24 @@ class Aircraft(BaseModel):
         return self.id == other.id
 
     def dict(self, *args, **kwargs) -> dict[str, Any]:
-        base_dict = super().dict(*args, exclude={
-            'mass_breakdown_dict',
-            'mass_breakdown',
-            'mission_profile',
-            'wing',
-            'tail',
-            'fuselage',
-            'propellers'
-        }, **kwargs)
+        base_dict = super().dict(*args,
+                                 exclude={
+                                     'mass_breakdown_dict', 'mass_breakdown',
+                                     'mission_profile', 'wing', 'tail',
+                                     'fuselage', 'propellers'
+                                 },
+                                 **kwargs)
         base_dict.update({
-            'Mass Breakdown': self.mass_breakdown.dict(),
-            'Mission Profile': self.mission_profile.dict(),
-            'Wing': self.wing.dict(),
-            'Tail': self.tail.dict(),
-            'Fuselage': self.fuselage.dict(),
+            'Mass Breakdown':
+            self.mass_breakdown.dict(),
+            'Mission Profile':
+            self.mission_profile.dict(),
+            'Wing':
+            self.wing.dict(),
+            'Tail':
+            self.tail.dict(),
+            'Fuselage':
+            self.fuselage.dict(),
             'Propellers': [propeller.dict() for propeller in self.propellers],
         })
         return base_dict

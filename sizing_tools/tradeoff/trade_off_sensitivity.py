@@ -4,36 +4,28 @@ import pandas as pd
 
 from utility.plotting import show, save
 
-input_grades = np.array([[4, 3, 3, 4, 5, 3],
-                         [2.9, 5.1, 3, 3.1, 3, 3.9],
-                         [4, 3, 2, 4, 5, 3],
-                         [2, 3, 4, 2, 4, 2]])
+input_grades = np.array([[4, 3, 3, 4, 5, 3], [2.9, 5.1, 3, 3.1, 3, 3.9],
+                         [4, 3, 2, 4, 5, 3], [2, 3, 4, 2, 4, 2]])
 
 random_grades = np.random.choice([1, 2, 3, 4, 5], size=(4, 6))
 
-input_weights = np.array([0.1,
-                          0.3,
-                          0.15,
-                          0.2,
-                          0.1,
-                          0.15]).T
+input_weights = np.array([0.1, 0.3, 0.15, 0.2, 0.1, 0.15]).T
 
 
 class WeightSensitivity():
+
     def __init__(self, grades: np.ndarray, weights: np.ndarray) -> None:
         self.grades = grades
-        self.start_weights = np.array([0.1,
-                                       0.3,
-                                       0.15,
-                                       0.2,
-                                       0.1,
-                                       0.15]).T
+        self.start_weights = np.array([0.1, 0.3, 0.15, 0.2, 0.1, 0.15]).T
         self.weights = weights
         self.win_count = np.zeros(4)
         self.combinations = set()
         self.weights_df = pd.DataFrame([self.final_grades],
-                                       columns=['Winged Rotorcraft', 'Rotating Wing', 'Folding Wing',
-                                                'VSQP'])
+                                       columns=[
+                                           'Winged Rotorcraft',
+                                           'Rotating Wing', 'Folding Wing',
+                                           'VSQP'
+                                       ])
 
     @property
     def final_grades(self):
@@ -51,7 +43,8 @@ class WeightSensitivity():
         boundary = 0.05
         lower_start = self.start_weights[i_from] - boundary
         higher_start = self.start_weights[i_to] + boundary
-        if lower_start < self.weights[i_from] and self.weights[i_to] < higher_start:
+        if lower_start < self.weights[i_from] and self.weights[
+                i_to] < higher_start:
             self.weights[i_from] -= 0.01
             self.weights[i_to] += 0.01
 
@@ -66,7 +59,12 @@ class WeightSensitivity():
                 self.combinations.add(str(self.weights))
                 self.win_count[self.winner] += 1
                 data.append(self.final_grades)
-        self.weights_df = pd.DataFrame(data, columns=['Winged Rotorcraft', 'Rotating Wing', 'Folding Wing', 'VSQP'])
+        self.weights_df = pd.DataFrame(data,
+                                       columns=[
+                                           'Winged Rotorcraft',
+                                           'Rotating Wing', 'Folding Wing',
+                                           'VSQP'
+                                       ])
 
     @show
     @save
@@ -74,7 +72,9 @@ class WeightSensitivity():
         # plt.rcParams["figure.figsize"] = [12, 8]
         # plt.rcParams["figure.autolayout"] = True
         fig, ax = plt.subplots(figsize=(7, 5))
-        ax = self.weights_df[['Winged Rotorcraft', 'Rotating Wing', 'Folding Wing', 'VSQP']].plot(
+        ax = self.weights_df[[
+            'Winged Rotorcraft', 'Rotating Wing', 'Folding Wing', 'VSQP'
+        ]].plot(
             kind='kde',
             ax=ax,
             xlabel='Grades',
