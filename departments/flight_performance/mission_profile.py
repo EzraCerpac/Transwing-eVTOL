@@ -1,5 +1,6 @@
 import json
 from dataclasses import dataclass
+from enum import Enum, auto
 from pathlib import Path
 from typing import Optional
 
@@ -168,3 +169,19 @@ if __name__ == '__main__':
     default_mission.adjust_and_verify_phases()
     print(default_mission.dict())
     default_mission.save_to_json('default_mission_exp.json')
+
+
+class Phase(Enum):
+    TAKEOFF = auto()
+    VERTICAL_CLIMB = auto()
+    TRANSITION1 = auto()
+    CLIMB = auto()
+    CRUISE = auto()
+    DESCENT = auto()
+    TRANSITION2 = auto()
+    HOVER = auto()
+    VERTICAL_DESCENT = auto()
+    LANDING = auto()
+
+    def __int__(self):
+        return self.value - 1

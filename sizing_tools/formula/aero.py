@@ -1,4 +1,4 @@
-from math import sqrt, pi
+from aerosandbox.numpy import sqrt, pi
 
 from scipy.optimize import minimize
 

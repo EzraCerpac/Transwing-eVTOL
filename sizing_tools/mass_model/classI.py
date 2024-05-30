@@ -3,6 +3,7 @@ import sys
 
 from scipy.constants import g
 
+import departments.flight_performance.power_calculations
 from utility.plotting.plot_functions import save_with_name
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -95,8 +96,8 @@ class ClassIModel(Model):
         ws_output = self.w_s_stall_speed()
         wp_output = self.ver_climb(ws_output)
         self.aircraft.wing.area = g * self.aircraft.total_mass / ws_output
-        self.aircraft.mission_profile.TAKEOFF.power = g * self.aircraft.total_mass / wp_output
-        return self.aircraft.wing.area, self.aircraft.mission_profile.TAKEOFF.power
+        departments.flight_performance.power_calculations.power = g * self.aircraft.total_mass / wp_output
+        return self.aircraft.wing.area, departments.flight_performance.power_calculations.power
 
     # @show
     @save_with_name(lambda self: self.aircraft.id + '_wing_loading')
