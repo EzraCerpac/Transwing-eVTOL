@@ -10,6 +10,7 @@ from sizing_tools.model import Model
 
 
 class MissionProfileOptimization(Model):
+
     def __init__(self, aircraft: Aircraft):
         super().__init__(aircraft)
         self.n_timesteps = 100
@@ -26,20 +27,37 @@ class MissionProfileOptimization(Model):
         ]
 
     def init_phase_variables(self, phase: Phase, start_time):
-        self.end_final = self.opti.variable(init_guess=start_time + 50, lower_bound=start_time+1, upper_bound=10000)
+        self.end_final = self.opti.variable(init_guess=start_time + 50,
+                                            lower_bound=start_time + 1,
+                                            upper_bound=10000)
         self.time = np.linspace(start_time, self.end_final, self.n_timesteps)
 
-        self.x = self.opti.variable(init_guess=np.linspace(0, ac.range, self.n_timesteps), lower_bound=0)
-        self.y = self.opti.variable(init_guess=np.zeros(self.n_timesteps), lower_bound=0)
-        self.v_x = self.opti.derivative_of(self.x, with_respect_to=self.time, derivative_init_guess=1)
-        self.v_y = self.opti.derivative_of(self.y, with_respect_to=self.time, derivative_init_guess=0)
-        self.a_x = self.opti.derivative_of(self.v_x, with_respect_to=self.time, derivative_init_guess=0)
-        self.a_y = self.opti.derivative_of(self.v_y, with_respect_to=self.time, derivative_init_guess=0)
+        self.x = self.opti.variable(init_guess=np.linspace(
+            0, ac.range, self.n_timesteps),
+                                    lower_bound=0)
+        self.y = self.opti.variable(init_guess=np.zeros(self.n_timesteps),
+                                    lower_bound=0)
+        self.v_x = self.opti.derivative_of(self.x,
+                                           with_respect_to=self.time,
+                                           derivative_init_guess=1)
+        self.v_y = self.opti.derivative_of(self.y,
+                                           with_respect_to=self.time,
+                                           derivative_init_guess=0)
+        self.a_x = self.opti.derivative_of(self.v_x,
+                                           with_respect_to=self.time,
+                                           derivative_init_guess=0)
+        self.a_y = self.opti.derivative_of(self.v_y,
+                                           with_respect_to=self.time,
+                                           derivative_init_guess=0)
 
-        self.power_required = power_required(phase, self.aircraft, self.v_x, self.v_y, self.y)
-        self.acceleration_power = acceleration_power(self.a_x, self.a_y, self.v_x, self.v_y, self.aircraft.total_mass)
-        self.total_power = self.power_required #+ self.acceleration_power
-        self.total_energy = np.sum(np.trapz(self.total_power) * np.diff(self.time))
+        self.power_required = power_required(phase, self.aircraft, self.v_x,
+                                             self.v_y, self.y)
+        self.acceleration_power = acceleration_power(self.a_x, self.a_y,
+                                                     self.v_x, self.v_y,
+                                                     self.aircraft.total_mass)
+        self.total_power = self.power_required  #+ self.acceleration_power
+        self.total_energy = np.sum(
+            np.trapz(self.total_power) * np.diff(self.time))
 
     def set_constraints(self, phase: Phase):
         self.opti.subject_to([
@@ -87,8 +105,6 @@ class MissionProfileOptimization(Model):
         #     self.distances[-1] == self.aircraft.range,
         # ])
 
-
-
     def run(self, verbose=True):
         # Optimize
         self.opti.minimize(self.total_energy)
@@ -117,7 +133,8 @@ class MissionProfileOptimization(Model):
             self.a_x = self.opti.debug.value(self.a_x)
             self.a_y = self.opti.debug.value(self.a_y)
             self.power_required = self.opti.debug.value(self.power_required)
-            self.acceleration_power = self.opti.debug.value(self.acceleration_power)
+            self.acceleration_power = self.opti.debug.value(
+                self.acceleration_power)
             self.total_power = self.opti.debug.value(self.total_power)
             self.total_energy = self.opti.debug.value(self.total_energy)
 
@@ -134,6 +151,7 @@ class MissionProfileOptimization(Model):
             'acceleration_power': self.acceleration_power,
             'Power [W]': self.total_power,
         })
+
 
 if __name__ == '__main__':
     from departments.flight_performance.plots import *
