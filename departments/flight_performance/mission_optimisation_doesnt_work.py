@@ -6,11 +6,13 @@ import casadi
 
 opti = asb.Opti()
 
+
 @dataclass
 class MissionPhase:
     duration: float | casadi.MX
     horizontal_speed: float | casadi.MX
     vertical_speed: float | casadi.MX
+
 
 @dataclass
 class MissionProfile:
@@ -72,11 +74,10 @@ class MissionProfile:
             self.landing,
         ]
 
+
 def mission_profile_objective(mission_profile: MissionProfile):
-    return sum(
-        phase.duration
-        for phase in mission_profile.phases
-    )
+    return sum(phase.duration for phase in mission_profile.phases)
+
 
 mission_profile = MissionProfile()
 objective = mission_profile_objective(mission_profile)
@@ -85,6 +86,10 @@ opti.minimize(objective)
 sol = opti.solve()
 print(sol(objective))
 for phase in mission_profile.phases:
-    phase_vars = [var for var in [phase.duration, phase.horizontal_speed, phase.vertical_speed] if isinstance(var, casadi.MX)]
+    phase_vars = [
+        var for var in
+        [phase.duration, phase.horizontal_speed, phase.vertical_speed]
+        if isinstance(var, casadi.MX)
+    ]
     phase_values = sol.value(phase_vars)
     print(*phase_values)

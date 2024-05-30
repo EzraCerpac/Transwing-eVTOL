@@ -10,6 +10,7 @@ from sizing_tools.model import Model
 
 
 class MissionProfileOptimization(Model):
+
     def __init__(self, aircraft: Aircraft):
         super().__init__(aircraft)
         self.opti = asb.Opti()
@@ -26,15 +27,25 @@ class MissionProfileOptimization(Model):
 
     def init_variables(self):
         n_vars = len(Phase)
-        self.durations = self.opti.variable(init_guess=10, n_vars=n_vars, lower_bound=0)
-        self.horizontal_speeds = self.opti.variable(init_guess=10, n_vars=n_vars, lower_bound=0, upper_bound=100)
-        self.vertical_speeds = self.opti.variable(init_guess=0, n_vars=n_vars, lower_bound=-100, upper_bound=100)
+        self.durations = self.opti.variable(init_guess=10,
+                                            n_vars=n_vars,
+                                            lower_bound=0)
+        self.horizontal_speeds = self.opti.variable(init_guess=10,
+                                                    n_vars=n_vars,
+                                                    lower_bound=0,
+                                                    upper_bound=100)
+        self.vertical_speeds = self.opti.variable(init_guess=0,
+                                                  n_vars=n_vars,
+                                                  lower_bound=-100,
+                                                  upper_bound=100)
         self.altitudes = casadi.cumsum(self.vertical_speeds * self.durations)
         self.distances = casadi.cumsum(self.horizontal_speeds * self.durations)
         self.powers = np.array([
-            power(phase, self.aircraft, horizontal_speed, vertical_speed, altitude)
-            for phase, horizontal_speed, vertical_speed, altitude in
-            zip(Phase, self.horizontal_speeds.nz, self.vertical_speeds.nz, self.altitudes.nz)
+            power(phase, self.aircraft, horizontal_speed, vertical_speed,
+                  altitude)
+            for phase, horizontal_speed, vertical_speed, altitude in zip(
+                Phase, self.horizontal_speeds.nz, self.vertical_speeds.nz,
+                self.altitudes.nz)
         ])
         self.energies = self.powers * self.durations
         self.total_energy = np.sum(self.energies)
@@ -85,7 +96,8 @@ class MissionProfileOptimization(Model):
         except Exception as e:
             print(e)
             self.durations = self.opti.debug.value(self.durations)
-            self.horizontal_speeds = self.opti.debug.value(self.horizontal_speeds)
+            self.horizontal_speeds = self.opti.debug.value(
+                self.horizontal_speeds)
             self.vertical_speeds = self.opti.debug.value(self.vertical_speeds)
             self.altitudes = self.opti.debug.value(self.altitudes)
             self.distances = self.opti.debug.value(self.distances)
@@ -105,6 +117,7 @@ class MissionProfileOptimization(Model):
             "Energy [J]": self.energies,
         })
         return df
+
 
 if __name__ == '__main__':
     from departments.flight_performance.plots import *
