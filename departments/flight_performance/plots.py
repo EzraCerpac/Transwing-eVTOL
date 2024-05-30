@@ -3,6 +3,7 @@ from matplotlib import pyplot as plt
 
 from utility.plotting import show
 
+
 @show
 def plot_per_phase(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
     fig, axs = plt.subplots(7, 1, figsize=(30, 20), sharex=True)
@@ -33,6 +34,7 @@ def plot_per_phase(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
 
     plt.tight_layout()
     return fig, axs
+
 
 @show
 def plot_over_distance(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
