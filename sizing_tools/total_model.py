@@ -25,7 +25,7 @@ class TotalModel(Model):
 
     def run(self):
         self.class_I_II_iteration()
-        # HingeLoadingModel(self.aircraft).shear_and_moment_at_hinge()
+        HingeLoadingModel(self.aircraft).shear_and_moment_at_hinge()
         try:
             self.aircraft.save()
         except AttributeError:
