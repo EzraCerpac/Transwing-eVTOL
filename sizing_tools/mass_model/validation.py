@@ -11,6 +11,7 @@ from data.literature.evtol_performance import plot_mass_over_payload as plot_mas
 from data.literature.evtol_performance import plot_range_over_mass as plot_range_over_mass_data
 from sizing_tools.mass_model.iteration import Iteration
 from utility.plotting import show, save, save_with_name
+from utility.plotting.helper import plot_legend
 from utility.unit_conversion import convert_float
 
 
@@ -50,16 +51,14 @@ class MassEstimation:
         ax.legend()
         return fig, ax
 
-    def plot_mass_over_payload(self, ax: plt.Axes) -> plt.Axes:
-        payloads = np.linspace(80, 500, 21)  # kg
+    def plot_mass_over_payload(self, ax: plt.Axes, payloads=np.linspace(150, 500, 15)) -> plt.Axes:
         masses = self.mass_over(payloads, self.ac_func_payload)
-        ax.plot(payloads, masses, label=self.initial_aircraft.full_name)
+        ax.plot(payloads, masses, label='Concept ' + self.initial_aircraft.id)
         return ax
 
-    def plot_range_over_mass(self, ax: plt.Axes) -> plt.Axes:
-        ranges = np.linspace(50, 250, 21)  # km
+    def plot_range_over_mass(self, ax: plt.Axes, ranges=np.linspace(50, 210, 15)) -> plt.Axes:
         masses = self.mass_over(ranges, self.ac_func_range)
-        ax.plot(ranges, masses, label=self.initial_aircraft.full_name)
+        ax.plot(ranges, masses, label='Concept ' + self.initial_aircraft.id)
         return ax
 
     @show
@@ -155,14 +154,8 @@ def plot_concepts_range_over_mass(
         ax = mass_estimation.plot_range_over_mass(ax)
     ax.set_xlabel('Range [km]')
     ax.set_ylabel('Total mass [kg]')
-    fig_leg = plt.figure(figsize=(3, 2))
-    ax_leg = fig_leg.add_subplot(111)
-
-    # Add the legend from the original plot to the new figure
-    ax_leg.legend(*ax.get_legend_handles_labels())
-    ax_leg.axis('off')
-
-    fig_leg.savefig('legend.png', bbox_inches='tight')  # Save the legend figure to 'legend.png'
+    ax.set_xlim(right=255)
+    fig_leg, ax_leg = plot_legend(ax)
     return fig, ax
 
 

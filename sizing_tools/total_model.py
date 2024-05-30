@@ -78,10 +78,10 @@ class TotalModel(Model):
 def main():
     for concept in all_concepts:
         model = TotalModel(concept)
-        model.print_results(mass_breakdown=False,
-                            energy_breakdown=False,
+        model.print_results(mass_breakdown=True,
+                            energy_breakdown=True,
                             hinge_loading=False,
-                            class1_diagram=False)
+                            class1_diagram=True)
         model.run()
         # model.print_all_parameters()
 
