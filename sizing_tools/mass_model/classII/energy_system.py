@@ -122,7 +122,8 @@ class EnergySystemMassModel(MassModel):
             self.initial_total_mass * g, rho, phase.C_L,
             self.aircraft.wing.area)
         D = drag(C_D, rho, velocity, self.aircraft.wing.area)
-        return cruise_power_required(D, velocity, self.aircraft.propulsion_efficiency)
+        return cruise_power_required(D, velocity,
+                                     self.aircraft.propulsion_efficiency)
 
     def _cruise_power_fixed_velocity(self,
                                      phase: MissionPhase,
@@ -138,7 +139,8 @@ class EnergySystemMassModel(MassModel):
                                self.aircraft.wing.oswald_efficiency_factor)
         D = drag(self.C_D, rho, phase.horizontal_speed,
                  self.aircraft.wing.area)
-        return cruise_power_required(D, phase.horizontal_speed, self.aircraft.propulsion_efficiency)
+        return cruise_power_required(D, phase.horizontal_speed,
+                                     self.aircraft.propulsion_efficiency)
 
     def _update_descent_phase(self, phase: MissionPhase) -> None:
         assert phase.phase == Phase.DESCENT

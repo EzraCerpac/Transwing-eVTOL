@@ -88,8 +88,8 @@ def C_L_cruise_opt(C_D0: float, aspect_ratio: float, e: float) -> float:
 
 # Function to calculate the power required for propulsion
 def cruise_power_required(drag: float,
-                   velocity: float,
-                   propulsion_efficiency: float = 1) -> float:
+                          velocity: float,
+                          propulsion_efficiency: float = 1) -> float:
     """
     Calculate the power required for propulsion.
 
