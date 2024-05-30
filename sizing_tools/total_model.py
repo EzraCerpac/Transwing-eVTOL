@@ -1,3 +1,4 @@
+import departments.flight_performance.power_calculations
 from data.concept_parameters.aircraft import Aircraft
 from data.concept_parameters.concepts import all_concepts
 from sizing_tools.hinge_loading import HingeLoadingModel
@@ -39,7 +40,7 @@ class TotalModel(Model):
             f"Total Energy: {convert_float(self.aircraft.mission_profile.energy, 'J', 'kWh'):.2f} kWh"
         )
         print(
-            f"Takeoff Power: {convert_float(self.aircraft.mission_profile.TAKEOFF.power, 'W', 'kW'):.2f} kW"
+            f"Takeoff Power: {convert_float(departments.flight_performance.power_calculations.power, 'W', 'kW'):.2f} kW"
         )
         HingeLoadingModel(self.aircraft).shear_and_moment_at_hinge()
         print(f"Hinge Load: {self.aircraft.hinge_load:.2f} N")

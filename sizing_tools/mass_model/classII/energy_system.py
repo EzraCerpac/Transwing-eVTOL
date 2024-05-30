@@ -3,6 +3,7 @@ from math import atan
 from aerosandbox import Atmosphere
 from scipy.constants import g
 
+import departments.flight_performance.power_calculations
 from data.concept_parameters.aircraft import Aircraft
 from data.concept_parameters.mission_profile import MissionPhase, Phase
 from sizing_tools.formula.aero import C_L_from_lift, hover_power, hover_velocity, rotor_disk_area, C_D_from_CL, drag, \
@@ -18,8 +19,8 @@ class EnergySystemMassModel(MassModel):
     def __init__(self, aircraft: Aircraft, initial_total_mass: float):
         super().__init__(aircraft, initial_total_mass)
         self.mission_profile = aircraft.mission_profile
-        if self.aircraft.mission_profile.TAKEOFF.power is None:
-            self.aircraft.mission_profile.TAKEOFF.power = self._hover_power(
+        if departments.flight_performance.power_calculations.power is None:
+            departments.flight_performance.power_calculations.power = self._hover_power(
                 self.aircraft.mission_profile.TAKEOFF)
 
     @property
@@ -53,7 +54,7 @@ class EnergySystemMassModel(MassModel):
     def _power(self, phase: MissionPhase) -> float:
         match phase.phase:
             case Phase.TAKEOFF:
-                power = self.aircraft.mission_profile.TAKEOFF.power  # from Class I model
+                power = departments.flight_performance.power_calculations.power  # from Class I model
             case Phase.HOVER_CLIMB:
                 power = self._climb_power(phase)
             case Phase.CLIMB:

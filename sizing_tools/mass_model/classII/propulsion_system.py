@@ -1,3 +1,4 @@
+import departments.flight_performance.power_calculations
 from data.concept_parameters.aircraft import Aircraft
 from data.concept_parameters.mission_profile import Phase
 from sizing_tools.formula.emperical import engine_mass
@@ -22,7 +23,7 @@ class PropulsionSystemMassModel(MassModel):
         Calculate the mass of the motor
         :return: mass of the motor in kg
         """
-        power = self.aircraft.mission_profile.TAKEOFF.power
+        power = departments.flight_performance.power_calculations.power
         return engine_mass(convert_float(power, 'W', 'kW'),
                            self.aircraft.motor_power_margin,
                            self.aircraft.motor_prop_count)
@@ -32,7 +33,7 @@ class PropulsionSystemMassModel(MassModel):
         Calculate the mass of the propeller
         :return: mass of the propeller in kg
         """
-        power = self.aircraft.mission_profile.TAKEOFF.power
+        power = departments.flight_performance.power_calculations.power
         return 0.144 * (2 * self.aircraft.propeller_radius *
                         (convert_float(power, 'W', 'kW') /
                          self.aircraft.motor_prop_count) *
