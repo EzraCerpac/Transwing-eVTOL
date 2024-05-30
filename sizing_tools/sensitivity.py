@@ -12,8 +12,13 @@ from utility.plotting import show
 
 
 class SensitivityAnalysis:
-    def __init__(self, aircraft: Aircraft, parameters: list[str],
-                 variation_range: np.ndarray = np.linspace(-0.1, 0.1, 11)) -> None:
+
+    def __init__(
+        self,
+        aircraft: Aircraft,
+        parameters: list[str],
+        variation_range: np.ndarray = np.linspace(-0.1, 0.1, 11)
+    ) -> None:
         """
         Conduct a sensitivity analysis on a specified parameter of an aircraft model.
         :param aircraft: the aircraft model to be analyzed
@@ -26,7 +31,8 @@ class SensitivityAnalysis:
         self.variation_range = variation_range
         self.output: dict[str, tuple[np.ndarray, np.ndarray, float]] = {}
 
-    def run_single_param(self, parameter: str) -> tuple[np.ndarray, np.ndarray]:
+    def run_single_param(self,
+                         parameter: str) -> tuple[np.ndarray, np.ndarray]:
         """
         Conduct a sensitivity analysis on a single parameter of an aircraft model.
         :param parameter: the parameter of interest
@@ -53,7 +59,8 @@ class SensitivityAnalysis:
             if len(attrs) > 1:
                 setattr(obj, attrs[1], original_value * (1 + variation))
             else:
-                setattr(aircraft_copy, parameter, original_value * (1 + variation))
+                setattr(aircraft_copy, parameter,
+                        original_value * (1 + variation))
 
             # Run the TotalModel and record the total mass output
             model = TotalModel(aircraft_copy)
@@ -64,7 +71,8 @@ class SensitivityAnalysis:
             parameter_values.append(original_value * (1 + variation))
             total_mass_outputs.append(total_mass_output)
 
-        self.output[parameter] = (np.array(parameter_values), np.array(total_mass_outputs), np.NaN)
+        self.output[parameter] = (np.array(parameter_values),
+                                  np.array(total_mass_outputs), np.NaN)
         return self.output[parameter][:2]
 
     def calculate_sensitivity(self) -> dict[str, float]:
@@ -75,8 +83,12 @@ class SensitivityAnalysis:
         for parameter, output in self.output.items():
             parameter_values, total_mass_outputs, sensitivity = output
             sensitivity = np.gradient(total_mass_outputs, parameter_values)[0]
-            self.output[parameter] = (parameter_values, total_mass_outputs, sensitivity)
-        return {parameter: output[2] for parameter, output in self.output.items()}
+            self.output[parameter] = (parameter_values, total_mass_outputs,
+                                      sensitivity)
+        return {
+            parameter: output[2]
+            for parameter, output in self.output.items()
+        }
 
     def run(self) -> dict[str, tuple[np.ndarray, np.ndarray, float]]:
         """
@@ -85,7 +97,9 @@ class SensitivityAnalysis:
         """
         with ThreadPoolExecutor() as executor:
             for i, parameter in enumerate(self.parameters):
-                logger.debug(f'Running sensitivity analysis for parameter {i + 1}/{len(self.parameters)}: {parameter}')
+                logger.debug(
+                    f'Running sensitivity analysis for parameter {i + 1}/{len(self.parameters)}: {parameter}'
+                )
                 executor.submit(self.run_single_param, parameter)
         self.calculate_sensitivity()
         return self.output
@@ -98,15 +112,21 @@ class SensitivityAnalysis:
         :return: a tuple containing the figure and axes of the plot
         """
         fig, ax = plt.subplots(figsize=(8, 6))
-        parameter_values, total_mass_outputs, sensitivity = self.output[parameter]
-        ax.plot(parameter_values, total_mass_outputs, label=f'{parameter} sensitivity: {sensitivity:.2f}')
-        ax.set_title(f'Total Mass Output vs {parameter}, sensitivity: {sensitivity:.2f}')
+        parameter_values, total_mass_outputs, sensitivity = self.output[
+            parameter]
+        ax.plot(parameter_values,
+                total_mass_outputs,
+                label=f'{parameter} sensitivity: {sensitivity:.2f}')
+        ax.set_title(
+            f'Total Mass Output vs {parameter}, sensitivity: {sensitivity:.2f}'
+        )
         ax.set_xlabel(parameter)
         ax.set_ylabel('Total Mass Output')
         return fig, ax
 
     @show
-    def plot_combined(self, exclude: list[str] = []) -> tuple[plt.Figure, plt.Axes]:
+    def plot_combined(self,
+                      exclude: list[str] = []) -> tuple[plt.Figure, plt.Axes]:
         """
         Plot a bar chart of the sensitivities for all parameters of interest.
         :param exclude: a list of parameters to exclude from the plot
@@ -116,26 +136,34 @@ class SensitivityAnalysis:
         sensitivities = self.dict
         for parameter, sensitivity in sensitivities.items():
             if parameter not in exclude:
-                ax.bar(parameter, sensitivity, label=f'{parameter} sensitivity: {sensitivity:.2f}')
-        ax.set_title('Sensitivity of Total Mass Output to Parameters of Interest')
+                ax.bar(parameter,
+                       sensitivity,
+                       label=f'{parameter} sensitivity: {sensitivity:.2f}')
+        ax.set_title(
+            'Sensitivity of Total Mass Output to Parameters of Interest')
         ax.set_xlabel('Parameter')
         ax.set_ylabel('Sensitivity')
         ax.legend()
         return fig, ax
 
     def dict(self, *args, **kwargs) -> dict[str, float]:
-        return {parameter: output[2] for parameter, output in self.output.items()}
+        return {
+            parameter: output[2]
+            for parameter, output in self.output.items()
+        }
 
     def __str__(self) -> str:
         txt = 'Sensitivity Analysis Results\n'
-        for parameter, sensitivity in sorted(self.dict().items(), key=lambda item: -abs(item[1])):
+        for parameter, sensitivity in sorted(self.dict().items(),
+                                             key=lambda item: -abs(item[1])):
             txt += f"{parameter.replace('_', ' ')} & {sensitivity}\n"
         return txt
 
 
 if __name__ == '__main__':
     # Define the range of variations for the sensitivity analysis
-    variation_range = np.linspace(-0.01, 0.01, 11)  # Vary each parameter by ±10%
+    variation_range = np.linspace(-0.01, 0.01,
+                                  11)  # Vary each parameter by ±10%
 
     # Conduct the sensitivity analysis for each parameter of interest
     parameters_of_interest = [
@@ -161,7 +189,9 @@ if __name__ == '__main__':
         'motor_power_margin',
         'v_stall',
     ]
-    sensitivity_analysis = SensitivityAnalysis(concept_C2_1, parameters_of_interest, variation_range)
+    sensitivity_analysis = SensitivityAnalysis(concept_C2_1,
+                                               parameters_of_interest,
+                                               variation_range)
     sensitivity_analysis.run()
     # sensitivity_analysis.plot_combined()
     sensitivity_analysis.plot_single('payload_mass')

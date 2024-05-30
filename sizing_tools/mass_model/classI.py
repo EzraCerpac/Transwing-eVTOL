@@ -6,7 +6,7 @@ from scipy.constants import g
 from utility.plotting.plot_functions import save_with_name
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-root_dir = os.path.abspath(os.path.join(current_dir,  '..'))  # Adjust as needed
+root_dir = os.path.abspath(os.path.join(current_dir, '..'))  # Adjust as needed
 sys.path.append(root_dir)
 
 from sizing_tools.model import Model
@@ -104,9 +104,7 @@ class ClassIModel(Model):
         fig, ax = plt.subplots(figsize=(7, 7))
         xx = np.arange(1, max_x)
 
-        plt.axvline(x=self.w_s_stall_speed(),
-                    label='Stall Speed',
-                    color='red')
+        plt.axvline(x=self.w_s_stall_speed(), label='Stall Speed', color='red')
         plt.plot(
             xx,
             self._wp(xx),
