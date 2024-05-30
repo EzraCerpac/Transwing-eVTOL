@@ -1,5 +1,5 @@
 from data.concept_parameters.aircraft import Aircraft
-from data.concept_parameters.concepts import all_concepts
+from data.concept_parameters.concepts import all_concepts, rotating_wings
 from sizing_tools.hinge_loading import HingeLoadingModel
 from sizing_tools.mass_model.classI import ClassIModel
 from sizing_tools.mass_model.iteration import Iteration
@@ -25,7 +25,7 @@ class TotalModel(Model):
 
     def run(self):
         self.class_I_II_iteration()
-        HingeLoadingModel(self.aircraft).shear_and_moment_at_hinge()
+        # HingeLoadingModel(self.aircraft).shear_and_moment_at_hinge()
         try:
             self.aircraft.save()
         except AttributeError:
@@ -57,8 +57,8 @@ class TotalModel(Model):
         print(
             f"Cruise C_L: {self.aircraft.mission_profile.CRUISE.C_L:.2f}"
         )
-        print(f"Hinge Load: {self.aircraft.hinge_load:.2f} N")
-        print(f"Hinge Moment: {self.aircraft.hinge_moment:.2f} Nm")
+        # print(f"Hinge Load: {self.aircraft.hinge_load:.2f} N")
+        # print(f"Hinge Moment: {self.aircraft.hinge_moment:.2f} Nm")
         print("\n")
         if class1_diagram:
             ClassIModel(self.aircraft).plot_wp_ws()
@@ -76,13 +76,15 @@ class TotalModel(Model):
 
 
 def main():
-    for concept in all_concepts:
+    for concept in rotating_wings:
         model = TotalModel(concept)
-        model.print_results(mass_breakdown=True,
-                            energy_breakdown=True,
-                            hinge_loading=False,
-                            class1_diagram=True)
         model.run()
+        model.print_results(
+            mass_breakdown=True,
+            energy_breakdown=True,
+            # hinge_loading=True,
+            class1_diagram=True
+        )
         # model.print_all_parameters()
 
 

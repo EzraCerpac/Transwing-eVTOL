@@ -27,7 +27,7 @@ class MassEstimation:
             mass = list(
                 executor.map(
                     lambda val: Iteration(
-                        ac_func(*val if isinstance(val, tuple) else (val, ))).
+                        ac_func(*val if isinstance(val, tuple) else (val,))).
                     run(tolerance=1e-5, tol_classII=1e-6).total_mass, array))
         return np.array(mass)
 
@@ -64,10 +64,9 @@ class MassEstimation:
     @show
     @save_with_name(
         lambda self: f'{self.initial_aircraft.id}_mass_over_payload_and_range')
-    def plot_mass_over_payload_and_range(self) -> tuple[plt.Figure, plt.Axes]:
-        fig, ax = plt.subplots(figsize=(10, 6))
-        payloads = np.linspace(80, 500, 11)  # kg
-        ranges = np.linspace(50, 200, 11)  # km
+    def plot_mass_over_payload_and_range(self, payloads: np.ndarray = np.linspace(150, 500, 13),
+                                         ranges: np.ndarray = np.linspace(70, 170, 11)) -> tuple[plt.Figure, plt.Axes]:
+        fig, ax = plt.subplots(figsize=(8, 5))
 
         # Create a grid of payload and range values
         payload_grid, range_grid = np.meshgrid(payloads, ranges)
@@ -86,16 +85,17 @@ class MassEstimation:
                               range_grid,
                               mass_grid,
                               cmap='viridis',
-                              vmin=600,
-                              vmax=2400)
+                              # vmin=600,
+                              # vmax=2400,
+                              )
         df = reduced_vtol_data()
         # df = df.sort_values(by='Mass (kg)', ascending=False)
-        for i, row in df.iterrows():
+        for _, row in df.iterrows():
             if ranges[0] < row["Range (km)"] < ranges[-1] and payloads[
-                    0] < row["Payload (kg)"] < payloads[-1]:
+                0] < row["Payload (kg)"] < payloads[-1]:
                 ax.scatter(row["Payload (kg)"],
                            row["Range (km)"],
-                           label=f'{row["Name"]}: {row["Mass (kg)"]:.1f} kg')
+                           label=f'{row["Name"]}: {row["Mass (kg)"]:.0f} kg')
         ax.set_xlabel('Payload [kg]')
         ax.set_ylabel('Range [km]')
         # ax.set_title('Total mass over payload and range for ' + self.initial_aircraft.name)
@@ -164,8 +164,10 @@ if __name__ == '__main__':
 
     concepts = [concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10]
 
-    plot_concepts_mass_over_payload(concepts)
-    plot_concepts_range_over_mass(concepts)
+    # plot_concepts_mass_over_payload(concepts)
+    # plot_concepts_range_over_mass(concepts)
+
+    MassEstimation(concept_C2_10).plot_mass_over_payload_and_range()
 
     # for concept in concepts:
     #     MassEstimation(concept).plot_mass_over_payload_and_range()

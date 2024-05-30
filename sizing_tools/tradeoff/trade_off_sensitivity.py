@@ -32,7 +32,7 @@ class WeightSensitivity():
         self.win_count = np.zeros(4)
         self.combinations = set()
         self.weights_df = pd.DataFrame([self.final_grades],
-                                       columns=['Winged Hovercraft', 'Rotating Wing', 'Folding Wing',
+                                       columns=['Winged Rotorcraft', 'Rotating Wing', 'Folding Wing',
                                                 'VSQP'])
 
     @property
@@ -66,7 +66,7 @@ class WeightSensitivity():
                 self.combinations.add(str(self.weights))
                 self.win_count[self.winner] += 1
                 data.append(self.final_grades)
-        self.weights_df = pd.DataFrame(data, columns=['Winged Hovercraft', 'Rotating Wing', 'Folding Wing', 'VSQP'])
+        self.weights_df = pd.DataFrame(data, columns=['Winged Rotorcraft', 'Rotating Wing', 'Folding Wing', 'VSQP'])
 
     @show
     @save
@@ -74,7 +74,7 @@ class WeightSensitivity():
         # plt.rcParams["figure.figsize"] = [12, 8]
         # plt.rcParams["figure.autolayout"] = True
         fig, ax = plt.subplots(figsize=(7, 5))
-        ax = self.weights_df[['Winged Hovercraft', 'Rotating Wing', 'Folding Wing', 'VSQP']].plot(
+        ax = self.weights_df[['Winged Rotorcraft', 'Rotating Wing', 'Folding Wing', 'VSQP']].plot(
             kind='kde',
             ax=ax,
             xlabel='Grades',
