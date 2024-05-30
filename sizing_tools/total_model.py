@@ -79,8 +79,7 @@ def main():
             mass_breakdown=True,
             energy_breakdown=True,
             # hinge_loading=True,
-            class1_diagram=True
-        )
+            class1_diagram=True)
         # model.print_all_parameters()
 
 
