@@ -1,4 +1,4 @@
-from typing import Optional, NamedTuple
+from typing import Optional, NamedTuple, Any
 
 from aerosandbox import Airplane
 from pydantic import BaseModel, field_validator, Field
