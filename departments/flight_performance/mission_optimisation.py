@@ -85,7 +85,10 @@ class MissionProfileOptimization(Model):
                                      lower_bound=-30,
                                      upper_bound=60),
         )
-        self.thrust_level = self.opti.variable(init_guess=0.5, n_vars=self.n_timesteps, lower_bound=0, upper_bound=1)
+        self.thrust_level = self.opti.variable(init_guess=0.5,
+                                               n_vars=self.n_timesteps,
+                                               lower_bound=0,
+                                               upper_bound=1)
 
         a = np.diff(self.dyn.speed) / np.diff(self.time)
         self.a_x = a * np.cos(self.dyn.gamma[:-1])
@@ -104,10 +107,11 @@ class MissionProfileOptimization(Model):
 
         self.cruise_constraints()
 
-
     def cruise_constraints(self):
         alpha_derivative = np.diff(self.dyn.alpha) / np.diff(self.time)
-        thrust_derivative = self.opti.derivative_of(self.thrust_level, with_respect_to=self.time, derivative_init_guess=0)
+        thrust_derivative = self.opti.derivative_of(self.thrust_level,
+                                                    with_respect_to=self.time,
+                                                    derivative_init_guess=0)
 
         start_cruise_distance = 0.1 * self.aircraft.range
         end_cruise_distance = 0.9 * self.aircraft.range
@@ -138,10 +142,13 @@ class MissionProfileOptimization(Model):
             pitch_rate > -.1,
         ])
         CL = 3 * np.sind(2 * self.dyn.alpha)
-        CD = C_D_from_CL(CL, self.aircraft.estimated_CD0, self.aircraft.wing.aspect_ratio,
+        CD = C_D_from_CL(CL, self.aircraft.estimated_CD0,
+                         self.aircraft.wing.aspect_ratio,
                          self.aircraft.wing.oswald_efficiency_factor)
-        lift = self.dyn.op_point.dynamic_pressure() * self.aircraft.wing.area * CL
-        drag = self.dyn.op_point.dynamic_pressure() * self.aircraft.wing.area * CD
+        lift = self.dyn.op_point.dynamic_pressure(
+        ) * self.aircraft.wing.area * CL
+        drag = self.dyn.op_point.dynamic_pressure(
+        ) * self.aircraft.wing.area * CD
         self.dyn.add_force(
             Fx=-drag,
             Fz=-lift,
