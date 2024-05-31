@@ -157,6 +157,22 @@ class Wing(BaseModel):
         self.mean_aerodynamic_chord = data.get('mean_aerodynamic_chord')
         self.span = data.get('span')
 
+    def __str__(self):
+        return f"Wing with {self.area} m^2 area, {self.aspect_ratio} aspect ratio, {self.mean_aerodynamic_chord} m mean aerodynamic chord and {self.span} m span."
+
+    def __repr__(self):
+        return f"Wing(area={self.area}, aspect_ratio={self.aspect_ratio}, mean_aerodynamic_chord={self.mean_aerodynamic_chord}, span={self.span})"
+
+    def dict(self, *args, **kwargs):
+        base_dict = super().dict(*args, **kwargs)
+        base_dict.update({
+            'area': self.area,
+            'aspect_ratio': self.aspect_ratio,
+            'mean_aerodynamic_chord': self.mean_aerodynamic_chord,
+            'span': self.span,
+        })
+        return base_dict
+
 
 class Tail(BaseModel):
     S_th: Optional[float] = Field(0.5, gt=0)  # m^2

@@ -1,5 +1,6 @@
-from typing import Optional
+from typing import Optional, NamedTuple, Any
 
+from aerosandbox import Airplane
 from pydantic import BaseModel, field_validator, Field
 
 from data.concept_parameters.aircraft_components import Propeller, Tail, Fuselage, Wing, MassObject
@@ -101,54 +102,54 @@ class Aircraft(BaseModel):
             name='default',
             phases={
                 Phase.TAKEOFF:
-                MissionPhase(phase=Phase.TAKEOFF,
-                             duration=0.17 * 60,
-                             horizontal_speed=0,
-                             distance=0,
-                             vertical_speed=0 * 60,
-                             ending_altitude=1.5),
+                    MissionPhase(phase=Phase.TAKEOFF,
+                                 duration=0.17 * 60,
+                                 horizontal_speed=0,
+                                 distance=0,
+                                 vertical_speed=0 * 60,
+                                 ending_altitude=1.5),
                 Phase.HOVER_CLIMB:
-                MissionPhase(
-                    phase=Phase.HOVER_CLIMB,
-                    duration=self.cruise_altitude / self.rate_of_climb,
-                    horizontal_speed=self.cruise_velocity,  # gets adjusted in model
-                    distance=self.cruise_velocity * self.cruise_altitude /
-                    self.rate_of_climb,  # gets adjusted in model
-                    vertical_speed=self.rate_of_climb,
-                    ending_altitude=self.cruise_altitude),
+                    MissionPhase(
+                        phase=Phase.HOVER_CLIMB,
+                        duration=self.cruise_altitude / self.rate_of_climb,
+                        horizontal_speed=self.cruise_velocity,  # gets adjusted in model
+                        distance=self.cruise_velocity * self.cruise_altitude /
+                                 self.rate_of_climb,  # gets adjusted in model
+                        vertical_speed=self.rate_of_climb,
+                        ending_altitude=self.cruise_altitude),
                 Phase.CLIMB:  # set to 0
-                MissionPhase(
-                    phase=Phase.CLIMB,
-                    duration=0,
-                    horizontal_speed=self.
-                    cruise_velocity,  # gets adjusted in model
-                    distance=0,
-                    vertical_speed=0,
-                    ending_altitude=self.cruise_altitude),
+                    MissionPhase(
+                        phase=Phase.CLIMB,
+                        duration=0,
+                        horizontal_speed=self.
+                        cruise_velocity,  # gets adjusted in model
+                        distance=0,
+                        vertical_speed=0,
+                        ending_altitude=self.cruise_altitude),
                 Phase.CRUISE:
-                MissionPhase(phase=Phase.CRUISE,
-                             duration=self.range / self.cruise_velocity,
-                             horizontal_speed=self.cruise_velocity,
-                             distance=self.range,
-                             vertical_speed=0,
-                             ending_altitude=self.cruise_altitude),
+                    MissionPhase(phase=Phase.CRUISE,
+                                 duration=self.range / self.cruise_velocity,
+                                 horizontal_speed=self.cruise_velocity,
+                                 distance=self.range,
+                                 vertical_speed=0,
+                                 ending_altitude=self.cruise_altitude),
                 Phase.DESCENT:
-                MissionPhase(
-                    phase=Phase.DESCENT,
-                    duration=self.cruise_altitude / self.rate_of_climb,
-                    horizontal_speed=self.
-                    cruise_velocity,  # gets adjusted in model
-                    distance=self.cruise_velocity * self.cruise_altitude /
-                    self.rate_of_climb,  # gets adjusted in model
-                    vertical_speed=-self.rate_of_climb,  # weird assumption
-                    ending_altitude=1.5),
+                    MissionPhase(
+                        phase=Phase.DESCENT,
+                        duration=self.cruise_altitude / self.rate_of_climb,
+                        horizontal_speed=self.
+                        cruise_velocity,  # gets adjusted in model
+                        distance=self.cruise_velocity * self.cruise_altitude /
+                                 self.rate_of_climb,  # gets adjusted in model
+                        vertical_speed=-self.rate_of_climb,  # weird assumption
+                        ending_altitude=1.5),
                 Phase.LANDING:
-                MissionPhase(phase=Phase.LANDING,
-                             duration=1 * 60,
-                             horizontal_speed=0,
-                             distance=0,
-                             vertical_speed=0 * 60,
-                             ending_altitude=0),
+                    MissionPhase(phase=Phase.LANDING,
+                                 duration=1 * 60,
+                                 horizontal_speed=0,
+                                 distance=0,
+                                 vertical_speed=0 * 60,
+                                 ending_altitude=0),
             })
 
     @classmethod
@@ -171,11 +172,65 @@ class Aircraft(BaseModel):
             raise ValueError('Parameter must be less than 1')
         return v
 
+    def save(self, verbose: bool = True) -> None:
+        from utility.data_management.save_and_load_object import save
+        save(self,
+             name=self.full_name.replace(' ', '_').replace('.', '_'),
+             verbose=verbose)
+
+    @classmethod
+    def load(cls,
+             id: str = 'C2.1',
+             directory: str = 'end_of_trade-off_concepts') -> 'Aircraft':
+        from utility.data_management.save_and_load_object import load
+        full_name = {
+            'C1.5': 'Concept_C1_5_(Winged_Rotorcraft)',
+            'C2.1': 'Concept_C2_1_(Rotating_Wing)',
+            'C2.6': 'Concept_C2_6_(Folding_Wing)',
+            'C2.10': 'Concept_C2_10_(Variable_Skew_QuadPlane)',
+        }
+        ac = load(f'{directory}/{full_name[id]}')
+        assert isinstance(ac, Aircraft)
+        assert ac.id == id
+        return ac
+
     def __repr__(self) -> str:
         return f'Aircraft(id={self.id})'
+
+    def __str__(self) -> str:
+        return self.full_name
 
     def __hash__(self) -> int:
         return hash(self.id)
 
     def __eq__(self, other) -> bool:
         return self.id == other.id
+
+    def dict(self, *args, **kwargs) -> dict[str, Any]:
+        base_dict = super().dict(*args,
+                                 exclude={
+                                     'mass_breakdown_dict', 'mass_breakdown',
+                                     'mission_profile', 'wing', 'tail',
+                                     'fuselage', 'propellers'
+                                 },
+                                 **kwargs)
+        base_dict.update({
+            'Mass Breakdown':
+            self.mass_breakdown.dict(),
+            'Mission Profile':
+            self.mission_profile.dict(),
+            'Wing':
+            self.wing.dict(),
+            'Tail':
+            self.tail.dict(),
+            'Fuselage':
+            self.fuselage.dict(),
+            'Propellers': [propeller.dict() for propeller in self.propellers],
+        })
+        return base_dict
+
+
+class AC(NamedTuple):
+    name: str
+    data: Aircraft
+    parametric: Airplane

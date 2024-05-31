@@ -11,6 +11,7 @@ from data.literature.evtol_performance import plot_mass_over_payload as plot_mas
 from data.literature.evtol_performance import plot_range_over_mass as plot_range_over_mass_data
 from sizing_tools.mass_model.iteration import Iteration
 from utility.plotting import show, save, save_with_name
+from utility.plotting.helper import plot_legend
 from utility.unit_conversion import convert_float
 
 
@@ -50,25 +51,27 @@ class MassEstimation:
         ax.legend()
         return fig, ax
 
-    def plot_mass_over_payload(self, ax: plt.Axes) -> plt.Axes:
-        payloads = np.linspace(80, 500, 21)  # kg
+    def plot_mass_over_payload(
+        self, ax: plt.Axes, payloads=np.linspace(150, 500, 15)) -> plt.Axes:
         masses = self.mass_over(payloads, self.ac_func_payload)
-        ax.plot(payloads, masses, label=self.initial_aircraft.full_name)
+        ax.plot(payloads, masses, label='Concept ' + self.initial_aircraft.id)
         return ax
 
-    def plot_range_over_mass(self, ax: plt.Axes) -> plt.Axes:
-        ranges = np.linspace(50, 250, 21)  # km
+    def plot_range_over_mass(
+        self, ax: plt.Axes, ranges=np.linspace(50, 210, 15)) -> plt.Axes:
         masses = self.mass_over(ranges, self.ac_func_range)
-        ax.plot(ranges, masses, label=self.initial_aircraft.full_name)
+        ax.plot(ranges, masses, label='Concept ' + self.initial_aircraft.id)
         return ax
 
     @show
     @save_with_name(
         lambda self: f'{self.initial_aircraft.id}_mass_over_payload_and_range')
-    def plot_mass_over_payload_and_range(self) -> tuple[plt.Figure, plt.Axes]:
-        fig, ax = plt.subplots(figsize=(10, 6))
-        payloads = np.linspace(80, 500, 11)  # kg
-        ranges = np.linspace(50, 200, 11)  # km
+    def plot_mass_over_payload_and_range(
+        self,
+        payloads: np.ndarray = np.linspace(150, 500, 13),
+        ranges: np.ndarray = np.linspace(70, 170, 11)
+    ) -> tuple[plt.Figure, plt.Axes]:
+        fig, ax = plt.subplots(figsize=(8, 5))
 
         # Create a grid of payload and range values
         payload_grid, range_grid = np.meshgrid(payloads, ranges)
@@ -83,20 +86,22 @@ class MassEstimation:
         mass_grid = mass_grid.reshape(payload_grid.shape)
 
         # Create a contour plot
-        contour = ax.contourf(payload_grid,
-                              range_grid,
-                              mass_grid,
-                              cmap='viridis',
-                              vmin=600,
-                              vmax=2400)
+        contour = ax.contourf(
+            payload_grid,
+            range_grid,
+            mass_grid,
+            cmap='viridis',
+            # vmin=600,
+            # vmax=2400,
+        )
         df = reduced_vtol_data()
         # df = df.sort_values(by='Mass (kg)', ascending=False)
-        for i, row in df.iterrows():
+        for _, row in df.iterrows():
             if ranges[0] < row["Range (km)"] < ranges[-1] and payloads[
                     0] < row["Payload (kg)"] < payloads[-1]:
                 ax.scatter(row["Payload (kg)"],
                            row["Range (km)"],
-                           label=f'{row["Name"]}: {row["Mass (kg)"]:.1f} kg')
+                           label=f'{row["Name"]}: {row["Mass (kg)"]:.0f} kg')
         ax.set_xlabel('Payload [kg]')
         ax.set_ylabel('Range [km]')
         # ax.set_title('Total mass over payload and range for ' + self.initial_aircraft.name)
@@ -127,6 +132,7 @@ class MassEstimation:
 
 def reduced_vtol_data() -> pd.DataFrame:
     df = vtol_data.copy()
+    df = df[df["Primary Class"] == "PL"]
     return df
 
 
@@ -140,7 +146,7 @@ def plot_concepts_mass_over_payload(
         ax = mass_estimation.plot_mass_over_payload(ax)
     ax.set_xlabel('Payload [kg]')
     ax.set_ylabel('Total mass [kg]')
-    ax.legend()
+    # ax.legend()
     return fig, ax
 
 
@@ -154,7 +160,8 @@ def plot_concepts_range_over_mass(
         ax = mass_estimation.plot_range_over_mass(ax)
     ax.set_xlabel('Range [km]')
     ax.set_ylabel('Total mass [kg]')
-    ax.legend()
+    ax.set_xlim(right=255)
+    fig_leg, ax_leg = plot_legend(ax)
     return fig, ax
 
 
@@ -163,8 +170,10 @@ if __name__ == '__main__':
 
     concepts = [concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10]
 
-    plot_concepts_mass_over_payload(concepts)
-    plot_concepts_range_over_mass(concepts)
+    # plot_concepts_mass_over_payload(concepts)
+    # plot_concepts_range_over_mass(concepts)
 
-    for concept in concepts:
-        MassEstimation(concept).plot_mass_over_payload_and_range()
+    MassEstimation(concept_C2_10).plot_mass_over_payload_and_range()
+
+    # for concept in concepts:
+    #     MassEstimation(concept).plot_mass_over_payload_and_range()

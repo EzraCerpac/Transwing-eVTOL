@@ -13,7 +13,7 @@ from utility.unit_conversion import convert_float
 @save_with_name(lambda aircraft: aircraft.id + '_energy_breakdown')
 def plot_energy_breakdown_per_phase(
         aircraft: Aircraft) -> tuple[plt.Figure, plt.Axes]:
-    fig, ax = plt.subplots(figsize=(7, 6))
+    fig, ax = plt.subplots(figsize=(7, 7))
 
     # Prepare data for pie chart
     energies = [
@@ -34,7 +34,7 @@ def plot_energy_breakdown_per_phase(
     ax.text(
         0.5,
         0.5,
-        f'Total Energy\n{convert_float(aircraft.mission_profile.energy, "J", "kWh"):.2f} kWh',
+        f'Total Energy\n{convert_float(aircraft.mission_profile.energy, "J", "kWh"):.0f} kWh',
         horizontalalignment='center',
         verticalalignment='center',
         transform=ax.transAxes,
@@ -42,8 +42,8 @@ def plot_energy_breakdown_per_phase(
                   edgecolor='black',
                   boxstyle='round,pad=0.5',
                   alpha=0.8))
-    plt.setp(texts, size=10, weight="bold")
-    plt.setp(autotexts, size=8, weight="bold")
+    plt.setp(texts, size=12, weight="bold")
+    plt.setp(autotexts, size=10, weight="bold")
     # ax.set_title(f'Energy Breakdown of {aircraft.name}')
 
     return fig, ax

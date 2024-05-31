@@ -69,6 +69,18 @@ class MissionPhase(BaseModel):
             f' vertical speed: {self.vertical_speed:.2f} m/s,\n' + \
             f' ending altitude: {self.ending_altitude:.2f} m\n'
 
+    def dict(self, *args, **kwargs):
+        return {
+            'duration': self.duration,
+            'horizontal_speed': self.horizontal_speed,
+            'distance': self.distance,
+            'vertical_speed': self.vertical_speed,
+            'ending_altitude': self.ending_altitude,
+            'energy': self.energy,
+            'power': self.power,
+            'C_L': self.C_L
+        }
+
 
 class MissionProfile(BaseModel):
     name: str = 'unnamed'
@@ -119,3 +131,9 @@ class MissionProfile(BaseModel):
             logger.warning(
                 f'number of phases is not 5, but {len(v)}, in {cls.name}')
         return v
+
+    def dict(self, *args, **kwargs):
+        return {
+            phase.phase: phase.dict(*args, **kwargs)
+            for phase in self.phases.values()
+        }

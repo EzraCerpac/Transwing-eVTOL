@@ -43,14 +43,18 @@ engine_data = df_from_markdown("""
 # @save
 def plot_power_over_mass_data(
         df: pd.DataFrame = engine_data) -> tuple[plt.Figure, plt.Axes]:
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(8, 5))
 
     for i, row in df.iterrows():
-        ax.scatter(row["Mass (kg)"], row["Power (kW)"], label=row["Motor(s)"])
+        ax.scatter(row["Mass (kg)"],
+                   row["Power (kW)"],
+                   label=row["Motor(s)"],
+                   marker="x",
+                   color="black")
 
-    ax.set_xlabel("Mass (kg)")
-    ax.set_ylabel("Power (kW)")
-    # ax.set_title("Power vs Mass for Electric Motors")
+    ax.set_xlabel("Mass [kg]")
+    ax.set_ylabel("Power [kW]")
+    # ax.set_title("Power over Mass for Electric Engines")
     ax.set_xlim(left=0, right=120)
     ax.set_ylim(bottom=0, top=500)
     # ax.legend()
@@ -61,11 +65,20 @@ def plot_power_over_mass_data(
 @save
 def plot_power_over_mass(mass_over_power_fn: Callable[[np.ndarray], np.ndarray], df: pd.DataFrame = engine_data) -> \
 tuple[plt.Figure, plt.Axes]:
+    from scipy.stats import linregress
     fig, ax = plot_power_over_mass_data(df)
     # get y axis limits
     yy = np.linspace(ax.get_ylim()[0], ax.get_ylim()[1], 101)
     xx = mass_over_power_fn(yy)
     ax.plot(xx, yy, label="Emperical Mass over Power")
+    # Calculate the R value
+    slope, intercept, r_value, p_value, std_err = linregress(
+        df["Mass (kg)"], df["Power (kW)"])
+    r_squared = r_value**2
+
+    # Display the R value
+    ax.text(0.8, 0.9, f'R$^2$ = {r_squared:.2f}', transform=ax.transAxes)
+
     return fig, ax
 
 

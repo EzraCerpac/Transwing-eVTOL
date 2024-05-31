@@ -100,14 +100,12 @@ class ClassIModel(Model):
         return self.aircraft.wing.area, self.aircraft.mission_profile.TAKEOFF.power
 
     # @show
-    @save_with_name(lambda self: self.aircraft.name)
-    def plot_wp_ws(self) -> tuple[plt.Figure, plt.Axes]:
-        fig, ax = plt.subplots(figsize=(6, 6))
-        xx = np.arange(1, 2000)
+    @save_with_name(lambda self: self.aircraft.id + '_wing_loading')
+    def plot_wp_ws(self, max_x: float = 2000) -> tuple[plt.Figure, plt.Axes]:
+        fig, ax = plt.subplots(figsize=(7, 7))
+        xx = np.arange(1, max_x)
 
-        plt.axvline(x=self.w_s_stall_speed(),
-                    label=' Stall Speed',
-                    color='red')
+        plt.axvline(x=self.w_s_stall_speed(), label='Stall Speed', color='red')
         plt.plot(
             xx,
             self._wp(xx),
@@ -115,9 +113,12 @@ class ClassIModel(Model):
         )
         plt.plot(xx, self.ver_climb(xx), label='Vertical Climb')
         plt.plot(xx, self.steady_climb(), label='Cruise Climb')
-        plt.xlabel('W/S [N/m$^2$]')
-        plt.ylabel('W/P [N/W]')
+        plt.xlabel('$W/S$ [N/m$^2$]')
+        plt.ylabel('$W/P$ [N/W]')
         # plt.title(f"Concept: {self.aircraft.name}")
+        plt.xlim(0, max_x)
+        plt.ylim(bottom=0)
+        plt.grid()
         plt.legend(loc='upper right')
         return fig, ax
 

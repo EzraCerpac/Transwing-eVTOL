@@ -24,9 +24,8 @@ vtol_data = df_from_markdown("""
 
 data_from_philip = pd.DataFrame({
     "Name": [
-        "CityAirbus NextGen", "Prosperity 1 (V1500M)", "Joby S4",
-        "Jaunt Air Mobility Journey", "Archer Aviation Midnight",
-        "Volocopter VoloCity", "Lilium Jet", "Ehang 216-S"
+        "CityAirbus NG", "Prosperity (V1500M)", "Joby S4", "Jaunt AM Journey",
+        "Archer AM", "Volocopter VoloCity", "Lilium Jet", "Ehang 216-S"
     ],
     "Range (km)": [80, 250, 161, 129, 161, 45, 250, 35],
     "Mass (kg)": [2200, 1500, 2404, 2722, 3175, 900, 3175, 600],
@@ -44,13 +43,13 @@ vtol_data = vtol_data.sort_values(by='Mass (kg)', ascending=True)
 # @save
 def plot_range_over_mass(
         df: DataFrame = vtol_data) -> tuple[plt.Figure, plt.Axes]:
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(7, 5))
 
     for i, row in df.iterrows():
         ax.scatter(row["Range (km)"], row["Mass (kg)"], label=row["Name"])
 
-    ax.set_xlabel("Range (km)")
-    ax.set_ylabel("Mass (kg)")
+    ax.set_xlabel("Range [km]")
+    ax.set_ylabel("Mass [kg]")
     # ax.set_title("Range over Mass")
     # ax.legend()
     # plt.show()
@@ -60,13 +59,13 @@ def plot_range_over_mass(
 # @save
 def plot_range_over_payload(
         df: DataFrame = vtol_data) -> tuple[plt.Figure, plt.Axes]:
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(7, 5))
 
     for i, row in df.iterrows():
         ax.scatter(row["Payload (kg)"], row["Range (km)"], label=row["Name"])
 
-    ax.set_xlabel("Payload (kg)")
-    ax.set_ylabel("Range (km)")
+    ax.set_xlabel("Payload [kg]")
+    ax.set_ylabel("Range [km]")
     # ax.set_title("Range over Payload")
     # ax.legend()
     # plt.show()
@@ -76,7 +75,7 @@ def plot_range_over_payload(
 # @save
 def plot_mass_over_payload(
         df: DataFrame = vtol_data) -> tuple[plt.Figure, plt.Axes]:
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(7, 5))
 
     for i, row in df.iterrows():
         ax.scatter(row["Payload (kg)"], row["Mass (kg)"], label=row["Name"])
