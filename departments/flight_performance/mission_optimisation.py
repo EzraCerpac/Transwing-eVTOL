@@ -4,7 +4,10 @@ import aerosandbox as asb
 import aerosandbox.numpy as np
 import pandas as pd
 
-from data.concept_parameters.aircraft import Aircraft
+from data.concept_parameters.aircraft import Aircraft, AC
+from departments.aerodynamics.cl_cd_polars import Aero
+from model.airplane_models.cessna152 import parametric
+from model.airplane_models.rotating_wing import rot_wing
 from sizing_tools.formula.aero import C_D_from_CL
 from sizing_tools.model import Model
 
@@ -16,18 +19,22 @@ class OptParam(Enum):
     ENERGY = 'energy'
     MAX_POWER = 'maximum power'
 
-
+#E423
 class MissionProfileOptimization(Model):
 
     def __init__(self,
-                 aircraft: Aircraft,
+                 aircraft: AC,
                  opt_param: OptParam,
                  n_timesteps=500):
-        super().__init__(aircraft)
+        super().__init__(aircraft.data)
+        self.parametric = aircraft.parametric
+        self.c_l_over_alpha_func = lambda alpha: Aero(self.parametric).c_l_over_alpha_func(alpha)
+
         self.opti = asb.Opti()
         self.opt_param = opt_param
         self.n_timesteps = n_timesteps
-        self.init(self.horizontal_constraints, self.init_horizontal_dynamics)
+
+        self.init(self.horizontal_constraints, self.horizontal_dynamics)
         # self.init(self.vertical_constraints, self.init_vertical_dynamics)
 
     @property
@@ -120,7 +127,10 @@ class MissionProfileOptimization(Model):
             log_transform=True,
             lower_bound=self.aircraft.cruise_altitude)
         cruise_velocity = self.opti.variable(
-            init_guess=self.aircraft.cruise_velocity, log_transform=True)
+            init_guess=self.aircraft.cruise_velocity,
+            log_transform=True,
+            # lower_bound=self.aircraft.cruise_velocity
+        )
         self.opti.subject_to([
             self.dyn.altitude[start_cruise_index] == cruise_altitude,
             self.dyn.speed[start_cruise_index] == cruise_velocity,
@@ -131,22 +141,34 @@ class MissionProfileOptimization(Model):
             self.dyn.speed <= cruise_velocity,
         ])
 
-    def init_horizontal_dynamics(self):
+    def horizontal_dynamics(self, use_aero: bool = False):
         pitch_rate = np.diff(np.degrees(self.dyn.alpha)) / np.diff(self.time)
         self.opti.subject_to([
             pitch_rate < .1,
             pitch_rate > -.1,
         ])
-        CL = 3 * np.sind(2 * self.dyn.alpha)
-        CD = C_D_from_CL(CL, self.aircraft.estimated_CD0, self.aircraft.wing.aspect_ratio,
-                         self.aircraft.wing.oswald_efficiency_factor)
-        lift = self.dyn.op_point.dynamic_pressure() * self.aircraft.wing.area * CL
-        drag = self.dyn.op_point.dynamic_pressure() * self.aircraft.wing.area * CD
-        self.dyn.add_force(
-            Fx=-drag,
-            Fz=-lift,
-            axes='wind',
-        )
+
+        if use_aero:
+            aero = asb.AeroBuildup(
+                airplane=self.parametric,
+                op_point=self.dyn.op_point,
+            ).run()
+            self.dyn.add_force(
+                *aero['F_w'],
+                axes='wind',
+            )
+        else:
+            self.CL = np.array([self.c_l_over_alpha_func(alpha) for alpha in self.dyn.alpha.nz])
+            CD = C_D_from_CL(self.CL, self.aircraft.estimated_CD0, self.aircraft.wing.aspect_ratio,
+                             self.aircraft.wing.oswald_efficiency_factor)
+            lift = self.dyn.op_point.dynamic_pressure() * self.aircraft.wing.area * self.CL
+            drag = self.dyn.op_point.dynamic_pressure() * self.aircraft.wing.area * CD
+            self.dyn.add_force(
+                Fx=-drag,
+                Fz=-lift,
+                axes='wind',
+            )
+
         self.dyn.add_force(
             Fx=self.thrust * np.cos(ALPHA_i),
             Fz=self.thrust * np.sin(ALPHA_i),
@@ -203,24 +225,28 @@ class MissionProfileOptimization(Model):
             thrust_derivative < .01,
         ])
 
-    def init_vertical_dynamics(self):
+    def init_vertical_dynamics(self, use_aero: bool = False):
         pitch_rate = np.diff(np.degrees(self.dyn.gamma)) / np.diff(self.time)
         self.opti.subject_to([
             pitch_rate < .1,
             pitch_rate > -.1,
         ])
-        CD = 0.02
-        drag = self.dyn.op_point.dynamic_pressure(
-        ) * self.aircraft.wing.area * CD
+
+        if use_aero:
+            raise NotImplementedError
+        else:
+            CD = 0.02
+            drag = self.dyn.op_point.dynamic_pressure(
+            ) * self.aircraft.wing.area * CD
+            self.dyn.add_force(
+                Fx=0,
+                Fz=0,
+                axes='wind',
+            )
+
         self.dyn.add_force(
-            Fx=0,
-            Fz=0,
-            axes='wind',
-        )
-        self.dyn.add_force(
-            Fx=self.thrust * np.sin(self.dyn.alpha),
-            Fz=self.thrust * -np.cos(self.dyn.alpha),
-            axes='wind',
+            Fz=-self.thrust,
+            axes='body',
         )
 
     def run(self, verbose=True):
@@ -242,6 +268,7 @@ class MissionProfileOptimization(Model):
             self.power_available = sol(self.power_available)
             self.thrust = sol(self.thrust)
             self.total_energy = sol(self.total_energy)
+            self.CL = sol(self.CL)
         except Exception as e:
             print(e)
             self.time = self.opti.debug.value(self.time)
@@ -255,6 +282,7 @@ class MissionProfileOptimization(Model):
             self.power_available = self.opti.debug.value(self.power_available)
             self.thrust = self.opti.debug.value(self.thrust)
             self.total_energy = self.opti.debug.value(self.total_energy)
+            self.CL = self.opti.debug.value(self.CL)
         print(f"\nOptimized for {self.opt_param.value}:")
         print(f"Total energy: {self.total_energy / 3600000:.1f} kWh")
         print(f"Total time: {self.time[-1]:.1f} s")
@@ -268,6 +296,7 @@ class MissionProfileOptimization(Model):
             'speed': self.dyn.speed,
             'gamma': self.dyn.gamma,
             'alpha': self.dyn.alpha,
+            'C_L': self.CL,
             'altitude': -self.dyn.z_e,
             'power': self.power_available,
             'thrust': self.thrust,
@@ -278,7 +307,7 @@ class MissionProfileOptimization(Model):
 if __name__ == '__main__':
     from departments.flight_performance.plots import *
 
-    ac = Aircraft.load()
+    ac = rot_wing
     mission_profile_optimization = MissionProfileOptimization(
         ac, opt_param=OptParam.TIME, n_timesteps=80)
     mission_profile_optimization.run()

@@ -3,9 +3,9 @@ import aerosandbox.numpy as np
 
 from data.concept_parameters.aircraft import Aircraft, AC
 
-ac = Aircraft.load('C2.1', directory='end_of_trade-off_concepts')
+ac = Aircraft.load()
 
-wing_airfoil = Airfoil("naca0012")
+wing_airfoil = Airfoil("E423")
 tail_airfoil = Airfoil("naca0012")
 
 parametric = Airplane(
