@@ -8,8 +8,8 @@ from departments.flight_performance.mission_profile import Phase
 from sizing_tools.formula.aero import C_D_from_CL
 from sizing_tools.model import Model
 
-
 ALPHA_i = 0
+
 
 class MissionProfileOptimization(Model):
 
@@ -28,19 +28,31 @@ class MissionProfileOptimization(Model):
         ]
 
     def init_horizontal_config(self, phase: Phase):
-        self.time = self.opti.variable(init_guess=np.linspace(0, 100, self.n_timesteps))
+        self.time = self.opti.variable(
+            init_guess=np.linspace(0, 100, self.n_timesteps))
         self.opti.subject_to([
             self.time[0] == 0,
             np.diff(self.time) > 0,
         ])
 
         self.dyn = asb.DynamicsPointMass2DSpeedGamma(
-            mass_props=asb.MassProperties(mass=self.aircraft.total_mass, Ixx=1000, Iyy=500, Izz=500),
+            mass_props=asb.MassProperties(mass=self.aircraft.total_mass,
+                                          Ixx=1000,
+                                          Iyy=500,
+                                          Izz=500),
             x_e=np.linspace(0, self.aircraft.range, self.n_timesteps),
-            z_e=self.opti.variable(init_guess=np.linspace(0, self.aircraft.cruise_altitude, self.n_timesteps)),
-            speed=self.opti.variable(init_guess=self.aircraft.cruise_velocity, n_vars=self.n_timesteps),
-            gamma=self.opti.variable(init_guess=0, n_vars=self.n_timesteps, lower_bound=-np.pi/2, upper_bound=np.pi/2),
-            alpha=self.opti.variable(init_guess=0, n_vars=self.n_timesteps, lower_bound=-30, upper_bound=60),
+            z_e=self.opti.variable(init_guess=np.linspace(
+                0, self.aircraft.cruise_altitude, self.n_timesteps)),
+            speed=self.opti.variable(init_guess=self.aircraft.cruise_velocity,
+                                     n_vars=self.n_timesteps),
+            gamma=self.opti.variable(init_guess=0,
+                                     n_vars=self.n_timesteps,
+                                     lower_bound=-np.pi / 2,
+                                     upper_bound=np.pi / 2),
+            alpha=self.opti.variable(init_guess=0,
+                                     n_vars=self.n_timesteps,
+                                     lower_bound=-30,
+                                     upper_bound=60),
         )
         self.opti.subject_to([
             self.dyn.x_e[0] == 0,
@@ -59,10 +71,14 @@ class MissionProfileOptimization(Model):
         ])
 
         CL = 3 * np.sind(2 * self.dyn.alpha)
-        CD = C_D_from_CL(CL, self.aircraft.estimated_CD0, self.aircraft.wing.aspect_ratio, self.aircraft.wing.oswald_efficiency_factor)
+        CD = C_D_from_CL(CL, self.aircraft.estimated_CD0,
+                         self.aircraft.wing.aspect_ratio,
+                         self.aircraft.wing.oswald_efficiency_factor)
 
-        lift = self.dyn.op_point.dynamic_pressure() * self.aircraft.wing.area * CL
-        drag = self.dyn.op_point.dynamic_pressure() * self.aircraft.wing.area * CD
+        lift = self.dyn.op_point.dynamic_pressure(
+        ) * self.aircraft.wing.area * CL
+        drag = self.dyn.op_point.dynamic_pressure(
+        ) * self.aircraft.wing.area * CD
 
         # self.dyn.add_force(
         #     Fx=-drag,
@@ -71,7 +87,10 @@ class MissionProfileOptimization(Model):
         # )
         # self.dyn.add_gravity_force()
 
-        self.thrust_level = self.opti.variable(init_guess=0.5, n_vars=self.n_timesteps, lower_bound=0, upper_bound=1)
+        self.thrust_level = self.opti.variable(init_guess=0.5,
+                                               n_vars=self.n_timesteps,
+                                               lower_bound=0,
+                                               upper_bound=1)
         max_power = self.aircraft.mission_profile.TAKEOFF.power
         self.power_available = self.thrust_level * max_power
         self.thrust = self.power_available / self.dyn.speed
@@ -87,7 +106,8 @@ class MissionProfileOptimization(Model):
         self.dyn.constrain_derivatives(self.opti, self.time)
 
     def run(self, verbose=True):
-        self.total_energy = np.sum(np.trapz(self.power_available) * np.diff(self.time))
+        self.total_energy = np.sum(
+            np.trapz(self.power_available) * np.diff(self.time))
         # Optimize
         self.opti.minimize(self.total_energy)
 
@@ -119,7 +139,8 @@ class MissionProfileOptimization(Model):
 if __name__ == '__main__':
     from departments.flight_performance.plots import *
     ac = Aircraft.load()
-    mission_profile_optimization = MissionProfileOptimization(ac, n_timesteps=100)
+    mission_profile_optimization = MissionProfileOptimization(ac,
+                                                              n_timesteps=100)
     mission_profile_optimization.run()
 
     df = mission_profile_optimization.to_dataframe()
