@@ -147,7 +147,6 @@ class VNDiagram(Model):
 
 
 if __name__ == "__main__":
-    ac = concept_C2_1
-    TotalModel(ac).class_I_II_iteration()
+    ac = Aircraft.load()
     model = VNDiagram(ac)
     model.V_N_diagram()
