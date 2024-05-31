@@ -1,16 +1,13 @@
 import aerosandbox as asb
 import aerosandbox.numpy as np
 import pandas as pd
-from casadi import vertcat
-from scipy.constants import g
 
 from data.concept_parameters.aircraft import Aircraft
-from departments.flight_performance.mission_profile import Phase
 from sizing_tools.formula.aero import C_D_from_CL
 from sizing_tools.model import Model
 
-
 ALPHA_i = 0
+
 
 class MissionProfileOptimization(Model):
 
@@ -40,7 +37,8 @@ class MissionProfileOptimization(Model):
             x_e=np.cosspace(0, self.aircraft.range, self.n_timesteps),
             z_e=self.opti.variable(init_guess=np.linspace(0, -self.aircraft.cruise_altitude, self.n_timesteps)),
             speed=self.opti.variable(init_guess=self.aircraft.cruise_velocity, n_vars=self.n_timesteps),
-            gamma=self.opti.variable(init_guess=0, n_vars=self.n_timesteps, lower_bound=-np.pi/2, upper_bound=np.pi/2),
+            gamma=self.opti.variable(init_guess=0, n_vars=self.n_timesteps, lower_bound=-np.pi / 2,
+                                     upper_bound=np.pi / 2),
             alpha=self.opti.variable(init_guess=0, n_vars=self.n_timesteps, lower_bound=-30, upper_bound=60),
         )
         self.opti.subject_to([
@@ -63,7 +61,8 @@ class MissionProfileOptimization(Model):
             self.dyn.altitude[end_cruise_index] == cruise_altitude,
             self.dyn.speed[start_cruise_index] == cruise_velocity,
             self.dyn.speed[end_cruise_index] == cruise_velocity,
-            np.diff(self.dyn.speed[start_cruise_index:end_cruise_index]) / np.diff(self.time[start_cruise_index:end_cruise_index]) == 0,
+            np.diff(self.dyn.speed[start_cruise_index:end_cruise_index]) / np.diff(
+                self.time[start_cruise_index:end_cruise_index]) == 0,
             self.dyn.gamma[start_cruise_index:end_cruise_index] == 0,
             self.dyn.altitude <= cruise_altitude,
             self.dyn.speed <= cruise_velocity,
@@ -76,13 +75,15 @@ class MissionProfileOptimization(Model):
         ])
 
         CL = 3 * np.sind(2 * self.dyn.alpha)
-        CD = C_D_from_CL(CL, self.aircraft.estimated_CD0, self.aircraft.wing.aspect_ratio, self.aircraft.wing.oswald_efficiency_factor)
+        CD = C_D_from_CL(CL, self.aircraft.estimated_CD0, self.aircraft.wing.aspect_ratio,
+                         self.aircraft.wing.oswald_efficiency_factor)
 
         lift = self.dyn.op_point.dynamic_pressure() * self.aircraft.wing.area * CL
         drag = self.dyn.op_point.dynamic_pressure() * self.aircraft.wing.area * CD
 
         self.thrust_level = self.opti.variable(init_guess=0.5, n_vars=self.n_timesteps, lower_bound=0, upper_bound=1)
-        self.max_power = self.opti.variable(init_guess=self.aircraft.mission_profile.TAKEOFF.power, log_transform=True, upper_bound=self.aircraft.mission_profile.TAKEOFF.power)
+        self.max_power = self.opti.variable(init_guess=self.aircraft.mission_profile.TAKEOFF.power, log_transform=True,
+                                            upper_bound=self.aircraft.mission_profile.TAKEOFF.power)
         self.power_available = self.thrust_level * self.max_power
         self.thrust = self.power_available / self.dyn.speed * self.aircraft.propulsion_efficiency
         # self.opti.subject_to([
@@ -108,7 +109,6 @@ class MissionProfileOptimization(Model):
         self.power_required = drag * self.dyn.speed
         self.total_energy = np.sum(np.trapz(self.power_available) * np.diff(self.time))
         self.opti.subject_to(self.total_energy <= self.aircraft.mission_profile.energy)
-
 
     def run(self, verbose=True):
         # Optimize
@@ -139,8 +139,8 @@ class MissionProfileOptimization(Model):
             self.thrust = self.opti.debug.value(self.thrust)
             self.power_required = self.opti.debug.value(self.power_required)
             self.total_energy = self.opti.debug.value(self.total_energy)
-        print(f"Total energy: {self.total_energy/3600000:.1f} kWh")
-        print(f"Max power: {self.max_power/1000:.1f} kW")
+        print(f"Total energy: {self.total_energy / 3600000:.1f} kWh")
+        print(f"Max power: {self.max_power / 1000:.1f} kW")
 
     def to_dataframe(self) -> pd.DataFrame:
         return pd.DataFrame({
@@ -155,6 +155,7 @@ class MissionProfileOptimization(Model):
 
 if __name__ == '__main__':
     from departments.flight_performance.plots import *
+
     ac = Aircraft.load()
     mission_profile_optimization = MissionProfileOptimization(ac, n_timesteps=50)
     mission_profile_optimization.run()
