@@ -39,7 +39,7 @@ def plot_per_phase(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
 
 @show
 def plot_over_distance(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
-    fig, axs = plt.subplots(2, 2, figsize=(20, 10), sharex=True)
+    fig, axs = plt.subplots(2, 3, figsize=(20, 10), sharex=True)
     axs = axs.flatten()
     axs[0].plot(df["x"], df["speed"])
     axs[0].set_ylabel("Airspeed [m/s]")
@@ -52,6 +52,12 @@ def plot_over_distance(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
 
     axs[3].plot(df["x"], df["alpha"])
     axs[3].set_ylabel("alpha")
+
+    axs[4].plot(df["x"], df["power"])
+    axs[4].set_ylabel("Power [W]")
+
+    axs[5].plot(df["x"], df["thrust"])
+    axs[5].set_ylabel("Thrust [N]")
 
     plt.tight_layout()
     return fig, axs
