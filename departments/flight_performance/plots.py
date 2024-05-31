@@ -53,11 +53,12 @@ def plot_over_distance(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
     axs[3].plot(df["x"], df["alpha"])
     axs[3].set_ylabel("alpha")
 
-    axs[4].plot(df["x"], df["power"])
-    axs[4].set_ylabel("Power [W]")
+    axs[4].plot(df["x"], df["C_L"])
+    axs[4].set_ylabel("C_L")
 
-    axs[5].plot(df["x"], df["thrust"])
-    axs[5].set_ylabel("Thrust [N]")
+    axs[5].plot(df["x"], df["power"])
+    axs[5].set_ylabel("Power [W]")
+
 
     plt.tight_layout()
     return fig, axs

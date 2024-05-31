@@ -1,12 +1,12 @@
 from functools import cache
+from typing import Callable
 
 import aerosandbox as asb
 import aerosandbox.numpy as np
-import aerosandbox.tools.pretty_plots as p
 import matplotlib.pyplot as plt
+from casadi import interp1d
 
-from model.airplane_models.cessna152 import parametric
-from model.airplane_models.rotating_wing import parametric
+from model.airplane_models.rotating_wing import rot_wing
 from utility.plotting import show
 
 
@@ -28,6 +28,10 @@ class Aero:
                                    velocity=self.velocity,
                                    alpha=self.alpha,
                                )).run()
+
+    def c_l_over_alpha_func(self, alpha) -> Callable[[float], float]:
+        CL = self.aero_data["CL"]
+        return np.interp(alpha, self.alpha, CL)
 
     @property
     def glide_ratio(self) -> float:
@@ -63,6 +67,6 @@ class Aero:
 
 
 if __name__ == '__main__':
-    aero = Aero(parametric)
+    aero = Aero(rot_wing.parametric)
     print(aero.glide_ratio)
     aero.plot_cl_cd_polars()
