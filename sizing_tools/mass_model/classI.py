@@ -105,9 +105,7 @@ class ClassIModel(Model):
         fig, ax = plt.subplots(figsize=(7, 7))
         xx = np.arange(1, max_x)
 
-        plt.axvline(x=self.w_s_stall_speed(),
-                    label='Stall Speed',
-                    color='red')
+        plt.axvline(x=self.w_s_stall_speed(), label='Stall Speed', color='red')
         plt.plot(
             xx,
             self._wp(xx),

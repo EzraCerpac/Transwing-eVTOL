@@ -133,4 +133,7 @@ class MissionProfile(BaseModel):
         return v
 
     def dict(self, *args, **kwargs):
-        return {phase.phase: phase.dict(*args, **kwargs) for phase in self.phases.values()}
+        return {
+            phase.phase: phase.dict(*args, **kwargs)
+            for phase in self.phases.values()
+        }

@@ -32,19 +32,17 @@ class TotalModel(Model):
             logger.debug("No save method for this aircraft")
 
     def print_results(
-            self,
-            mass_breakdown: bool = False,
-            energy_breakdown: bool = False,
-            hinge_loading: bool = False,
-            class1_diagram: bool = False,
+        self,
+        mass_breakdown: bool = False,
+        energy_breakdown: bool = False,
+        hinge_loading: bool = False,
+        class1_diagram: bool = False,
     ):
-        if not all(
-                [
-                    self.aircraft.total_mass,
-                    self.aircraft.hinge_load,
-                    self.aircraft.hinge_moment,
-                ]
-        ):
+        if not all([
+                self.aircraft.total_mass,
+                self.aircraft.hinge_load,
+                self.aircraft.hinge_moment,
+        ]):
             self.run()
         print(f"Concept: {self.aircraft.full_name}")
         print(f"Total Mass: {self.aircraft.total_mass:.2f} kg")
@@ -54,9 +52,7 @@ class TotalModel(Model):
         print(
             f"Takeoff Power: {convert_float(self.aircraft.mission_profile.TAKEOFF.power, 'W', 'kW'):.2f} kW"
         )
-        print(
-            f"Cruise C_L: {self.aircraft.mission_profile.CRUISE.C_L:.2f}"
-        )
+        print(f"Cruise C_L: {self.aircraft.mission_profile.CRUISE.C_L:.2f}")
         # print(f"Hinge Load: {self.aircraft.hinge_load:.2f} N")
         # print(f"Hinge Moment: {self.aircraft.hinge_moment:.2f} Nm")
         print("\n")
@@ -83,8 +79,7 @@ def main():
             mass_breakdown=True,
             energy_breakdown=True,
             # hinge_loading=True,
-            class1_diagram=True
-        )
+            class1_diagram=True)
         # model.print_all_parameters()
 
 
