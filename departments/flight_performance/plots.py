@@ -56,16 +56,16 @@ def plot_over_distance(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
     plt.tight_layout()
     return fig, axs
 
+
 def plot_dynamic(dyn: DynamicsPointMass2DSpeedGamma):
     import aerosandbox.tools.pretty_plots as p
-    p.plot_color_by_value(
-        dyn.x_e, dyn.altitude,
-        c=dyn.speed,
-        colorbar=True,
-        cmap="Blues",
-        clim=(0, 40),
-        colorbar_label="Speed [m/s]"
-    )
+    p.plot_color_by_value(dyn.x_e,
+                          dyn.altitude,
+                          c=dyn.speed,
+                          colorbar=True,
+                          cmap="Blues",
+                          clim=(0, 40),
+                          colorbar_label="Speed [m/s]")
     p.show_plot(
         f"Fastest Path to climb to {dyn.altitude[-1]} m",
         "Range [m]",
