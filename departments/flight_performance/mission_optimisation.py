@@ -19,16 +19,15 @@ class OptParam(Enum):
     ENERGY = 'energy'
     MAX_POWER = 'maximum power'
 
+
 #E423
 class MissionProfileOptimization(Model):
 
-    def __init__(self,
-                 aircraft: AC,
-                 opt_param: OptParam,
-                 n_timesteps=500):
+    def __init__(self, aircraft: AC, opt_param: OptParam, n_timesteps=500):
         super().__init__(aircraft.data)
         self.parametric = aircraft.parametric
-        self.c_l_over_alpha_func = lambda alpha: Aero(self.parametric).c_l_over_alpha_func(alpha)
+        self.c_l_over_alpha_func = lambda alpha: Aero(
+            self.parametric).c_l_over_alpha_func(alpha)
 
         self.opti = asb.Opti()
         self.opt_param = opt_param
@@ -79,7 +78,7 @@ class MissionProfileOptimization(Model):
                                           Izz=500),
             x_e=self.opti.variable(init_guess=np.cosspace(
                 0, self.aircraft.range, self.n_timesteps),
-                lower_bound=0),
+                                   lower_bound=0),
             z_e=self.opti.variable(init_guess=np.linspace(
                 0, -self.aircraft.cruise_altitude, self.n_timesteps),
                                    upper_bound=0),
@@ -95,7 +94,10 @@ class MissionProfileOptimization(Model):
                                      lower_bound=-30,
                                      upper_bound=60),
         )
-        self.thrust_level = self.opti.variable(init_guess=0.5, n_vars=self.n_timesteps, lower_bound=0, upper_bound=1)
+        self.thrust_level = self.opti.variable(init_guess=0.5,
+                                               n_vars=self.n_timesteps,
+                                               lower_bound=0,
+                                               upper_bound=1)
 
         a = np.diff(self.dyn.speed) / np.diff(self.time)
         self.a_x = a * np.cos(self.dyn.gamma[:-1])
@@ -116,22 +118,32 @@ class MissionProfileOptimization(Model):
 
         self.cruise_constraints()
 
-
     def cruise_constraints(self):
-        cruise_time = self.opti.variable(init_guess=120, lower_bound=30, upper_bound=240)
-        cruise_altitude = self.opti.variable(init_guess=self.aircraft.cruise_altitude, log_transform=True, lower_bound=self.aircraft.cruise_altitude)
-        cruise_speed = self.opti.variable(init_guess=self.aircraft.cruise_velocity, log_transform=True, lower_bound=self.aircraft.v_stall)
+        cruise_time = self.opti.variable(init_guess=120,
+                                         lower_bound=30,
+                                         upper_bound=240)
+        cruise_altitude = self.opti.variable(
+            init_guess=self.aircraft.cruise_altitude,
+            log_transform=True,
+            lower_bound=self.aircraft.cruise_altitude)
+        cruise_speed = self.opti.variable(
+            init_guess=self.aircraft.cruise_velocity,
+            log_transform=True,
+            lower_bound=self.aircraft.v_stall)
         self.opti.subject_to([
-            self.time[self.n_timesteps//2-1] == cruise_time,
-            self.time[self.n_timesteps//2] == self.time[-1] - cruise_time,
-            self.dyn.altitude[self.n_timesteps//2-1] == cruise_altitude,
-            self.dyn.altitude[self.n_timesteps//2] == cruise_altitude,
-            self.dyn.speed[self.n_timesteps//2-1] == self.dyn.speed[self.n_timesteps//2],
-            self.dyn.alpha[self.n_timesteps//2-1] == self.dyn.alpha[self.n_timesteps//2],
-            self.dyn.gamma[self.n_timesteps//2-1] == self.dyn.gamma[self.n_timesteps//2],
-            self.thrust_level[self.n_timesteps//2-1] == self.thrust_level[self.n_timesteps//2],
+            self.time[self.n_timesteps // 2 - 1] == cruise_time,
+            self.time[self.n_timesteps // 2] == self.time[-1] - cruise_time,
+            self.dyn.altitude[self.n_timesteps // 2 - 1] == cruise_altitude,
+            self.dyn.altitude[self.n_timesteps // 2] == cruise_altitude,
+            self.dyn.speed[self.n_timesteps // 2 -
+                           1] == self.dyn.speed[self.n_timesteps // 2],
+            self.dyn.alpha[self.n_timesteps // 2 -
+                           1] == self.dyn.alpha[self.n_timesteps // 2],
+            self.dyn.gamma[self.n_timesteps // 2 -
+                           1] == self.dyn.gamma[self.n_timesteps // 2],
+            self.thrust_level[self.n_timesteps // 2 -
+                              1] == self.thrust_level[self.n_timesteps // 2],
         ])
-
 
     def horizontal_dynamics(self, use_aero: bool = False):
         pitch_rate = np.diff(np.degrees(self.dyn.alpha)) / np.diff(self.time)
@@ -152,10 +164,13 @@ class MissionProfileOptimization(Model):
         else:
             # self.CL = np.array([self.c_l_over_alpha_func(alpha) for alpha in self.dyn.alpha.nz])
             self.CL = 3 * np.sind(2 * self.dyn.alpha)
-            CD = C_D_from_CL(self.CL, self.aircraft.estimated_CD0, self.aircraft.wing.aspect_ratio,
+            CD = C_D_from_CL(self.CL, self.aircraft.estimated_CD0,
+                             self.aircraft.wing.aspect_ratio,
                              self.aircraft.wing.oswald_efficiency_factor)
-            lift = self.dyn.op_point.dynamic_pressure() * self.aircraft.wing.area * self.CL
-            drag = self.dyn.op_point.dynamic_pressure() * self.aircraft.wing.area * CD
+            lift = self.dyn.op_point.dynamic_pressure(
+            ) * self.aircraft.wing.area * self.CL
+            drag = self.dyn.op_point.dynamic_pressure(
+            ) * self.aircraft.wing.area * CD
             self.dyn.add_force(
                 Fx=-drag,
                 Fz=-lift,
