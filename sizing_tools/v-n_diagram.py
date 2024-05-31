@@ -17,9 +17,10 @@ from sizing_tools.model import Model
 from aerosandbox import Atmosphere
 from scipy.constants import g
 
-CL_MAX = 1.7 #from airfoil data
-NEG_CL_MAX = 1.18 # from airfoil data
-CLALPHA = 5.44 #rad^-1
+CL_MAX = 1.7  #from airfoil data
+NEG_CL_MAX = 1.18  # from airfoil data
+CLALPHA = 5.44  #rad^-1
+
 
 class VNDiagram(Model):
 
@@ -99,7 +100,6 @@ class VNDiagram(Model):
                                         )  # slope in [-]/[feet/second]
         return slope
 
-
     def V_N_diagram(self):
         #maneuver
         V_top = np.arange(0, self.maneuvering_speed(), 0.1)
@@ -146,10 +146,28 @@ class VNDiagram(Model):
                  color='black',
                  label='Min loadfactor: ' + str(round(min_loadfactor, 2)))
 
-        plt.vlines(self.stall_speed(), min_loadfactor, max_loadfactor, label = 'Stall speed', linestyle = 'dashed', color = 'blue')
-        plt.vlines(self.design_cruise_speed(), min_loadfactor, max_loadfactor, label = 'Design cruise speed', linestyle = 'dashed', color='green')
-        plt.vlines(self.dive_speed(), min_loadfactor, max_loadfactor, label = 'Dive speed', linestyle = 'dashed', color ='red')
-        plt.vlines(self.maneuvering_speed(), min_loadfactor, max_loadfactor, label = 'Maneuver speed')
+        plt.vlines(self.stall_speed(),
+                   min_loadfactor,
+                   max_loadfactor,
+                   label='Stall speed',
+                   linestyle='dashed',
+                   color='blue')
+        plt.vlines(self.design_cruise_speed(),
+                   min_loadfactor,
+                   max_loadfactor,
+                   label='Design cruise speed',
+                   linestyle='dashed',
+                   color='green')
+        plt.vlines(self.dive_speed(),
+                   min_loadfactor,
+                   max_loadfactor,
+                   label='Dive speed',
+                   linestyle='dashed',
+                   color='red')
+        plt.vlines(self.maneuvering_speed(),
+                   min_loadfactor,
+                   max_loadfactor,
+                   label='Maneuver speed')
 
         plt.plot(V_vc, N_top_vc, linestyle='dashed', color='black')
         plt.plot(V_vc, N_bottom_vc, linestyle='dashed', color='black')
