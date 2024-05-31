@@ -59,9 +59,9 @@ def plot_over_distance(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
     axs[5].plot(df["x"], df["power"])
     axs[5].set_ylabel("Power [W]")
 
-
     plt.tight_layout()
     return fig, axs
+
 
 @show
 def plot_over_time(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
@@ -84,7 +84,6 @@ def plot_over_time(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
 
     axs[5].plot(df["time"], df["power"])
     axs[5].set_ylabel("Power [W]")
-
 
     plt.tight_layout()
     return fig, axs
