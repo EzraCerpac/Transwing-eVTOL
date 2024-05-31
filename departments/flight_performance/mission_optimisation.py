@@ -1,22 +1,23 @@
 import aerosandbox as asb
 import aerosandbox.numpy as np
-import casadi
 import pandas as pd
+from scipy.constants import g
 
 from data.concept_parameters.aircraft import Aircraft
 from departments.flight_performance.mission_profile import Phase
-from departments.flight_performance.power_calculations import power, power_required, acceleration_power
+from sizing_tools.formula.aero import C_D_from_CL
 from sizing_tools.model import Model
 
 
+ALPHA_i = 0
+
 class MissionProfileOptimization(Model):
 
-    def __init__(self, aircraft: Aircraft):
+    def __init__(self, aircraft: Aircraft, n_timesteps=500):
         super().__init__(aircraft)
-        self.n_timesteps = 100
         self.opti = asb.Opti()
-        self.init_phase_variables(Phase.CLIMB, 0)
-        self.set_constraints(Phase.CLIMB)
+        self.n_timesteps = n_timesteps
+        self.init_horizontal_config(Phase.CLIMB)
 
     @property
     def necessary_parameters(self):
@@ -26,86 +27,67 @@ class MissionProfileOptimization(Model):
             # 'tbd'
         ]
 
-    def init_phase_variables(self, phase: Phase, start_time):
-        self.end_final = self.opti.variable(init_guess=start_time + 50,
-                                            lower_bound=start_time + 1,
-                                            upper_bound=10000)
-        self.time = np.linspace(start_time, self.end_final, self.n_timesteps)
-
-        self.x = self.opti.variable(init_guess=np.linspace(
-            0, ac.range, self.n_timesteps),
-                                    lower_bound=0)
-        self.y = self.opti.variable(init_guess=np.zeros(self.n_timesteps),
-                                    lower_bound=0)
-        self.v_x = self.opti.derivative_of(self.x,
-                                           with_respect_to=self.time,
-                                           derivative_init_guess=1)
-        self.v_y = self.opti.derivative_of(self.y,
-                                           with_respect_to=self.time,
-                                           derivative_init_guess=0)
-        self.a_x = self.opti.derivative_of(self.v_x,
-                                           with_respect_to=self.time,
-                                           derivative_init_guess=0)
-        self.a_y = self.opti.derivative_of(self.v_y,
-                                           with_respect_to=self.time,
-                                           derivative_init_guess=0)
-
-        self.power_required = power_required(phase, self.aircraft, self.v_x,
-                                             self.v_y, self.y)
-        self.acceleration_power = acceleration_power(self.a_x, self.a_y,
-                                                     self.v_x, self.v_y,
-                                                     self.aircraft.total_mass)
-        self.total_power = self.power_required  #+ self.acceleration_power
-        self.total_energy = np.sum(
-            np.trapz(self.total_power) * np.diff(self.time))
-
-    def set_constraints(self, phase: Phase):
+    def init_horizontal_config(self, phase: Phase):
+        self.time = self.opti.variable(init_guess=np.linspace(0, 100, self.n_timesteps))
         self.opti.subject_to([
-            self.v_x >= 0,
+            self.time[0] == 0,
+            np.diff(self.time) > 0,
         ])
-        match phase:
-            case phase.VERTICAL_CLIMB:
-                self.opti.subject_to([
-                    self.v_y >= 0,
-                ])
-            case phase.CLIMB:
-                self.opti.subject_to([
-                    self.x[0] == 0,
-                    self.y[0] == 0,  # tbchanged
-                    self.y[-1] == self.aircraft.cruise_altitude,
-                    self.v_x[0] == self.aircraft.v_stall,
-                    self.v_x[-1] == self.aircraft.cruise_velocity,
-                    # self.a_y == 0,
-                ])
 
-        # self.opti.subject_to([
-        #     self.horizontal_speeds[int(Phase.TAKEOFF)] == 0,
-        #     self.vertical_speeds[int(Phase.TAKEOFF)] == 0,
-        #     self.horizontal_speeds[int(Phase.LANDING)] == 0,
-        #     self.vertical_speeds[int(Phase.LANDING)] == 0,
-        #     self.horizontal_speeds[int(Phase.HOVER)] == 0,
-        #     self.vertical_speeds[int(Phase.HOVER)] == 0,
-        #     self.vertical_speeds[int(Phase.VERTICAL_CLIMB)] >= 0,
-        #     self.horizontal_speeds[int(Phase.VERTICAL_CLIMB)] == 0,
-        #     self.vertical_speeds[int(Phase.VERTICAL_DESCENT)] <= 0,
-        #     self.vertical_speeds[int(Phase.CLIMB)] >= 0,
-        #     self.vertical_speeds[int(Phase.CRUISE)] == 0,
-        #     self.vertical_speeds[int(Phase.DESCENT)] <= 0,
-        # ])
-        #
-        # self.opti.subject_to([
-        #     self.altitudes[0] == 0,
-        #     self.altitudes[-1] == 0,
-        #     self.altitudes[int(Phase.CLIMB)] == self.aircraft.cruise_altitude,
-        #     self.altitudes[int(Phase.CRUISE)] == self.aircraft.cruise_altitude,
-        # ])
-        #
-        # self.opti.subject_to([
-        #     self.distances[0] == 0,
-        #     self.distances[-1] == self.aircraft.range,
-        # ])
+        self.dyn = asb.DynamicsPointMass2DSpeedGamma(
+            mass_props=asb.MassProperties(mass=self.aircraft.total_mass, Ixx=1000, Iyy=500, Izz=500),
+            x_e=np.linspace(0, self.aircraft.range, self.n_timesteps),
+            z_e=self.opti.variable(init_guess=np.linspace(0, self.aircraft.cruise_altitude, self.n_timesteps)),
+            speed=self.opti.variable(init_guess=self.aircraft.cruise_velocity, n_vars=self.n_timesteps),
+            gamma=self.opti.variable(init_guess=0, n_vars=self.n_timesteps, lower_bound=-np.pi/2, upper_bound=np.pi/2),
+            alpha=self.opti.variable(init_guess=0, n_vars=self.n_timesteps, lower_bound=-30, upper_bound=60),
+        )
+        self.opti.subject_to([
+            self.dyn.x_e[0] == 0,
+            self.dyn.altitude[0] == 0,
+            self.dyn.altitude >= 0,
+            self.dyn.altitude[-1] == self.aircraft.cruise_altitude,
+            self.dyn.speed[0] == self.aircraft.v_stall,
+            self.dyn.speed >= self.aircraft.v_stall,
+            self.dyn.speed[-1] == self.aircraft.cruise_velocity,
+            self.dyn.gamma[0] == 0,
+        ])
+        pitch_rate = np.diff(self.dyn.gamma) / np.diff(self.time)
+        self.opti.subject_to([
+            pitch_rate < 2,
+            pitch_rate > -2,
+        ])
+
+        CL = 3 * np.sind(2 * self.dyn.alpha)
+        CD = C_D_from_CL(CL, self.aircraft.estimated_CD0, self.aircraft.wing.aspect_ratio, self.aircraft.wing.oswald_efficiency_factor)
+
+        lift = self.dyn.op_point.dynamic_pressure() * self.aircraft.wing.area * CL
+        drag = self.dyn.op_point.dynamic_pressure() * self.aircraft.wing.area * CD
+
+        # self.dyn.add_force(
+        #     Fx=-drag,
+        #     Fz=-lift,
+        #     axes='wind',
+        # )
+        # self.dyn.add_gravity_force()
+
+        self.thrust_level = self.opti.variable(init_guess=0.5, n_vars=self.n_timesteps, lower_bound=0, upper_bound=1)
+        max_power = self.aircraft.mission_profile.TAKEOFF.power
+        self.power_available = self.thrust_level * max_power
+        self.thrust = self.power_available / self.dyn.speed
+        self.opti.subject_to([
+            self.thrust[:-1] * np.cos(ALPHA_i) - drag[:-1] - self.dyn.mass_props.mass * g * np.sin(self.dyn.gamma[:-1]) == \
+            self.dyn.mass_props.mass * np.diff(self.dyn.speed) / np.diff(self.time),
+            self.thrust[:-1] * np.sin(ALPHA_i) + lift[:-1] - self.dyn.mass_props.mass * g * np.cos(self.dyn.gamma[:-1]) == \
+            self.dyn.mass_props.mass * self.dyn.speed[:-1] * np.diff(self.dyn.gamma) / np.diff(self.time),
+        ])
+
+        self.power_required = drag * self.dyn.speed
+
+        self.dyn.constrain_derivatives(self.opti, self.time)
 
     def run(self, verbose=True):
+        self.total_energy = np.sum(np.trapz(self.power_available) * np.diff(self.time))
         # Optimize
         self.opti.minimize(self.total_energy)
 
@@ -113,53 +95,35 @@ class MissionProfileOptimization(Model):
         try:
             sol = self.opti.solve(verbose=verbose)
             self.time = sol(self.time)
-            self.x = sol(self.x)
-            self.y = sol(self.y)
-            self.v_x = sol(self.v_x)
-            self.v_y = sol(self.v_y)
-            self.a_x = sol(self.a_x)
-            self.a_y = sol(self.a_y)
-            self.power_required = sol(self.power_required)
-            self.acceleration_power = sol(self.acceleration_power)
-            self.total_power = sol(self.total_power)
-            self.total_energy = sol(self.total_energy)
+            self.dyn = sol(self.dyn)
         except Exception as e:
             print(e)
             self.time = self.opti.debug.value(self.time)
-            self.x = self.opti.debug.value(self.x)
-            self.y = self.opti.debug.value(self.y)
-            self.v_x = self.opti.debug.value(self.v_x)
-            self.v_y = self.opti.debug.value(self.v_y)
-            self.a_x = self.opti.debug.value(self.a_x)
-            self.a_y = self.opti.debug.value(self.a_y)
-            self.power_required = self.opti.debug.value(self.power_required)
-            self.acceleration_power = self.opti.debug.value(
-                self.acceleration_power)
-            self.total_power = self.opti.debug.value(self.total_power)
-            self.total_energy = self.opti.debug.value(self.total_energy)
+            self.dyn.x_e = self.opti.debug.value(self.dyn.x_e)
+            self.dyn.z_e = self.opti.debug.value(self.dyn.z_e)
+            self.dyn.speed = self.opti.debug.value(self.dyn.speed)
+            self.dyn.gamma = self.opti.debug.value(self.dyn.gamma)
+            self.dyn.alpha = self.opti.debug.value(self.dyn.alpha)
 
     def to_dataframe(self) -> pd.DataFrame:
         return pd.DataFrame({
-            'Time [s]': self.time,
-            'Distance [m]': self.x,
-            'Altitude [m]': self.y,
-            'Horizontal Speed [m/s]': self.v_x,
-            'Vertical Speed [m/s]': self.v_y,
-            'Horizontal Acceleration [m/s2]': self.a_x,
-            'Vertical acceleration [m/s2]': self.a_y,
-            'power_required': self.power_required,
-            'acceleration_power': self.acceleration_power,
-            'Power [W]': self.total_power,
+            'time': self.time,
+            'x': self.dyn.x_e,
+            'z': self.dyn.z_e,
+            'speed': self.dyn.speed,
+            'gamma': self.dyn.gamma,
+            'alpha': self.dyn.alpha,
         })
 
 
 if __name__ == '__main__':
     from departments.flight_performance.plots import *
     ac = Aircraft.load()
-    mission_profile_optimization = MissionProfileOptimization(ac)
+    mission_profile_optimization = MissionProfileOptimization(ac, n_timesteps=100)
     mission_profile_optimization.run()
 
     df = mission_profile_optimization.to_dataframe()
     print(df.to_string())
     # plot_per_phase(df)
     plot_over_distance(df)
+    plot_dynamic(mission_profile_optimization.dyn)

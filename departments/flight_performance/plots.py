@@ -1,4 +1,5 @@
 import pandas as pd
+from aerosandbox import DynamicsPointMass2DSpeedGamma
 from matplotlib import pyplot as plt
 
 from utility.plotting import show
@@ -40,17 +41,33 @@ def plot_per_phase(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
 def plot_over_distance(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
     fig, axs = plt.subplots(2, 2, figsize=(20, 10), sharex=True)
     axs = axs.flatten()
-    axs[0].plot(df["Distance [m]"], df["Horizontal Speed [m/s]"])
-    axs[0].set_ylabel("Horizontal Speed [m/s]")
+    axs[0].plot(df["x"], df["speed"])
+    axs[0].set_ylabel("Airspeed [m/s]")
 
-    axs[1].plot(df["Distance [m]"], df["Vertical Speed [m/s]"])
-    axs[1].set_ylabel("Vertical Speed [m/s]")
+    axs[1].plot(df["x"], df["gamma"])
+    axs[1].set_ylabel("gamma")
 
-    axs[2].plot(df["Distance [m]"], df["Altitude [m]"])
-    axs[2].set_ylabel("Altitude [m]")
+    axs[2].plot(df["x"], -df["z"])
+    axs[2].set_ylabel("z [m]")
 
-    axs[3].plot(df["Distance [m]"], df["Power [W]"])
-    axs[3].set_ylabel("Power [W]")
+    axs[3].plot(df["x"], df["alpha"])
+    axs[3].set_ylabel("alpha")
 
     plt.tight_layout()
     return fig, axs
+
+def plot_dynamic(dyn: DynamicsPointMass2DSpeedGamma):
+    import aerosandbox.tools.pretty_plots as p
+    p.plot_color_by_value(
+        dyn.x_e, dyn.altitude,
+        c=dyn.speed,
+        colorbar=True,
+        cmap="Blues",
+        clim=(0, 40),
+        colorbar_label="Speed [m/s]"
+    )
+    p.show_plot(
+        f"Fastest Path to climb to {dyn.altitude[-1]} m",
+        "Range [m]",
+        "Elevation [m]",
+    )
