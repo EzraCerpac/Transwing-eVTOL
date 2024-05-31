@@ -63,6 +63,32 @@ def plot_over_distance(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
     plt.tight_layout()
     return fig, axs
 
+@show
+def plot_over_time(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
+    fig, axs = plt.subplots(2, 3, figsize=(20, 10), sharex=True)
+    axs = axs.flatten()
+    axs[0].plot(df["time"], df["speed"])
+    axs[0].set_ylabel("Airspeed [m/s]")
+
+    axs[1].plot(df["time"], df["gamma"])
+    axs[1].set_ylabel("gamma")
+
+    axs[2].plot(df["time"], -df["z"])
+    axs[2].set_ylabel("z [m]")
+
+    axs[3].plot(df["time"], df["alpha"])
+    axs[3].set_ylabel("alpha")
+
+    axs[4].plot(df["time"], df["C_L"])
+    axs[4].set_ylabel("C_L")
+
+    axs[5].plot(df["time"], df["power"])
+    axs[5].set_ylabel("Power [W]")
+
+
+    plt.tight_layout()
+    return fig, axs
+
 
 def plot_dynamic(dyn: DynamicsPointMass2DSpeedGamma):
     import aerosandbox.tools.pretty_plots as p
