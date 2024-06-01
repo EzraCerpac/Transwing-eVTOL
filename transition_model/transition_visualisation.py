@@ -5,6 +5,32 @@ import matplotlib.animation as animation
 import matplotlib
 from casadi import *
 
+class TransitionSim:
+
+    def __init__(self, alpha:float=45, beta:float=40) -> None:
+
+        self.alpha = np.deg2rad(alpha)
+        self.beta = np.deg2rad(beta)
+
+        self.C_z = np.array([[np.cos(self.alpha), -np.sin(self.alpha), 0],
+                [np.sin(self.alpha), np.cos(self.alpha), 0], [0, 0, 1]])
+
+        self.C_y = np.array([[np.cos(np.pi / 2 - self.beta), 0,
+                        np.sin(np.pi / 2 - self.beta)], [0, 1, 0],
+                        [-np.sin(np.pi / 2 - self.beta), 0,
+                        np.cos(np.pi / 2 - self.beta)]])
+
+        self.axis = self.C_z @ self.C_y @ np.array([[0], [0], [1]])
+
+        def init_animation(self,) -> None:
+            self.
+
+        def draw_wing(self, i) -> None:
+
+
+
+
+
 alpha = 0.852786  #35/180*np.pi
 beta = 0.0124301  #40/180*np.pi
 
