@@ -4,6 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.animation as animation
 import matplotlib
 from casadi import *
+import random as random
 
 class TransitionSim:
 
@@ -34,6 +35,16 @@ class TransitionSim:
 alpha = 0.852786  #35/180*np.pi
 beta = 0.0124301  #40/180*np.pi
 
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
+ax.set_aspect('equal')
+wing, = ax.plot([], [], [])
+
+def random_color():
+    np.random.seed()
+    rgbl=[np.random.random(), np.random.random(), np.random.random()]
+    print(np.random.random())
+    return tuple(rgbl)
 C_z = np.array([[np.cos(alpha), -np.sin(alpha), 0],
                 [np.sin(alpha), np.cos(alpha), 0], [0, 0, 1]])
 
@@ -99,23 +110,80 @@ def solve():
     })
     print(G(0.5, 0.5))
 
+def update(frame_number):
+    
+    alpha = 45/180*np.pi #0.852786 #35/180*np.pi
+    beta = 40/180*np.pi #0.0124301 #40/180*np.pi
 
-def update(frame_number, q, plot):
-    p0 = np.array([0, 0, 0])
-    p1 = np.array([0, 10, 0])
+    C_z = np.array([[np.cos(alpha), -np.sin(alpha), 0],
+                   [np.sin(alpha),  np.cos(alpha), 0],
+                   [    0    ,       0   , 1]])
+    
+    C_y = np.array([[ np.cos(np.pi/2-beta),  0, np.sin(np.pi/2-beta)],
+                    [    0,      1,              0      ],
+                    [-np.sin(np.pi/2-beta),  0, np.cos(np.pi/2-beta)]])
 
-    p1 = C(q) @ p1
 
-    plot = ax.plot([p0[0], p1[0]], [p0[1], p1[1]], zs=[p0[2], p1[2]])
+    x_axis = C_z @ C_y @ np.array([1, 0, 0])
+    y_axis = C_z @ C_y @ np.array([0, 1, 0])
+    z_axis = C_z @ C_y @ np.array([0, 0, 1])
 
+    #original axes
+    ax.plot([0, 1], [0, 0], zs=[0, 0], c='blue')
+    ax.plot([0, 0], [0, 1], zs=[0, 0], c='blue')
+    ax.plot([0, 0], [0, 0], zs=[0, 1], c='blue')
 
+    
+    
+    #ax.plot([0, x_axis[0]], [0, x_axis[1]], zs=[0, x_axis[2]], c='blue')
+    #ax.plot([0, y_axis[0]], [0, y_axis[1]], zs=[0, y_axis[2]], c='blue')
+    ax.plot([0, z_axis[0]], [0, z_axis[1]], zs=[0, z_axis[2]], c ='red')
+    ax.scatter(0, 0, 0)
+
+    q = -120/180*np.pi/3#100/180*np.pi/100
+
+    C_axis = np.cos(q)*np.eye(3,3) + np.sin(q)*np.array([[0, -z_axis[2], z_axis[1]], [z_axis[2], 0, -z_axis[0]], [-z_axis[1], z_axis[0], 0]]) + (1-np.cos(q))*z_axis*z_axis.T
+
+    A = np.array([[0.1], [-0.75], [0]])
+    B = np.array([[ 0.1], [0.25], [0]])
+    C = np.array([[ -0.1], [0.25], [0]])
+    D = np.array([[-0.1], [-0.75], [0]])
+
+    for i in range(frame_number):
+        color = random_color()
+        A = C_axis@A
+        B = C_axis@B
+        C = C_axis@C
+        D = C_axis@D
+        
+    ax.plot([A[0], B[0]], [A[1], B[1]], zs=[A[2], B[2]], c=color)
+    ax.plot([B[0], C[0]], [B[1], C[1]], zs=[B[2], C[2]], c=color)
+    ax.plot([C[0], D[0]], [C[1], D[1]], zs=[C[2], D[2]], c=color)
+    ax.plot([A[0], D[0]], [A[1], D[1]], zs=[A[2], D[2]], c=color)
+    
+    ax.scatter(A[0], A[1], A[2], c=color)
+    ax.scatter(B[0], B[1], B[2], c=color)
+    ax.scatter(C[0], C[1], C[2], c=color)
+    ax.scatter(D[0], D[1], D[2], c=color)
+    
+    
 def run_animation():
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
-
-
-def visualize(alpha: float, beta: float) -> None:
-
+    
+    
+    
+    
+def visualize(alpha:float, beta:float) -> None:
+    
+    C_z = np.array([[np.cos(alpha), -np.sin(alpha), 0],
+                   [np.sin(alpha),  np.cos(alpha), 0],
+                   [    0    ,       0   , 1]])
+    
+    C_y = np.array([[ np.cos(np.pi/2-beta),  0, np.sin(np.pi/2-beta)],
+                    [    0,      1,              0      ],
+                    [-np.sin(np.pi/2-beta),  0, np.cos(np.pi/2-beta)]])
+    
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
     ax.set_aspect('equal')
@@ -134,7 +202,9 @@ def visualize(alpha: float, beta: float) -> None:
     ax.plot([0, z_axis[0]], [0, z_axis[1]], zs=[0, z_axis[2]], c='red')
     ax.scatter(0, 0, 0)
 
-    q = 120 / 180 * np.pi / 100  #100/180*np.pi/100
+    q = 105/180*np.pi/100#100/180*np.pi/100
+
+    C_axis = np.cos(q)*np.eye(3,3) + np.sin(q)*np.array([[0, -z_axis[2], z_axis[1]], [z_axis[2], 0, -z_axis[0]], [-z_axis[1], z_axis[0], 0]]) + (1-np.cos(q))*z_axis*z_axis.T
 
     C_axis = np.cos(q) * np.eye(3, 3) + np.sin(q) * np.array(
         [[0, -z_axis[2], z_axis[1]], [z_axis[2], 0, -z_axis[0]],
@@ -150,11 +220,84 @@ def visualize(alpha: float, beta: float) -> None:
         ax.plot([0, wing2[0]], [0, wing2[1]], zs=[0, wing2[2]], c='green')
 
     plt.show()
+    
+def visualize2(alpha:float, beta:float) -> None:
+    
+    C_z = np.array([[np.cos(alpha), -np.sin(alpha), 0],
+                   [np.sin(alpha),  np.cos(alpha), 0],
+                   [    0    ,       0   , 1]])
+    
+    C_y = np.array([[ np.cos(np.pi/2-beta),  0, np.sin(np.pi/2-beta)],
+                    [    0,      1,              0      ],
+                    [-np.sin(np.pi/2-beta),  0, np.cos(np.pi/2-beta)]])
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(projection='3d')
+    ax.set_aspect('equal')
 
+    x_axis = C_z @ C_y @ np.array([1, 0, 0])
+    y_axis = C_z @ C_y @ np.array([0, 1, 0])
+    z_axis = C_z @ C_y @ np.array([0, 0, 1])
+
+    #original axes
+    ax.plot([0, 1], [0, 0], zs=[0, 0], c='blue')
+    ax.plot([0, 0], [0, 1], zs=[0, 0], c='blue')
+    ax.plot([0, 0], [0, 0], zs=[0, 1], c='blue')
+
+    
+    
+    #ax.plot([0, x_axis[0]], [0, x_axis[1]], zs=[0, x_axis[2]], c='blue')
+    #ax.plot([0, y_axis[0]], [0, y_axis[1]], zs=[0, y_axis[2]], c='blue')
+    ax.plot([0, z_axis[0]], [0, z_axis[1]], zs=[0, z_axis[2]], c ='red')
+    ax.scatter(0, 0, 0)
+
+    q = -120/180*np.pi/3#100/180*np.pi/100
+
+    C_axis = np.cos(q)*np.eye(3,3) + np.sin(q)*np.array([[0, -z_axis[2], z_axis[1]], [z_axis[2], 0, -z_axis[0]], [-z_axis[1], z_axis[0], 0]]) + (1-np.cos(q))*z_axis*z_axis.T
+
+    A = np.array([[0.1], [-0.75], [0]])
+    B = np.array([[ 0.1], [0.25], [0]])
+    C = np.array([[ -0.1], [0.25], [0]])
+    D = np.array([[-0.1], [-0.75], [0]])
+
+    for i in range(3+1):
+            
+        
+        
+        color = random_color()
+        
+        ax.plot([A[0], B[0]], [A[1], B[1]], zs=[A[2], B[2]], c=color)
+        ax.plot([B[0], C[0]], [B[1], C[1]], zs=[B[2], C[2]], c=color)
+        ax.plot([C[0], D[0]], [C[1], D[1]], zs=[C[2], D[2]], c=color)
+        ax.plot([A[0], D[0]], [A[1], D[1]], zs=[A[2], D[2]], c=color)
+        
+        ax.scatter(A[0], A[1], A[2], c=color)
+        ax.scatter(B[0], B[1], B[2], c=color)
+        ax.scatter(C[0], C[1], C[2], c=color)
+        ax.scatter(D[0], D[1], D[2], c=color)
+        
+        A = C_axis@A
+        B = C_axis@B
+        C = C_axis@C
+        D = C_axis@D
+    
+    ax.set_aspect('equal')
+    plt.show()
 
 if __name__ == '__main__':
+    C_z = np.array([[np.cos(alpha), -np.sin(alpha), 0],
+                   [np.sin(alpha),  np.cos(alpha), 0],
+                   [    0    ,       0   , 1]])
+    
+    C_y = np.array([[ np.cos(np.pi/2-beta),  0, np.sin(np.pi/2-beta)],
+                    [    0,      1,              0      ],
+                    [-np.sin(np.pi/2-beta),  0, np.cos(np.pi/2-beta)]])
 
-    alpha = 0.852786  #35/180*np.pi
-    beta = 0.0124301  #40/180*np.pi
-
-    visualize(alpha, beta)
+    alpha = 45/180*np.pi #0.852786 #35/180*np.pi
+    beta = 40/180*np.pi #0.0124301 #40/180*np.pi
+    
+    #visualize2(alpha, beta)
+    
+    
+    animation.FuncAnimation(fig=fig, func=update, frames = 20, interval=30)
+    plt.show()
