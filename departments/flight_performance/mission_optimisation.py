@@ -29,8 +29,16 @@ class MissionProfileOptimization(Model):
         aero = Aero(self.parametric,
                     altitude=self.aircraft.cruise_altitude,
                     velocity=self.aircraft.cruise_velocity)
-        self.c_l_over_alpha_func = lambda alpha: aero.c_l_over_alpha_func(alpha
-                                                                          )
+        self.c_l_over_alpha_func = lambda alpha: aero.c_l_over_alpha_func(alpha)
+        # self.aero = asb.AeroBuildup(
+        #     airplane=self.parametric,
+        #     op_point=asb.OperatingPoint(
+        #         atmosphere=asb.Atmosphere(altitude=self.aircraft.cruise_altitude),
+        #         velocity=self.aircraft.cruise_velocity,
+        #         alpha=self.alpha,
+        #     ),
+        # ).run()
+
 
         self.opti = asb.Opti()
         self.opt_param = opt_param
@@ -48,7 +56,7 @@ class MissionProfileOptimization(Model):
         ]
 
     def init(self, constraint_func: callable, dynamic_func: callable):
-        self.end_time = self.opti.variable(init_guess=3000, log_transform=True)
+        self.end_time = self.opti.variable(init_guess=2000, log_transform=True)
 
         constraint_func()
 
@@ -150,7 +158,7 @@ class MissionProfileOptimization(Model):
     def cruise_constraints(self):
         start_cruise_time = self.opti.variable(init_guess=300,
                                                log_transform=True)
-        end_cruise_time = self.opti.variable(init_guess=2000,
+        end_cruise_time = self.opti.variable(init_guess=1500,
                                              log_transform=True)
         self.opti.subject_to([
             start_cruise_time > 300,
@@ -171,7 +179,7 @@ class MissionProfileOptimization(Model):
         cruise_speed = self.opti.variable(
             init_guess=self.aircraft.cruise_velocity,
             log_transform=True,
-            lower_bound=self.aircraft.v_stall)
+            lower_bound=self.aircraft.cruise_velocity)
         self.opti.subject_to([
             cruise_altitude >= self.aircraft.cruise_altitude,
             # cruise_speed >= self.aircraft.cruise_velocity,
@@ -200,6 +208,7 @@ class MissionProfileOptimization(Model):
                 airplane=self.parametric,
                 op_point=self.dyn.op_point,
             ).run()
+            self.CL = aero['CL']
             self.dyn.add_force(
                 *aero['F_w'],
                 axes='wind',
@@ -358,14 +367,14 @@ if __name__ == '__main__':
     ac.data.v_stall = 20.
     ac.data.wing.area = 16
     mission_profile_optimization = MissionProfileOptimization(
-        ac, opt_param=OptParam.ENERGY, n_timesteps=130)
+        ac, opt_param=OptParam.ENERGY, n_timesteps=90)
     mission_profile_optimization.run(max_iter=1000)
 
     df = mission_profile_optimization.to_dataframe()
     # print(df.to_string())
-    plot_over_distance(df)
     # plot_step_density(df)
-    # plot_over_time(df)
+    plot_over_time(df)
+    plot_over_distance(df)
 
-    # aero = Aero(ac.parametric, velocity=ac.data.cruise_velocity, altitude=ac.data.cruise_altitude)
-    # aero.plot_cl_cd_polars()
+    aero = Aero(ac.parametric, velocity=ac.data.cruise_velocity, altitude=ac.data.cruise_altitude)
+    aero.plot_cl_cd_polars()
