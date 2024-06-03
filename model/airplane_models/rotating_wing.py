@@ -73,7 +73,8 @@ parametric = Airplane(
     ],
     propulsors=[
         Propulsor(
-            xyz_c=np.array([0, ((i + .5) / ac.motor_prop_count - .5) * ac.wing.span, 0]),
+            xyz_c=np.array(
+                [0, ((i + .5) / ac.motor_prop_count - .5) * ac.wing.span, 0]),
             radius=ac.propeller_radius,
         ) for i in range(ac.motor_prop_count)
     ],
