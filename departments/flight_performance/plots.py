@@ -41,24 +41,24 @@ def plot_per_phase(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
 def plot_over_distance(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
     fig, axs = plt.subplots(2, 3, figsize=(16, 8), sharex=True)
     axs = axs.flatten()
-    axs[0].plot(df["x"]/1000, df["speed"])
+    axs[0].plot(df["x"] / 1000, df["speed"])
     axs[0].set_ylabel("$V$ [m/s]")
 
-    axs[1].plot(df["x"]/1000, df["gamma"])
+    axs[1].plot(df["x"] / 1000, df["gamma"])
     axs[1].set_ylabel("$\gamma$ [rad]")
 
-    axs[2].plot(df["x"]/1000, -df["z"])
+    axs[2].plot(df["x"] / 1000, -df["z"])
     axs[2].set_ylabel("$h$ [m]")
 
-    axs[3].plot(df["x"]/1000, df["alpha"])
+    axs[3].plot(df["x"] / 1000, df["alpha"])
     axs[3].set_ylabel(r"$\alpha$ [deg]")
     axs[3].set_xlabel("Distance [km]")
 
-    axs[4].plot(df["x"]/1000, df["C_L"])
+    axs[4].plot(df["x"] / 1000, df["C_L"])
     axs[4].set_ylabel("$C_L$")
     axs[4].set_xlabel("Distance [km]")
 
-    axs[5].plot(df["x"]/1000, df["power"]/1000)
+    axs[5].plot(df["x"] / 1000, df["power"] / 1000)
     axs[5].set_ylabel("Power [kW]")
     axs[5].set_xlabel("Distance [km]")
 
