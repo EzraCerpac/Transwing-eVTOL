@@ -91,6 +91,7 @@ def plot_over_time(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
     plt.tight_layout()
     return fig, axs
 
+
 @show
 def plot_step_density(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
     from numpy import diff
