@@ -29,7 +29,8 @@ class MissionProfileOptimization(Model):
         aero = Aero(self.parametric,
                     altitude=self.aircraft.cruise_altitude,
                     velocity=self.aircraft.cruise_velocity)
-        self.c_l_over_alpha_func = lambda alpha: aero.c_l_over_alpha_func(alpha)
+        self.c_l_over_alpha_func = lambda alpha: aero.c_l_over_alpha_func(alpha
+                                                                          )
         # self.aero = asb.AeroBuildup(
         #     airplane=self.parametric,
         #     op_point=asb.OperatingPoint(
@@ -38,7 +39,6 @@ class MissionProfileOptimization(Model):
         #         alpha=self.alpha,
         #     ),
         # ).run()
-
 
         self.opti = asb.Opti()
         self.opt_param = opt_param
@@ -376,5 +376,7 @@ if __name__ == '__main__':
     plot_over_time(df)
     plot_over_distance(df)
 
-    aero = Aero(ac.parametric, velocity=ac.data.cruise_velocity, altitude=ac.data.cruise_altitude)
+    aero = Aero(ac.parametric,
+                velocity=ac.data.cruise_velocity,
+                altitude=ac.data.cruise_altitude)
     aero.plot_cl_cd_polars()

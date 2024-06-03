@@ -66,8 +66,9 @@ parametric = Airplane(
             xsecs=[
                 FuselageXSec(xyz_c=[(0.8 * xi - 0.2) * ac.fuselage.length, 0,
                                     0.1 * xi - 0.03],
-                             radius=.75 * Airfoil("dae51").local_thickness(x_over_c=xi) / Airfoil("dae51").max_thickness()
-                             )
+                             radius=.75 *
+                             Airfoil("dae51").local_thickness(x_over_c=xi) /
+                             Airfoil("dae51").max_thickness())
                 for xi in np.cosspace(0, 1, 30)
             ])
     ],
