@@ -53,5 +53,5 @@ class wing_model(Model):
 aircraft = Aircraft.load()
 aircraft.wing.area = 25.4
 model = wing_model(aircraft)
-print(model.MAC())
+print(model.rootcrt())
 print(model.aircraft.wing.area)
