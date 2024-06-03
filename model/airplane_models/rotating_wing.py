@@ -5,8 +5,8 @@ from data.concept_parameters.aircraft import Aircraft, AC
 
 ac = Aircraft.load()
 
-# wing_airfoil = Airfoil("E560")
-wing_airfoil = Airfoil("E423")
+wing_airfoil = Airfoil("E560")
+# wing_airfoil = Airfoil("E423")
 tail_airfoil = Airfoil("naca0012")
 
 parametric = Airplane(
@@ -66,8 +66,8 @@ parametric = Airplane(
             xsecs=[
                 FuselageXSec(xyz_c=[(0.8 * xi - 0.2) * ac.fuselage.length, 0,
                                     0.1 * xi - 0.03],
-                             radius=ac.fuselage.maximum_section_perimeter *
-                             Airfoil("dae51").local_thickness(x_over_c=xi))
+                             radius=.75 * Airfoil("dae51").local_thickness(x_over_c=xi) / Airfoil("dae51").max_thickness()
+                             )
                 for xi in np.cosspace(0, 1, 30)
             ])
     ],
