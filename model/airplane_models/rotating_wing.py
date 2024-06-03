@@ -1,11 +1,12 @@
-from aerosandbox import Airplane, Propulsor, Wing, Fuselage, WingXSec, FuselageXSec, Airfoil
+from aerosandbox import Airplane, Propulsor, Wing, Fuselage, WingXSec, FuselageXSec, Airfoil, ControlSurface
 import aerosandbox.numpy as np
 
 from data.concept_parameters.aircraft import Aircraft, AC
 
 ac = Aircraft.load()
 
-wing_airfoil = Airfoil("E560")
+# wing_airfoil = Airfoil("E560")
+wing_airfoil = Airfoil("E423")
 tail_airfoil = Airfoil("naca0012")
 
 parametric = Airplane(
@@ -19,12 +20,19 @@ parametric = Airplane(
                 WingXSec(  # Root
                     xyz_le=[0, 0, 0],
                     chord=ac.wing.max_chord,
-                    twist=0,
-                    airfoil=wing_airfoil),
+                    twist=1,
+                    airfoil=wing_airfoil,
+                    control_surfaces=[
+                        ControlSurface(
+                            name='Aileron',
+                            symmetric=False,
+                        ),
+                    ],
+                ),
                 WingXSec(  # Tip
-                    xyz_le=[0, ac.wing.span / 2, 0],
+                    xyz_le=[0.2, ac.wing.span / 2, 1],
                     chord=0.1 * ac.wing.max_chord,
-                    twist=0,
+                    twist=-1,
                     airfoil=wing_airfoil)
             ],
         ),
@@ -34,16 +42,23 @@ parametric = Airplane(
             xsecs=[
                 WingXSec(  # root
                     xyz_le=[0, 0, 0],
-                    chord=0.2,
+                    chord=0.3,
                     twist=0,
-                    airfoil=tail_airfoil),
+                    airfoil=tail_airfoil,
+                    control_surfaces=[
+                        ControlSurface(
+                            name='Elevator',
+                            symmetric=True,
+                        ),
+                    ],
+                ),
                 WingXSec(  # tip
-                    xyz_le=[0, 0.2, 0],
+                    xyz_le=[0.2, 1.5, 0],
                     chord=0.1,
                     twist=0,
                     airfoil=tail_airfoil)
             ],
-        ).translate([0.6, 0, 0.06])
+        ).translate([4, 0, 0.06])
     ],
     fuselages=[
         Fuselage(
@@ -58,7 +73,7 @@ parametric = Airplane(
     ],
     propulsors=[
         Propulsor(
-            xyz_c=np.array([i * 1 / ac.motor_prop_count, 0, 0]),
+            xyz_c=np.array([0, ((i + .5) / ac.motor_prop_count - .5) * ac.wing.span, 0]),
             radius=ac.propeller_radius,
         ) for i in range(ac.motor_prop_count)
     ],
@@ -72,12 +87,13 @@ rot_wing = AC(
 
 if __name__ == '__main__':
     import aerosandbox as asb
-    parametric.draw()
-    vlm = asb.VortexLatticeMethod(
-        airplane=parametric,
-        op_point=asb.OperatingPoint(
-            velocity=ac.cruise_velocity,  # m/s
-            alpha=5,  # degree
-        ))
-    vlm.run()
-    vlm.draw()
+    parametric.draw_three_view()
+
+    # vlm = asb.VortexLatticeMethod(
+    #     airplane=parametric,
+    #     op_point=asb.OperatingPoint(
+    #         velocity=ac.cruise_velocity,  # m/s
+    #         alpha=5,  # degree
+    #     ))
+    # vlm.run()
+    # vlm.draw()
