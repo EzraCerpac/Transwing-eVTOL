@@ -1,5 +1,4 @@
 from enum import Enum
-from math import floor, ceil
 
 import aerosandbox as asb
 import aerosandbox.numpy as np
@@ -21,10 +20,10 @@ class OptParam(Enum):
     TRADE_OFF = 'time * energy'
 
 
-#E423
+# E423
 class MissionProfileOptimization(Model):
 
-    def __init__(self, aircraft: AC, opt_param: OptParam, n_timesteps=500):
+    def __init__(self, aircraft: AC, opt_param: OptParam, n_timesteps=100):
         super().__init__(aircraft.data)
         self.parametric = aircraft.parametric
         aero = Aero(self.parametric, altitude=self.aircraft.cruise_altitude, velocity=self.aircraft.cruise_velocity)
@@ -47,7 +46,7 @@ class MissionProfileOptimization(Model):
 
     def init(self, constraint_func: callable, dynamic_func: callable):
         self.end_time = self.opti.variable(
-            init_guess=self.aircraft.range/self.aircraft.cruise_velocity,
+            init_guess=3000,
             log_transform=True
         )
 
@@ -58,12 +57,11 @@ class MissionProfileOptimization(Model):
             log_transform=True,
             upper_bound=self.aircraft.mission_profile.TAKEOFF.power / 2)
         self.power_available = self.thrust_level * self.max_power
-        self.thrust = self.power_available / self.dyn.speed * self.aircraft.propulsion_efficiency
+        self.thrust = self.power_available * self.aircraft.propulsion_efficiency / self.dyn.speed
 
         dynamic_func()
         self.dyn.add_gravity_force()
-        self.dyn.constrain_derivatives(self.opti, self.time)
-
+        self.dyn.constrain_derivatives(self.opti, self.time, method='simpson')
 
         self.total_energy = np.sum(
             np.trapz(self.power_available) * np.diff(self.time))
@@ -78,17 +76,17 @@ class MissionProfileOptimization(Model):
                                           Izz=500),
             x_e=self.opti.variable(init_guess=np.cosspace(
                 0, self.aircraft.range, self.n_timesteps),
-                                   lower_bound=0, upper_bound=self.aircraft.range),
+                lower_bound=0, upper_bound=self.aircraft.range),
             z_e=self.opti.variable(init_guess=np.linspace(
                 0, -self.aircraft.cruise_altitude, self.n_timesteps),
-                                   upper_bound=0),
+                upper_bound=0),
             speed=self.opti.variable(init_guess=self.aircraft.cruise_velocity,
                                      n_vars=self.n_timesteps,
                                      log_transform=True),
             gamma=self.opti.variable(init_guess=0,
                                      n_vars=self.n_timesteps,
-                                     lower_bound=-np.pi / 2,
-                                     upper_bound=np.pi / 2),
+                                     lower_bound=-np.radians(15),
+                                     upper_bound=np.radians(15)),
             alpha=self.opti.variable(init_guess=0,
                                      n_vars=self.n_timesteps,
                                      lower_bound=-10,
@@ -110,39 +108,57 @@ class MissionProfileOptimization(Model):
             self.dyn.altitude >= 0,
             self.dyn.altitude[-1] == 0,
             self.dyn.speed[0] == self.aircraft.v_stall,
-            self.dyn.speed >= self.aircraft.v_stall,
-            self.dyn.speed[-1] <= self.aircraft.v_stall,
+            self.dyn.speed >= self.dyn.speed[-1],
+            # self.dyn.speed[-1] <= self.aircraft.v_stall,
             self.dyn.gamma[0] == 0,
-            # self.dyn.gamma[-1] == 0,
-            # self.dyn.gamma < np.radians(10),
-            # self.dyn.gamma > np.radians(-10),
+            self.dyn.gamma[-1] == 0,
+            self.dyn.gamma < np.radians(15),
+            self.dyn.gamma > np.radians(-15),
             self.thrust_level < 1,
         ])
 
         self.cruise_constraints()
 
-        pitchrate = np.diff(self.dyn.gamma) / np.diff(self.time)
-        alpha_derivative = np.diff(np.degrees(self.dyn.alpha)) / np.diff(self.time)
-        thrust_derivative = np.diff(self.thrust_level) / np.diff(self.time)
-        acceleration = np.diff(self.dyn.speed) / np.diff(self.time)
+        pitchrate = self.dyn.state_derivatives()['gamma']
+        alpha_derivative = self.opti.derivative_of(self.dyn.alpha, self.time, .1)
+        thrust_derivative = self.opti.derivative_of(self.thrust_level, self.time, .1)
+        acceleration = self.dyn.state_derivatives()['speed']
         self.opti.subject_to([
-            # pitchrate < .05,
-            # pitchrate > -.05,
-            # alpha_derivative < .5,
-            # alpha_derivative > -.5,
+            pitchrate < .05,
+            pitchrate > -.05,
+            alpha_derivative < .5,
+            alpha_derivative > -.5,
             # thrust_derivative < .001,
             # thrust_derivative > -.01,
-            # acceleration < .1,
-            # acceleration > -.1,
+            # np.diff(self.thrust_level) < 0.01,
+            # np.diff(self.thrust_level) > -0.01,
+            acceleration < .1,
+            acceleration > -.1,
+        ])
+        self.opti.subject_to([
+            # np.diff(self.dyn.speed) < 2,
+            # np.diff(self.dyn.speed) > -2,
+            # np.diff(self.dyn.alpha) < 1,
+            # np.diff(self.dyn.alpha) > -1,
+            np.diff(self.dyn.gamma) < .1,
+            np.diff(self.dyn.gamma) > .1,
         ])
 
-
     def cruise_constraints(self):
-        start_cruise_time = self.opti.parameter(value=300)
-        end_cruise_time = self.opti.variable(init_guess=1000, lower_bound=start_cruise_time+1, log_transform=True)
-        self.opti.subject_to(end_cruise_time < self.end_time - 100)
-        self.time = np.concatenate([np.linspace(0, start_cruise_time, floor(self.n_timesteps / 2)),
-                                    np.linspace(end_cruise_time, self.end_time, ceil(self.n_timesteps / 2))], axis=0)
+        start_cruise_time = self.opti.variable(init_guess=300, log_transform=True)
+        end_cruise_time = self.opti.variable(init_guess=2000, log_transform=True)
+        self.opti.subject_to([
+            start_cruise_time > 300,
+            start_cruise_time < end_cruise_time - 0.4 * self.end_time,
+            end_cruise_time < self.end_time - 300,
+        ])
+        cruise_steps = self.n_timesteps // 3
+        start_cruise_index = self.n_timesteps // 3
+        end_cruise_index = start_cruise_index + cruise_steps
+        climb_time = np.cosspace(0, start_cruise_time, start_cruise_index)
+        cruise_time = np.cosspace(start_cruise_time + .1, end_cruise_time - .1, cruise_steps)
+        descent_time = np.cosspace(end_cruise_time, self.end_time, self.n_timesteps - end_cruise_index)
+        self.time = np.concatenate([climb_time, cruise_time, descent_time])
         cruise_altitude = self.opti.variable(
             init_guess=self.aircraft.cruise_altitude,
             log_transform=True)
@@ -155,20 +171,16 @@ class MissionProfileOptimization(Model):
             # cruise_speed >= self.aircraft.cruise_velocity,
         ])
         self.opti.subject_to([
-            self.dyn.altitude[self.n_timesteps // 2 - 1] == cruise_altitude,
-            self.dyn.altitude[self.n_timesteps // 2] == cruise_altitude,
-            self.dyn.speed[self.n_timesteps // 2 - 1] == cruise_speed,
-            self.dyn.speed[self.n_timesteps // 2] == cruise_speed,
-            self.dyn.alpha[self.n_timesteps // 2 -
-                           1] == self.dyn.alpha[self.n_timesteps // 2],
-            self.dyn.gamma[self.n_timesteps // 2 - 1] == self.dyn.gamma[self.n_timesteps // 2],
-            self.thrust_level[self.n_timesteps // 2 -
-                              1] == self.thrust_level[self.n_timesteps // 2],
+            self.dyn.altitude[start_cruise_index:end_cruise_index] == cruise_altitude,
+            self.dyn.speed[start_cruise_index:end_cruise_index] == cruise_speed,
+            self.dyn.alpha[start_cruise_index:end_cruise_index] == self.dyn.alpha[end_cruise_index],
+            self.dyn.gamma[start_cruise_index:end_cruise_index] == self.dyn.gamma[end_cruise_index],
+            self.thrust_level[start_cruise_index:end_cruise_index] == self.thrust_level[end_cruise_index],
         ])
         self.opti.subject_to([
-            self.dyn.altitude <= cruise_altitude,
+            # self.dyn.altitude <= cruise_altitude,
             self.dyn.speed <= cruise_speed,
-            # self.dyn.op_point.energy_altitude() <= self.dyn.op_point[self.n_timesteps // 2].energy_altitude(),
+            # self.dyn.op_point.energy_altitude() <= self.dyn.op_point[start_cruise_index].energy_altitude(),
         ])
 
     def horizontal_dynamics(self, use_aero: bool = False):
@@ -212,7 +224,7 @@ class MissionProfileOptimization(Model):
             x_e=np.cosspace(0, 1000, self.n_timesteps),
             z_e=self.opti.variable(init_guess=np.linspace(
                 0, -100, self.n_timesteps),
-                                   upper_bound=0),
+                upper_bound=0),
             speed=self.opti.variable(init_guess=0, n_vars=self.n_timesteps),
             gamma=self.opti.variable(init_guess=0,
                                      n_vars=self.n_timesteps,
@@ -281,30 +293,15 @@ class MissionProfileOptimization(Model):
         self.opti.minimize(opt_param)
 
         # Post-process
-        try:
-            sol = self.opti.solve(verbose=verbose, max_iter=max_iter)
-            self.time = sol(self.time)
-            self.dyn = sol(self.dyn)
-            self.thrust_level = sol(self.thrust_level)
-            self.max_power = sol(self.max_power)
-            self.power_available = sol(self.power_available)
-            self.thrust = sol(self.thrust)
-            self.total_energy = sol(self.total_energy)
-            self.CL = sol(self.CL)
-        except Exception as e:
-            print(e)
-            self.time = self.opti.debug.value(self.time)
-            self.dyn.x_e = self.opti.debug.value(self.dyn.x_e)
-            self.dyn.z_e = self.opti.debug.value(self.dyn.z_e)
-            self.dyn.speed = self.opti.debug.value(self.dyn.speed)
-            self.dyn.gamma = self.opti.debug.value(self.dyn.gamma)
-            self.dyn.alpha = self.opti.debug.value(self.dyn.alpha)
-            self.thrust_level = self.opti.debug.value(self.thrust_level)
-            self.max_power = self.opti.debug.value(self.max_power)
-            self.power_available = self.opti.debug.value(self.power_available)
-            self.thrust = self.opti.debug.value(self.thrust)
-            self.total_energy = self.opti.debug.value(self.total_energy)
-            self.CL = self.opti.debug.value(self.CL)
+        sol = self.opti.solve(verbose=verbose, max_iter=max_iter, behavior_on_failure='return_last')
+        self.time = sol(self.time)
+        self.dyn = sol(self.dyn)
+        self.thrust_level = sol(self.thrust_level)
+        self.max_power = sol(self.max_power)
+        self.power_available = sol(self.power_available)
+        self.thrust = sol(self.thrust)
+        self.total_energy = sol(self.total_energy)
+        self.CL = sol(self.CL)
         print(f"\nOptimized for {self.opt_param.value}:")
         print(f"Total energy: {self.total_energy / 3600000:.1f} kWh")
         print(f"Total time: {self.time[-1]:.1f} s")
@@ -334,13 +331,14 @@ if __name__ == '__main__':
     ac.data.v_stall = 20.
     ac.data.wing.area = 16
     mission_profile_optimization = MissionProfileOptimization(
-        ac, opt_param=OptParam.TIME, n_timesteps=150)
+        ac, opt_param=OptParam.ENERGY, n_timesteps=130)
     mission_profile_optimization.run(max_iter=1000)
 
     df = mission_profile_optimization.to_dataframe()
     # print(df.to_string())
-    # plot_over_time(df)
     plot_over_distance(df)
+    # plot_step_density(df)
+    # plot_over_time(df)
 
     # aero = Aero(ac.parametric, velocity=ac.data.cruise_velocity, altitude=ac.data.cruise_altitude)
     # aero.plot_cl_cd_polars()

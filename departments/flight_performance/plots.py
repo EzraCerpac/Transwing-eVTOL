@@ -53,8 +53,8 @@ def plot_over_distance(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
     axs[3].plot(df["x"], df["alpha"])
     axs[3].set_ylabel("alpha")
 
-    axs[4].plot(df["x"], df["energy altitude"])
-    axs[4].set_ylabel("Energy Altitude [m]")
+    axs[4].plot(df["x"], df["C_L"])
+    axs[4].set_ylabel("C_L")
 
     axs[5].plot(df["x"], df["power"])
     axs[5].set_ylabel("Power [W]")
@@ -84,6 +84,20 @@ def plot_over_time(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
 
     axs[5].plot(df["time"], df["power"])
     axs[5].set_ylabel("Power [W]")
+
+    plt.tight_layout()
+    return fig, axs
+
+@show
+def plot_step_density(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
+    from numpy import diff
+    fig, axs = plt.subplots(2, 1, figsize=(20, 10), sharex=True)
+    axs = axs.flatten()
+    axs[0].plot(df["time"])
+    axs[0].set_ylabel("Time [s]")
+
+    axs[1].plot(diff(df["time"]))
+    axs[1].set_ylabel("Time step [s]")
 
     plt.tight_layout()
     return fig, axs
