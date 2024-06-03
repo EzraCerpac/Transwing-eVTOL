@@ -5,7 +5,7 @@ from data.concept_parameters.aircraft import Aircraft, AC
 
 ac = Aircraft.load()
 
-wing_airfoil = Airfoil("E423")
+wing_airfoil = Airfoil("E560")
 tail_airfoil = Airfoil("naca0012")
 
 parametric = Airplane(

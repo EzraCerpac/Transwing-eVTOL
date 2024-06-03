@@ -53,8 +53,8 @@ def plot_over_distance(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
     axs[3].plot(df["x"], df["alpha"])
     axs[3].set_ylabel("alpha")
 
-    axs[4].plot(df["x"], df["C_L"])
-    axs[4].set_ylabel("C_L")
+    axs[4].plot(df["x"], df["energy altitude"])
+    axs[4].set_ylabel("Energy Altitude [m]")
 
     axs[5].plot(df["x"], df["power"])
     axs[5].set_ylabel("Power [W]")
@@ -67,8 +67,8 @@ def plot_over_distance(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
 def plot_over_time(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
     fig, axs = plt.subplots(2, 3, figsize=(20, 10), sharex=True)
     axs = axs.flatten()
-    axs[0].plot(df["time"], df["speed"])
-    axs[0].set_ylabel("Airspeed [m/s]")
+    axs[0].plot(df["time"], df["x"])
+    axs[0].set_ylabel("Distance [m]")
 
     axs[1].plot(df["time"], df["gamma"])
     axs[1].set_ylabel("gamma")

@@ -14,17 +14,21 @@ class Aero:
 
     def __init__(self,
                  airplane: asb.Airplane,
+                 altitude: float = 0,
                  velocity: float = 55,
                  alpha: float | np.ndarray = np.linspace(-20, 20, 500)):
         self.airplane = airplane
+        self.altitude = altitude
         self.velocity = velocity
         self.alpha = alpha
 
     @property
     @cache
     def aero_data(self) -> dict:
+        atmos = asb.Atmosphere(altitude=self.altitude)
         return asb.AeroBuildup(airplane=self.airplane,
                                op_point=asb.OperatingPoint(
+                                   atmosphere=atmos,
                                    velocity=self.velocity,
                                    alpha=self.alpha,
                                )).run()
