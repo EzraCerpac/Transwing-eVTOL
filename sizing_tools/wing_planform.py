@@ -30,8 +30,8 @@ class wing_model(Model):
         return []
 
     def rootcrt(self) -> float:
-        cr = 2 * self.aircraft.wing.area / ((
-            1 + self.aircraft.taper) * self.aircraft.wing.span)
+        cr = 2 * self.aircraft.wing.area / (
+            (1 + self.aircraft.taper) * self.aircraft.wing.span)
         return cr
 
     def tipcrt(self) -> float:
