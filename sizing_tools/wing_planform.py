@@ -30,13 +30,14 @@ class WingModel(Model):
 
     def __init__(self, aircraft: Aircraft, altitude: float = None):
         super().__init__(aircraft)
-        self.atmosphere = Atmosphere(
-            altitude=altitude if altitude is not None else self.aircraft.cruise_altitude)
+        self.atmosphere = Atmosphere(altitude=altitude if altitude is not None
+                                     else self.aircraft.cruise_altitude)
         self.rho = self.atmosphere.density()
         self.mu = self.atmosphere.dynamic_viscosity()
         self.sweep = 0
         self.wing_position = WingPosition.MID
-        self.dihedral = (dihedral_ranges[self.wing_position][0] + dihedral_ranges[self.wing_position][1]) / 2
+        self.dihedral = (dihedral_ranges[self.wing_position][0] +
+                         dihedral_ranges[self.wing_position][1]) / 2
 
     @property
     def necessary_parameters(self) -> list[str]:
@@ -45,7 +46,7 @@ class WingModel(Model):
     @property
     def rootcrt(self) -> float:
         cr = 2 * self.aircraft.wing.area / (
-                (1 + self.aircraft.taper) * self.aircraft.wing.span)
+            (1 + self.aircraft.taper) * self.aircraft.wing.span)
         return cr
 
     @property
@@ -56,22 +57,21 @@ class WingModel(Model):
     @property
     def le_sweep(self) -> float:
         sweep = np.arctan(
-            np.tan(self.sweep) + (1 - self.aircraft.taper) / (self.aircraft.wing.aspect_ratio *
-                                                              (1 + self.aircraft.taper))
-        )
+            np.tan(self.sweep) + (1 - self.aircraft.taper) /
+            (self.aircraft.wing.aspect_ratio * (1 + self.aircraft.taper)))
         return sweep
 
     @property
     def MAC(self) -> float:
         MAC_length = self.rootcrt * 2 / 3 * (1 + self.aircraft.taper +
-                                             self.aircraft.taper ** 2) / (
-                             1 + self.aircraft.taper)
+                                             self.aircraft.taper**2) / (
+                                                 1 + self.aircraft.taper)
         return MAC_length
 
     @property
     def y_mac(self) -> float:
         y_MAC = self.aircraft.wing.span / 6 * (1 + 2 * self.aircraft.taper) / (
-                1 + self.aircraft.taper)
+            1 + self.aircraft.taper)
         return y_MAC
 
     def Reynolds(self, velocity: float = None) -> float:
@@ -79,9 +79,7 @@ class WingModel(Model):
         return asb.OperatingPoint(
             self.atmosphere,
             velocity=velocity,
-        ).reynolds(
-            self.MAC,
-        )
+        ).reynolds(self.MAC, )
 
 
 if __name__ == '__main__':

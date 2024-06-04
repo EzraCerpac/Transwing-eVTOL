@@ -35,7 +35,11 @@ parametric = Airplane(
                     ],
                 ),
                 WingXSec(  # Tip
-                    xyz_le=[ac.wing.span / 2 * tan(wing_model.le_sweep), ac.wing.span / 2, ac.wing.span / 2 * tand(wing_model.dihedral)],
+                    xyz_le=[
+                        ac.wing.span / 2 * tan(wing_model.le_sweep),
+                        ac.wing.span / 2,
+                        ac.wing.span / 2 * tand(wing_model.dihedral)
+                    ],
                     chord=wing_model.tipcrt,
                     twist=-1,
                     airfoil=wing_airfoil)
