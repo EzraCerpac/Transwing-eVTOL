@@ -43,11 +43,18 @@ class wing_model(Model):
                                                self.aircraft.taper**2) / (
                                                    1 + self.aircraft.taper)
         return MAC_length
+    
+    def y_mac(self) ->float:
+        self.aircraft.wing.span/6*(1+2*self.aircraft.taper)/(1+self.aircraft.taper)
+        
+    
 
     def Reynolds(self) -> float:
         Re = self.rho * self.aircraft.cruise_velocity * self.MAC(
         ) / self.mu  #reynolds engine
         return Re
+    
+    
 
 
 aircraft = Aircraft.load()
