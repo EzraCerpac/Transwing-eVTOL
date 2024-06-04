@@ -10,7 +10,10 @@ from sizing_tools.wing_planform import WingModel
 class ClassIIDrag(Model):
     """Calculate CD0 for the aircraft selected, the velocity in m/s and the altitude in m"""
 
-    def __init__(self, ac: AC, velocity: float = None, altitude: float = None) -> None:
+    def __init__(self,
+                 ac: AC,
+                 velocity: float = None,
+                 altitude: float = None) -> None:
         super().__init__(ac.data)
         self.velocity = velocity if velocity is not None else self.aircraft.cruise_velocity
         self.altitude = altitude if altitude is not None else self.aircraft.cruise_altitude
@@ -29,7 +32,7 @@ class ClassIIDrag(Model):
         #### INPUTS #####
         # Fuselage
         self.l_fus = self.aircraft.fuselage.length  # m
-        self.d_fus = self.aircraft.fuselage.maximum_section_perimeter # m
+        self.d_fus = self.aircraft.fuselage.maximum_section_perimeter  # m
 
         # Airfoil # double check all of these
         self.root_cord = wing_model.rootcrt  # m
@@ -77,8 +80,8 @@ class ClassIIDrag(Model):
 
     def C_f_RAYMER(self, l, lam_percent):
         C_f_lam = 1.328 / np.sqrt(self.Reynolds(l))
-        C_f_tur = 0.455 / ((np.log10(self.Reynolds(l))) ** 2.58 *
-                           (1 + 0.144 * self.mach ** 2) ** 0.65)
+        C_f_tur = 0.455 / ((np.log10(self.Reynolds(l)))**2.58 *
+                           (1 + 0.144 * self.mach**2)**0.65)
         return C_f_lam * (lam_percent / 100) + C_f_tur * (1 -
                                                           (lam_percent / 100))
 
@@ -92,9 +95,9 @@ class ClassIIDrag(Model):
         L_2 = 2
         L_3 = 5  # 35%
         S_wet_fus = (np.pi * self.d_fus / 4) * (
-                (1 / (3 * L_1 ** 2)) *
-                ((4 * L_1 ** 2 + self.d_fus ** 2 / 4) ** 1.5 - self.d_fus ** 3 / 8) -
-                self.d_fus + 4 * L_2 + 2 * np.sqrt(L_3 ** 2 + self.d_fus ** 2 / 4))
+            (1 / (3 * L_1**2)) *
+            ((4 * L_1**2 + self.d_fus**2 / 4)**1.5 - self.d_fus**3 / 8) -
+            self.d_fus + 4 * L_2 + 2 * np.sqrt(L_3**2 + self.d_fus**2 / 4))
 
         # Flat Plate Skin Friction Coefficient
         lam_percent_fus = 25  # Assumption, probably between 25 and 35
@@ -105,10 +108,10 @@ class ClassIIDrag(Model):
 
         # Component Form Factor
         FF_wing = (1 + (0.6 / self.x_tc * self.MAC) * self.tc + 100 *
-                   (self.tc ** 4)) * (1.34 * self.mach ** 0.18 *
-                                      np.cos(self.sweep) ** 0.28)
+                   (self.tc**4)) * (1.34 * self.mach**0.18 *
+                                    np.cos(self.sweep)**0.28)
         f = self.l_fus / self.d_fus
-        FF_fus = 1 + 60 / (f ** 3) + f / 400
+        FF_fus = 1 + 60 / (f**3) + f / 400
         FF_nacelle = 1 + 0.35 / f
 
         # Component interference factor
@@ -139,7 +142,7 @@ class ClassIIDrag(Model):
         L_tc = 1.2 if self.x_tc >= 0.3 else 2.0
 
         return R_wf * R_ls * C_f_w * (1 + L_tc + 100 *
-                                      (self.tc) ** 4) * S_wet_w / self.S
+                                      (self.tc)**4) * S_wet_w / self.S
 
     def fus_CD0(self):  # dont use
         self.param_check()
@@ -148,16 +151,16 @@ class ClassIIDrag(Model):
         L_2 = self.l_fus * 0.5
         L_3 = self.l_fus * 0.35
         S_wet_fus = (np.pi * self.d_fus / 4) * (
-                (1 / (3 * L_1 ** 2)) *
-                ((4 * L_1 ** 2 + self.d_fus ** 2 / 4) ** 1.5 - self.d_fus ** 3 / 8) -
-                self.d_fus + 4 * L_2 + 2 * np.sqrt(L_3 ** 2 + self.d_fus ** 2 / 4))
+            (1 / (3 * L_1**2)) *
+            ((4 * L_1**2 + self.d_fus**2 / 4)**1.5 - self.d_fus**3 / 8) -
+            self.d_fus + 4 * L_2 + 2 * np.sqrt(L_3**2 + self.d_fus**2 / 4))
 
         R_wf = 1.045  # See Roskam VI figure 4.1, depends on Fuselage Reynolds number and Mach number
         C_f_fus = 0.00225  # See Roskam VI figure 4.3, depends on Fuselage Reynolds number and Mach number
 
         return R_wf * C_f_fus * (
-                1 + 60 / (self.l_fus / self.d_fus) ** 3 + 0.0025 *
-                (self.l_fus / self.d_fus)) * S_wet_fus / self.S
+            1 + 60 / (self.l_fus / self.d_fus)**3 + 0.0025 *
+            (self.l_fus / self.d_fus)) * S_wet_fus / self.S
 
 
 if __name__ == '__main__':
