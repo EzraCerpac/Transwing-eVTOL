@@ -1,16 +1,17 @@
 import numpy as np
 import os, sys
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # from data.concept_parameters.aircraft import AC, Aircraft
 from model.airplane_models.rotating_wing import rot_wing
 
 
-
 class C2Drag():
     """Calculate CD0 for the aircraft selected, the v_cruise in m/s and the altitude in m"""
+
     def __init__(self, v_cruise: float, altitude: float, ac: AC) -> None:
-        
+
         #### INPUTS #####
         self.v_cruise = v_cruise  # m/s
         self.altitude = altitude  # m
@@ -149,9 +150,7 @@ class C2Drag():
 
 if __name__ == '__main__':
     ac = rot_wing
-    c = C2Drag(ac.data.cruise_velocity,ac.data.cruise_altitude,ac)
+    c = C2Drag(ac.data.cruise_velocity, ac.data.cruise_altitude, ac)
     c.total_CD0_RAYMER(True)
     # print(f"WING CD0 ROSKAM = {round(c.wing_CD0(),5)}")
     # print(f"FUSE CD0 ROSKAM = {round(c.fus_CD0(),5)}")
-    
-    
