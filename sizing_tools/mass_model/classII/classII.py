@@ -1,6 +1,5 @@
 from scipy.optimize import fixed_point
 
-
 import sys
 import os
 
@@ -34,8 +33,8 @@ class ClassIIModel(MassModel):
             aircraft, self.initial_total_mass)
         self.airframe_mass_model = AirframeMassModel(aircraft,
                                                      self.initial_total_mass)
-        self.fixed_equipment_model = FixedEquipmentMassModel(aircraft,
-                                                              self.initial_total_mass)
+        self.fixed_equipment_model = FixedEquipmentMassModel(
+            aircraft, self.initial_total_mass)
         self.propulsion_system_mass_model = PropulsionSystemMassModel(
             aircraft, self.initial_total_mass)
         super().__init__(aircraft, self.initial_total_mass)
@@ -51,7 +50,7 @@ class ClassIIModel(MassModel):
                 self.airframe_mass_model.total_mass(initial_total_mass) +
                 self.fixed_equipment_model.total_mass(initial_total_mass) +
                 self.propulsion_system_mass_model.total_mass() +
-                self.aircraft.payload_mass) 
+                self.aircraft.payload_mass)
 
     def total_mass(self, **kwargs) -> float:
         self.aircraft.total_mass = fixed_point(self.total_mass_estimation,
@@ -81,10 +80,13 @@ class ClassIIModel(MassModel):
                 'vertical_tail': self.airframe_mass_model.vertical_tail_mass(),
                 'landing_gear': self.airframe_mass_model.landing_gear_mass(),
             },
-            'fixed_equipment':{
-                'total': self.fixed_equipment_model.total_mass(),
-                'oxygen_system_mass': self.fixed_equipment_model.oxygen_system_mass(),
-                'furnishings_mass': self.fixed_equipment_model.furnishings_mass(),
+            'fixed_equipment': {
+                'total':
+                self.fixed_equipment_model.total_mass(),
+                'oxygen_system_mass':
+                self.fixed_equipment_model.oxygen_system_mass(),
+                'furnishings_mass':
+                self.fixed_equipment_model.furnishings_mass(),
             },
             'propulsion': {
                 'total':
