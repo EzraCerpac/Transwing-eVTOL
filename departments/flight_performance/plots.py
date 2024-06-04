@@ -129,6 +129,7 @@ def plot_dynamic(dyn: DynamicsPointMass2DSpeedGamma):
         "Elevation [m]",
     )
 
+
 @show
 def plot_over_distance_vertical(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
     fig, axs = plt.subplots(2, 3, figsize=(16, 8), sharex=True)
@@ -156,6 +157,7 @@ def plot_over_distance_vertical(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
 
     plt.tight_layout()
     return fig, axs
+
 
 @show
 def plot_over_time_vertical(df: pd.DataFrame) -> (plt.Figure, plt.Axes):

@@ -66,9 +66,11 @@ class VerticalMissionProfileOptimization(Model):
             self.max_power > 100000,
         ])
         self.power_available = self.thrust_level * self.max_power
-        disk_area = rotor_disk_area(self.aircraft.propeller_radius) * self.aircraft.motor_prop_count
-        self.thrust = hover_thrust_from_power(self.power_available, disk_area, self.aircraft.figure_of_merit,
-                                              self.dyn.op_point.atmosphere.density())
+        disk_area = rotor_disk_area(
+            self.aircraft.propeller_radius) * self.aircraft.motor_prop_count
+        self.thrust = hover_thrust_from_power(
+            self.power_available, disk_area, self.aircraft.figure_of_merit,
+            self.dyn.op_point.atmosphere.density())
         dynamic_func()
         self.dyn.add_gravity_force()
         self.dyn.constrain_derivatives(self.opti, self.time)
@@ -79,7 +81,9 @@ class VerticalMissionProfileOptimization(Model):
         #     self.total_energy <= self.aircraft.mission_profile.energy)
 
     def vertical_constraints(self):
-        self.end_time = self.opti.variable(init_guess=100, log_transform=True, upper_bound=300)
+        self.end_time = self.opti.variable(init_guess=100,
+                                           log_transform=True,
+                                           upper_bound=300)
         self.time = np.linspace(0, self.end_time, self.n_timesteps)
         self.trans_altitude = self.opti.parameter(value=100)
         self.dyn = asb.DynamicsPointMass1DVertical(
@@ -87,9 +91,15 @@ class VerticalMissionProfileOptimization(Model):
                                           Ixx=1000,
                                           Iyy=500,
                                           Izz=500),
-            z_e=self.opti.variable(init_guess=np.linspace(0, -self.trans_altitude, self.n_timesteps), upper_bound=0),
-            w_e=self.opti.variable(init_guess=np.concatenate([np.linspace(0, -self.aircraft.rate_of_climb, self.n_timesteps // 2),
-                                                                np.linspace(-self.aircraft.rate_of_climb, 0, self.n_timesteps - self.n_timesteps // 2)])),
+            z_e=self.opti.variable(init_guess=np.linspace(
+                0, -self.trans_altitude, self.n_timesteps),
+                                   upper_bound=0),
+            w_e=self.opti.variable(init_guess=np.concatenate([
+                np.linspace(0, -self.aircraft.rate_of_climb,
+                            self.n_timesteps // 2),
+                np.linspace(-self.aircraft.rate_of_climb, 0, self.n_timesteps -
+                            self.n_timesteps // 2)
+            ])),
         )
         self.thrust_level = self.opti.variable(init_guess=0.9,
                                                n_vars=self.n_timesteps,
@@ -114,7 +124,7 @@ class VerticalMissionProfileOptimization(Model):
             a_v >= -2,
             # np.diff(self.thrust_level) < 0.01,
             # np.diff(self.thrust_level) > -0.01,
-            ])
+        ])
         self.opti.subject_to([
             # np.diff(self.dyn.speed) < 2,
             # np.diff(self.dyn.speed) > -2,
@@ -122,7 +132,7 @@ class VerticalMissionProfileOptimization(Model):
             # np.diff(self.dyn.alpha) > -1,
             # np.diff(self.dyn.gamma) < .1,
             # np.diff(self.dyn.gamma) > .1,
-            ])
+        ])
 
     def vertical_dynamics(self, use_aero: bool = False):
         if use_aero:
@@ -170,33 +180,33 @@ class VerticalMissionProfileOptimization(Model):
     def to_dataframe(self) -> pd.DataFrame:
         return pd.DataFrame({
             'time':
-                self.time,
+            self.time,
             'x':
-                self.dyn.x_e,
+            self.dyn.x_e,
             'z':
-                self.dyn.z_e,
+            self.dyn.z_e,
             'speed':
-                self.dyn.speed,
+            self.dyn.speed,
             'gamma':
-                self.dyn.gamma,
+            self.dyn.gamma,
             'alpha':
-                self.dyn.alpha,
+            self.dyn.alpha,
             'horizontal speed':
-                self.dyn.u_e,
+            self.dyn.u_e,
             'vertical speed':
-                self.dyn.w_e,
+            self.dyn.w_e,
             # 'C_L':
             #     self.CL,
             'altitude':
-                -self.dyn.z_e,
+            -self.dyn.z_e,
             'energy altitude':
-                self.dyn.op_point.energy_altitude(),
+            self.dyn.op_point.energy_altitude(),
             'power':
-                self.power_available,
+            self.power_available,
             'thrust':
-                self.thrust,
+            self.thrust,
             'thrust_level':
-                self.thrust_level,
+            self.thrust_level,
         })
 
 
