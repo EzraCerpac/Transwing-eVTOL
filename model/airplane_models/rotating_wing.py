@@ -1,9 +1,14 @@
+from math import tan
+
 from aerosandbox import Airplane, Propulsor, Wing, Fuselage, WingXSec, FuselageXSec, Airfoil, ControlSurface
 import aerosandbox.numpy as np
+from aerosandbox.numpy import tan, tand
 
 from data.concept_parameters.aircraft import Aircraft, AC
+from sizing_tools.wing_planform import WingModel
 
 ac = Aircraft.load()
+wing_model = WingModel(ac, altitude=ac.cruise_altitude)
 
 wing_airfoil = Airfoil("E560")
 # wing_airfoil = Airfoil("E423")
@@ -19,7 +24,7 @@ parametric = Airplane(
             xsecs=[
                 WingXSec(  # Root
                     xyz_le=[0, 0, 0],
-                    chord=ac.wing.max_chord,
+                    chord=wing_model.rootcrt,
                     twist=1,
                     airfoil=wing_airfoil,
                     control_surfaces=[
@@ -30,8 +35,8 @@ parametric = Airplane(
                     ],
                 ),
                 WingXSec(  # Tip
-                    xyz_le=[0.2, ac.wing.span / 2, 1],
-                    chord=0.1 * ac.wing.max_chord,
+                    xyz_le=[ac.wing.span / 2 * tan(wing_model.le_sweep), ac.wing.span / 2, ac.wing.span / 2 * tand(wing_model.dihedral)],
+                    chord=wing_model.tipcrt,
                     twist=-1,
                     airfoil=wing_airfoil)
             ],
