@@ -54,8 +54,12 @@ def plot_over_distance(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
     axs[3].set_ylabel(r"$\alpha$ [deg]")
     axs[3].set_xlabel("Distance [km]")
 
-    axs[4].plot(df["x"] / 1000, df["C_L"])
-    axs[4].set_ylabel("$C_L$")
+    # axs[4].plot(df["x"] / 1000, df["C_L"])
+    # axs[4].set_ylabel("$C_L$")
+    # axs[4].set_xlabel("Distance [km]")
+
+    axs[4].plot(df["x"] / 1000, df["thrust"])
+    axs[4].set_ylabel("$T$ [N]")
     axs[4].set_xlabel("Distance [km]")
 
     axs[5].plot(df["x"] / 1000, df["power"] / 1000)
@@ -82,8 +86,11 @@ def plot_over_time(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
     axs[3].plot(df["time"], df["alpha"])
     axs[3].set_ylabel("alpha")
 
-    axs[4].plot(df["time"], df["C_L"])
-    axs[4].set_ylabel("C_L")
+    # axs[4].plot(df["time"], df["C_L"])
+    # axs[4].set_ylabel("C_L")
+    axs[4].plot(df["time"], df["thrust"] / 1000)
+    axs[4].set_ylabel("$T$ [kN]")
+    axs[4].set_xlabel("Time [s]")
 
     axs[5].plot(df["time"], df["power"])
     axs[5].set_ylabel("Power [W]")
@@ -121,3 +128,59 @@ def plot_dynamic(dyn: DynamicsPointMass2DSpeedGamma):
         "Range [m]",
         "Elevation [m]",
     )
+
+@show
+def plot_over_distance_vertical(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
+    fig, axs = plt.subplots(2, 3, figsize=(16, 8), sharex=True)
+    axs = axs.flatten()
+    axs[0].plot(df["x"] / 1000, df["horizontal speed"])
+    axs[0].set_ylabel("$V_h$ [m/s]")
+
+    axs[1].plot(df["x"] / 1000, -df["vertical speed"])
+    axs[1].set_ylabel("$V_v$ [m/s]")
+
+    axs[2].plot(df["x"] / 1000, df["thrust"] / 1000)
+    axs[2].set_ylabel(r"$T$ [kN]")
+
+    axs[3].plot(df["x"] / 1000, df["x"] / 1000)
+    axs[3].set_ylabel("Distance [km]")
+    axs[3].set_xlabel("Distance [km]")
+
+    axs[4].plot(df["x"] / 1000, df["altitude"])
+    axs[4].set_ylabel("$h$ [m]")
+    axs[4].set_xlabel("Distance [km]")
+
+    axs[5].plot(df["x"] / 1000, df["power"] / 1000)
+    axs[5].set_ylabel("Power [kW]")
+    axs[5].set_xlabel("Distance [km]")
+
+    plt.tight_layout()
+    return fig, axs
+
+@show
+def plot_over_time_vertical(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
+    fig, axs = plt.subplots(2, 3, figsize=(16, 8), sharex=True)
+    axs = axs.flatten()
+    axs[0].plot(df["time"], df["horizontal speed"])
+    axs[0].set_ylabel("$V_h$ [m/s]")
+
+    axs[1].plot(df["time"], -df["vertical speed"])
+    axs[1].set_ylabel("$V_v$ [m/s]")
+
+    axs[2].plot(df["time"], df["alpha"])
+    axs[2].set_ylabel(r"$\alpha$ [deg]")
+
+    axs[3].plot(df["time"], df["x"])
+    axs[3].set_ylabel("Distance [m]")
+    axs[3].set_xlabel("Time [s]")
+
+    axs[4].plot(df["time"], df["altitude"])
+    axs[4].set_ylabel("$h$ [m]")
+    axs[4].set_xlabel("Time [s]")
+
+    axs[5].plot(df["time"], df["power"] / 1000)
+    axs[5].set_ylabel("Power [kW]")
+    axs[5].set_xlabel("Time [s]")
+
+    plt.tight_layout()
+    return fig, axs
