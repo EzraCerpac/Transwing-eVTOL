@@ -1,10 +1,19 @@
 from scipy.optimize import fixed_point
 
+
+import sys
+import os
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
+sys.path.append(parent_dir)
+
 from data.concept_parameters.aircraft import Aircraft
 from data.concept_parameters.aircraft_components import MassObject
 from data.literature.evtols import joby_s4
 from sizing_tools.mass_model.classII.airframe import AirframeMassModel
 from sizing_tools.mass_model.classII.energy_system import EnergySystemMassModel
+from sizing_tools.mass_model.classII.fixed_equipment import FixedEquipmentMassModel
 from sizing_tools.mass_model.classII.propulsion_system import PropulsionSystemMassModel
 from sizing_tools.mass_model.mass_model import MassModel
 from sizing_tools.misc_plots.mass_breakdown import plot_mass_breakdown
@@ -23,6 +32,8 @@ class ClassIIModel(MassModel):
             aircraft, self.initial_total_mass)
         self.airframe_mass_model = AirframeMassModel(aircraft,
                                                      self.initial_total_mass)
+        self.fixed_equipment_model = FixedEquipmentMassModel(aircraft,
+                                                              self.initial_total_mass)
         self.propulsion_system_mass_model = PropulsionSystemMassModel(
             aircraft, self.initial_total_mass)
         super().__init__(aircraft, self.initial_total_mass)
@@ -36,8 +47,9 @@ class ClassIIModel(MassModel):
     def total_mass_estimation(self, initial_total_mass: float) -> float:
         return (self.energy_system_mass_model.total_mass() +
                 self.airframe_mass_model.total_mass(initial_total_mass) +
+                self.fixed_equipment_model.total_mass(initial_total_mass) +
                 self.propulsion_system_mass_model.total_mass() +
-                self.aircraft.payload_mass)
+                self.aircraft.payload_mass) 
 
     def total_mass(self, **kwargs) -> float:
         self.aircraft.total_mass = fixed_point(self.total_mass_estimation,
@@ -66,6 +78,11 @@ class ClassIIModel(MassModel):
                 self.airframe_mass_model.horizontal_tail_mass(),
                 'vertical_tail': self.airframe_mass_model.vertical_tail_mass(),
                 'landing_gear': self.airframe_mass_model.landing_gear_mass(),
+            },
+            'fixed_equipment':{
+                'total': self.fixed_equipment_model.total_mass(),
+                'oxygen_system_mass': self.fixed_equipment_model.oxygen_system_mass(),
+                'furnishings_mass': self.fixed_equipment_model.furnishings_mass(),
             },
             'propulsion': {
                 'total':
