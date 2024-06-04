@@ -75,11 +75,24 @@ class MissionProfileOptimization(Model):
                 0, 10, self.n_timesteps),
                                    lower_bound=0,
                                    upper_bound=self.aircraft.range),
-            z_e=self.opti.variable(init_guess=-100, n_vars=self.n_timesteps, upper_bound=0),
-            u_b=self.opti.variable(init_guess=self.aircraft.v_stall, n_vars=self.n_timesteps, lower_bound=0),
-            w_b=self.opti.variable(init_guess=0, n_vars=self.n_timesteps, lower_bound=-50, upper_bound=50),
-            theta=self.opti.variable(init_guess=0, n_vars=self.n_timesteps, lower_bound=-np.pi / 2, upper_bound=np.pi / 2),
-            q=self.opti.variable(init_guess=0, n_vars=self.n_timesteps, lower_bound=-np.radians(5), upper_bound=np.radians(5)),
+            z_e=self.opti.variable(init_guess=-100,
+                                   n_vars=self.n_timesteps,
+                                   upper_bound=0),
+            u_b=self.opti.variable(init_guess=self.aircraft.v_stall,
+                                   n_vars=self.n_timesteps,
+                                   lower_bound=0),
+            w_b=self.opti.variable(init_guess=0,
+                                   n_vars=self.n_timesteps,
+                                   lower_bound=-50,
+                                   upper_bound=50),
+            theta=self.opti.variable(init_guess=0,
+                                     n_vars=self.n_timesteps,
+                                     lower_bound=-np.pi / 2,
+                                     upper_bound=np.pi / 2),
+            q=self.opti.variable(init_guess=0,
+                                 n_vars=self.n_timesteps,
+                                 lower_bound=-np.radians(5),
+                                 upper_bound=np.radians(5)),
         )
         # self.gamma = np.arctan(self.dyn.w_b / self.dyn.u_b)
         # self.alpha = self.dyn.theta - self.gamma
@@ -87,9 +100,14 @@ class MissionProfileOptimization(Model):
                                                n_vars=self.n_timesteps,
                                                log_transform=True,
                                                upper_bound=1)
-        self.elevator_deflection = self.opti.variable(init_guess=0, n_vars=self.n_timesteps, lower_bound=-np.radians(20), upper_bound=np.radians(20))
+        self.elevator_deflection = self.opti.variable(
+            init_guess=0,
+            n_vars=self.n_timesteps,
+            lower_bound=-np.radians(20),
+            upper_bound=np.radians(20))
         self.parametric.wings[1].set_control_surface_deflections({
-            'Elevator': self.elevator_deflection,
+            'Elevator':
+            self.elevator_deflection,
         })
 
         self.opti.subject_to([
