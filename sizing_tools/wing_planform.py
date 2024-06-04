@@ -19,11 +19,10 @@ class WingModel(Model):
 
     def __init__(self, aircraft: Aircraft, altitude: float = None):
         super().__init__(aircraft)
-        self.atmosphere = Atmosphere(
-            altitude=altitude if altitude is not None else self.aircraft.cruise_altitude)
+        self.atmosphere = Atmosphere(altitude=altitude if altitude is not None
+                                     else self.aircraft.cruise_altitude)
         self.rho = self.atmosphere.density()
         self.mu = self.atmosphere.dynamic_viscosity()
-
 
     #todo for later
     @property
@@ -55,9 +54,7 @@ class WingModel(Model):
         return asb.OperatingPoint(
             self.atmosphere,
             velocity=velocity,
-        ).reynolds(
-            self.MAC(),
-        )
+        ).reynolds(self.MAC(), )
 
 
 if __name__ == '__main__':
