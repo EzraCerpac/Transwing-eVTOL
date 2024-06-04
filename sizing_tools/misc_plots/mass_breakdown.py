@@ -44,8 +44,8 @@ def plot_mass_breakdown(aircraft: Aircraft) -> tuple[plt.Figure, plt.Axes]:
         prop={'family': 'DejaVu Sans Mono'})
     ax.add_artist(legend1)
     legend2 = ax.legend(wedges2[2:], [
-        "{}:{}\t{:>6.3g} kg".format(k.replace('_', ' '), "\t" if len(k) < 8 else "",
-                                    v).expandtabs(9)
+        "{}:{}\t{:>6.3g} kg".format(k.replace(
+            '_', ' '), "\t" if len(k) < 8 else "", v).expandtabs(9)
         for k, v in sub_masses.items()
     ],
                         loc="lower right",

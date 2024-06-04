@@ -46,7 +46,11 @@ def plot_power_over_mass_data(
     fig, ax = plt.subplots(figsize=(8, 5))
 
     for i, row in df.iterrows():
-        ax.scatter(row["Mass (kg)"], row["Power (kW)"], label=row["Motor(s)"], marker="x", color="black")
+        ax.scatter(row["Mass (kg)"],
+                   row["Power (kW)"],
+                   label=row["Motor(s)"],
+                   marker="x",
+                   color="black")
 
     ax.set_xlabel("Mass [kg]")
     ax.set_ylabel("Power [kW]")
@@ -68,7 +72,8 @@ tuple[plt.Figure, plt.Axes]:
     xx = mass_over_power_fn(yy)
     ax.plot(xx, yy, label="Emperical Mass over Power")
     # Calculate the R value
-    slope, intercept, r_value, p_value, std_err = linregress(df["Mass (kg)"], df["Power (kW)"])
+    slope, intercept, r_value, p_value, std_err = linregress(
+        df["Mass (kg)"], df["Power (kW)"])
     r_squared = r_value**2
 
     # Display the R value
