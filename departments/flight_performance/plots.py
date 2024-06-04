@@ -44,8 +44,10 @@ def plot_over_distance(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
     axs[0].plot(df["x"] / 1000, df["speed"])
     axs[0].set_ylabel("$V$ [m/s]")
 
-    axs[1].plot(df["x"] / 1000, df["gamma"])
-    axs[1].set_ylabel("$\gamma$ [rad]")
+    # axs[1].plot(df["x"] / 1000, df["gamma"])
+    # axs[1].set_ylabel("$\gamma$ [rad]")
+    axs[1].plot(df["x"] / 1000, df["elevator deflection"])
+    axs[1].set_ylabel("Elevator deflection [deg]")
 
     axs[2].plot(df["x"] / 1000, -df["z"])
     axs[2].set_ylabel("$h$ [m]")
@@ -77,8 +79,10 @@ def plot_over_time(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
     axs[0].plot(df["time"], df["x"])
     axs[0].set_ylabel("Distance [m]")
 
-    axs[1].plot(df["time"], df["gamma"])
-    axs[1].set_ylabel("gamma")
+    # axs[1].plot(df["time"], df["gamma"])
+    # axs[1].set_ylabel("gamma")
+    axs[1].plot(df["time"], df["elevator deflection"])
+    axs[1].set_ylabel("Elevator deflection [deg]")
 
     axs[2].plot(df["time"], -df["z"])
     axs[2].set_ylabel("z [m]")

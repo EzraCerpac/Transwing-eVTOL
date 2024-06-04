@@ -51,7 +51,7 @@ parametric = Airplane(
             xsecs=[
                 WingXSec(  # root
                     xyz_le=[0, 0, 0],
-                    chord=0.3,
+                    chord=0.5,
                     twist=0,
                     airfoil=tail_airfoil,
                     control_surfaces=[
@@ -62,7 +62,7 @@ parametric = Airplane(
                     ],
                 ),
                 WingXSec(  # tip
-                    xyz_le=[0.2, 1.5, 0],
+                    xyz_le=[0.2, 2, 0],
                     chord=0.1,
                     twist=0,
                     airfoil=tail_airfoil)
@@ -97,7 +97,6 @@ rot_wing = AC(
 )
 
 if __name__ == '__main__':
-    import aerosandbox as asb
     parametric.draw_three_view()
 
     # vlm = asb.VortexLatticeMethod(
