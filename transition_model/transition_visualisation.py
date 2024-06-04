@@ -56,8 +56,6 @@ class TransitionAnim:
         self.C = np.array([[-0.1], [0.25], [0]])
         self.D = np.array([[-0.1], [-0.75], [0]])
 
-        color = random_color()
-
         Xc, Yc, Zc = self.cylinder_data(0, .35, 0.5, 1, 0.1)
 
         self.animation_ax.plot_surface(Zc,
@@ -140,8 +138,6 @@ class TransitionAnim:
 
     def draw_wing(self, i) -> None:
 
-        color = random_color()
-
         self.line1.pop(0).remove()
         self.line2.pop(0).remove()
         self.line3.pop(0).remove()
@@ -199,7 +195,10 @@ class TransitionAnim:
 
         self.animation_ax.set_aspect('equal')
 
-    def run_animation(self, q: float = -110, n: int = 150) -> None:
+    def run_animation(self,
+                      q: float = -110,
+                      n: int = 150,
+                      save_anim: bool = False) -> None:
 
         dq = q / n
 
@@ -423,5 +422,4 @@ def visualize2(alpha: float, beta: float) -> None:
 if __name__ == '__main__':
 
     sim = TransitionAnim()
-
     sim.run_animation()
