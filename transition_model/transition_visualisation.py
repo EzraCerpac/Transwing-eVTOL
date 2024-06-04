@@ -195,7 +195,10 @@ class TransitionAnim:
 
         self.animation_ax.set_aspect('equal')
 
-    def run_animation(self, q: float = -110, n: int = 150, save_anim: bool = False) -> None:
+    def run_animation(self,
+                      q: float = -110,
+                      n: int = 150,
+                      save_anim: bool = False) -> None:
 
         dq = q / n
 

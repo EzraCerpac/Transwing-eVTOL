@@ -2,6 +2,8 @@
 
 alpha = 0
 beta = 0
+
+
 def random_color():
     np.random.seed()
     rgbl = [np.random.random(), np.random.random(), np.random.random()]
@@ -72,6 +74,7 @@ def optimize_axis():
         'abstol': 0.0001
     })
     print(G(0.5, 0.5))
+
 
 def run_animation():
     fig = plt.figure()
