@@ -1,13 +1,19 @@
 import numpy as np
+import os, sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# from data.concept_parameters.aircraft import AC, Aircraft
+from model.airplane_models.rotating_wing import rot_wing
+
 
 
 class C2Drag():
-
-    def __init__(self) -> None:
-
+    """Calculate CD0 for the aircraft selected, the v_cruise in m/s and the altitude in m"""
+    def __init__(self, v_cruise: float, altitude: float, ac: AC) -> None:
+        
         #### INPUTS #####
-        self.v_cruise = 200 / 3.6  # m/s
-        self.altitude = 500  # m
+        self.v_cruise = v_cruise  # m/s
+        self.altitude = altitude  # m
         self.rho = 1.1673  # kg/m3
         self.mach = 0.168  # -
         self.mu = 1.7894E-5  # kg/m3
@@ -28,8 +34,6 @@ class C2Drag():
         self.S_exp_VT = 0
         self.S_exp_HT = 2
         self.sweep = 0  # rad
-
-        self.param_check()
 
     def total_CD0_ROSKAM(self):
         return self.wing_CD0() + self.fus_CD0()
@@ -65,7 +69,7 @@ class C2Drag():
         return C_f_lam * (lam_percent / 100) + C_f_tur * (1 -
                                                           (lam_percent / 100))
 
-    def total_CD0_RAYMER(self):
+    def total_CD0_RAYMER(self, print=False):
         # Wetted Areas
 
         S_wet_w = 1.07 * 2 * self.S_exp_w
@@ -105,45 +109,49 @@ class C2Drag():
         tail_CD0 = 1 / self.S * C_f_wing * FF_wing * S_wet_HT
         total_drag = (wing_CD0 + fuselage_CD0 +
                       tail_CD0) * 1.20  # For Excrescence drag and leakage
-        print(f"TAIL CD0 RAYMER = {round(tail_CD0,5)}")
-        print(f"WING CD0 RAYMER = {round(wing_CD0,5)}")
-        print(f"FUSE CD0 RAYMER = {round(fuselage_CD0,5)}")
-        print(f"TOTAl CD0 RAYMER = {round(total_drag,5)}\n")
+        if print:
+            print(f"TAIL CD0 RAYMER = {round(tail_CD0,5)}")
+            print(f"WING CD0 RAYMER = {round(wing_CD0,5)}")
+            print(f"FUSE CD0 RAYMER = {round(fuselage_CD0,5)}")
+            print(f"TOTAl CD0 RAYMER = {round(total_drag,5)}\n")
         return total_drag
 
-    def wing_CD0(self):
-        S_wet_w = 1.07 * 2 * self.S_exp_w
-        R_wf = 1.045  # See Roskam VI figure 4.1, depends on Fuselage Reynolds number and Mach number
-        R_ls = 1.065  # See Roskam VI figure 4.2, depends on Sweep and Mach number
-        # C_f_w = 0.00295         # See Roskam VI figure 4.3, depends on Wing Reynolds number and Mach number
-        C_f_w = 0.001934  # See Roskam VI figure 4.3, depends on Wing Reynolds number and Mach number
+    # def wing_CD0(self):
+    #     S_wet_w = 1.07 * 2 * self.S_exp_w
+    #     R_wf = 1.045  # See Roskam VI figure 4.1, depends on Fuselage Reynolds number and Mach number
+    #     R_ls = 1.065  # See Roskam VI figure 4.2, depends on Sweep and Mach number
+    #     # C_f_w = 0.00295         # See Roskam VI figure 4.3, depends on Wing Reynolds number and Mach number
+    #     C_f_w = 0.001934  # See Roskam VI figure 4.3, depends on Wing Reynolds number and Mach number
 
-        L_tc = 1.2 if self.x_tc >= 0.3 else 2.0
+    #     L_tc = 1.2 if self.x_tc >= 0.3 else 2.0
 
-        return R_wf * R_ls * C_f_w * (1 + L_tc + 100 *
-                                      (self.tc)**4) * S_wet_w / self.S
+    #     return R_wf * R_ls * C_f_w * (1 + L_tc + 100 *
+    #                                   (self.tc)**4) * S_wet_w / self.S
 
-    def fus_CD0(self):
-        self.param_check()
+    # def fus_CD0(self):
+    #     self.param_check()
 
-        L_1 = self.l_fus * 0.15
-        L_2 = self.l_fus * 0.5
-        L_3 = self.l_fus * 0.35
-        S_wet_fus = (np.pi * self.d_fus / 4) * (
-            (1 / (3 * L_1**2)) *
-            ((4 * L_1**2 + self.d_fus**2 / 4)**1.5 - self.d_fus**3 / 8) -
-            self.d_fus + 4 * L_2 + 2 * np.sqrt(L_3**2 + self.d_fus**2 / 4))
+    #     L_1 = self.l_fus * 0.15
+    #     L_2 = self.l_fus * 0.5
+    #     L_3 = self.l_fus * 0.35
+    #     S_wet_fus = (np.pi * self.d_fus / 4) * (
+    #         (1 / (3 * L_1**2)) *
+    #         ((4 * L_1**2 + self.d_fus**2 / 4)**1.5 - self.d_fus**3 / 8) -
+    #         self.d_fus + 4 * L_2 + 2 * np.sqrt(L_3**2 + self.d_fus**2 / 4))
 
-        R_wf = 1.045  # See Roskam VI figure 4.1, depends on Fuselage Reynolds number and Mach number
-        C_f_fus = 0.00225  # See Roskam VI figure 4.3, depends on Fuselage Reynolds number and Mach number
+    #     R_wf = 1.045  # See Roskam VI figure 4.1, depends on Fuselage Reynolds number and Mach number
+    #     C_f_fus = 0.00225  # See Roskam VI figure 4.3, depends on Fuselage Reynolds number and Mach number
 
-        return R_wf * C_f_fus * (
-            1 + 60 / (self.l_fus / self.d_fus)**3 + 0.0025 *
-            (self.l_fus / self.d_fus)) * S_wet_fus / self.S
+    #     return R_wf * C_f_fus * (
+    #         1 + 60 / (self.l_fus / self.d_fus)**3 + 0.0025 *
+    #         (self.l_fus / self.d_fus)) * S_wet_fus / self.S
 
 
 if __name__ == '__main__':
-    c = C2Drag()
-    c.total_CD0_RAYMER()
+    ac = rot_wing
+    c = C2Drag(ac.data.cruise_velocity,ac.data.cruise_altitude,ac)
+    c.total_CD0_RAYMER(True)
     # print(f"WING CD0 ROSKAM = {round(c.wing_CD0(),5)}")
     # print(f"FUSE CD0 ROSKAM = {round(c.fus_CD0(),5)}")
+    
+    
