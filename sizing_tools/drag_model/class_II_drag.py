@@ -12,7 +12,8 @@ EXTRA_DRAG_MARGIN = 1.20
 class ClassIIDrag(Model):
     """Calculate CD0 for the aircraft selected, the velocity in m/s and the altitude in m"""
 
-    def __init__(self, ac: AC, velocity: float = None, altitude: float = None) -> None:
+    def __init__(self,
+                 ac: AC, velocity: float = None, altitude: float = None) -> None:
         super().__init__(ac.data)
         self.velocity = velocity if velocity is not None else self.aircraft.cruise_velocity
         self.altitude = altitude if altitude is not None else self.aircraft.cruise_altitude
