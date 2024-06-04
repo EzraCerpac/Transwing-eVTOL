@@ -12,17 +12,18 @@ from data.concept_parameters.aircraft import Aircraft
 from data.concept_parameters.concepts import concept_C2_1
 from utility.log import logger
 from aerosandbox import Atmosphere
+import aerosandbox as asb
 
 
-class wing_model(Model):
+class WingModel(Model):
 
-    def __init__(self, aircraft: Aircraft) -> None:
+    def __init__(self, aircraft: Aircraft, altitude: float = None):
         super().__init__(aircraft)
         self.atmosphere = Atmosphere(
-            altitude=self.aircraft.cruise_altitude if self.aircraft.
-            cruise_altitude is not None else 0)
+            altitude=altitude if altitude is not None else self.aircraft.cruise_altitude)
         self.rho = self.atmosphere.density()
-        self.mu = 1.79 * 10**(-5)  #dynamic viscosity
+        self.mu = self.atmosphere.dynamic_viscosity()
+
 
     #todo for later
     @property
@@ -49,14 +50,19 @@ class wing_model(Model):
             1 + self.aircraft.taper)
         return y_MAC
 
-    def Reynolds(self) -> float:
-        Re = self.rho * self.aircraft.cruise_velocity * self.MAC(
-        ) / self.mu  #reynolds engine
-        return Re
+    def Reynolds(self, velocity: float = None) -> float:
+        velocity = velocity if velocity is not None else self.aircraft.cruise_velocity
+        return asb.OperatingPoint(
+            self.atmosphere,
+            velocity=velocity,
+        ).reynolds(
+            self.MAC(),
+        )
 
 
-aircraft = Aircraft.load()
-# aircraft.wing.area = 25.4
-model = wing_model(aircraft)
-print(model.Reynolds())
-print(model.aircraft.wing.area)
+if __name__ == '__main__':
+    aircraft = Aircraft.load()
+    # aircraft.wing.area = 25.4
+    model = WingModel(aircraft)
+    print(model.Reynolds())
+    print(model.aircraft.wing.area)
