@@ -45,7 +45,8 @@ class wing_model(Model):
         return MAC_length
     
     def y_mac(self) ->float:
-        self.aircraft.wing.span/6*(1+2*self.aircraft.taper)/(1+self.aircraft.taper)
+        y_MAC =self.aircraft.wing.span/6*(1+2*self.aircraft.taper)/(1+self.aircraft.taper)
+        return y_MAC
         
     
 
@@ -58,7 +59,7 @@ class wing_model(Model):
 
 
 aircraft = Aircraft.load()
-aircraft.wing.area = 25.4
+# aircraft.wing.area = 25.4
 model = wing_model(aircraft)
-print(model.rootcrt())
+print(model.Reynolds())
 print(model.aircraft.wing.area)
