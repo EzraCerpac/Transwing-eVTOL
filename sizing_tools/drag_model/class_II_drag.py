@@ -42,7 +42,9 @@ class ClassIIDrag(Model):
         self.MAC = wing_model.MAC
         x_over_c_sample = np.linspace(0, 1, 101)
         self.t_over_c = airfoil.max_thickness(x_over_c_sample)
-        self.x_over_c_at_t_over_c = np.argmax(airfoil.local_thickness(x_over_c_sample) == self.t_over_c) / len(x_over_c_sample)
+        self.x_over_c_at_t_over_c = np.argmax(
+            airfoil.local_thickness(x_over_c_sample) == self.t_over_c) / len(
+                x_over_c_sample)
 
         # Wing # also check these
         self.S_wet = 30  # m2
@@ -112,9 +114,9 @@ class ClassIIDrag(Model):
 
         # Component Form Factor
         FF_wing = (1 +
-                   (0.6 / self.x_over_c_at_t_over_c * self.MAC) * self.t_over_c + 100 *
-                   (self.t_over_c**4)) * (1.34 * self.mach**0.18 *
-                                          np.cos(self.sweep)**0.28)
+                   (0.6 / self.x_over_c_at_t_over_c * self.MAC) * self.t_over_c
+                   + 100 * (self.t_over_c**4)) * (1.34 * self.mach**0.18 *
+                                                  np.cos(self.sweep)**0.28)
         f = self.l_fus / self.d_fus
         FF_fus = 1 + 60 / (f**3) + f / 400
         FF_nacelle = 1 + 0.35 / f

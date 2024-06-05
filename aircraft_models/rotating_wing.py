@@ -1,8 +1,16 @@
-from math import tan
+from math import tan, cos, sin
+
+import sys
+import os
 
 from aerosandbox import Airplane, Propulsor, Wing, Fuselage, WingXSec, FuselageXSec, Airfoil, ControlSurface
 import aerosandbox.numpy as np
 from aerosandbox.numpy import tan, tand
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
+
+sys.path.append(parent_dir)
 
 from data.concept_parameters.aircraft import Aircraft, AC
 from sizing_tools.wing_planform import WingModel
@@ -51,7 +59,7 @@ parametric = Airplane(
             xsecs=[
                 WingXSec(  # root
                     xyz_le=[0, 0, 0],
-                    chord=0.5,
+                    chord=1.896,
                     twist=0,
                     airfoil=tail_airfoil,
                     control_surfaces=[
@@ -62,8 +70,12 @@ parametric = Airplane(
                     ],
                 ),
                 WingXSec(  # tip
-                    xyz_le=[0.2, 2, 0],
-                    chord=0.1,
+                    xyz_le=[
+                        4.348 / 2 * tan(np.radians(36.86)),
+                        4.348 / 2 * cos(np.radians(37.62)),
+                        -4.348 / 2 * sin(np.radians(37.62))
+                    ],
+                    chord=1.896 * 0.4,
                     twist=0,
                     airfoil=tail_airfoil)
             ],
@@ -98,14 +110,4 @@ rot_wing = AC(
 
 if __name__ == '__main__':
     parametric.draw_three_view()
-    print(parametric.wings[0].area())
-    print(ac.wing.area)
-
-    # vlm = asb.VortexLatticeMethod(
-    #     airplane=parametric,
-    #     op_point=asb.OperatingPoint(
-    #         velocity=ac.cruise_velocity,  # m/s
-    #         alpha=5,  # degree
-    #     ))
-    # vlm.run()
-    # vlm.draw()
+    # parametric.draw()
