@@ -58,27 +58,41 @@ class Optimalisation(Model, ABC):
             k: v
             for k, v in {
                 # 'end time': self.end_time,
-                'time': self.time,
-                'x': self.dyn.x_e,
+                'time':
+                self.time,
+                'x':
+                self.dyn.x_e,
                 # 'z': self.dyn.z_e,
-                'altitude': self.dyn.altitude,
+                'altitude':
+                self.dyn.altitude,
                 'u':
                 self.dyn.u_b if hasattr(self.dyn, 'u_b') else self.dyn.u_e,
                 'w':
                 self.dyn.w_b if hasattr(self.dyn, 'w_b') else self.dyn.w_e,
-                'gamma': self.dyn.theta - self.dyn.alpha if hasattr(self.dyn, 'theta') else None,
-                'alpha': self.dyn.alpha,
+                'gamma':
+                self.dyn.theta -
+                self.dyn.alpha if hasattr(self.dyn, 'theta') else None,
+                'alpha':
+                self.dyn.alpha,
                 'theta':
                 self.dyn.theta if hasattr(self.dyn, 'theta') else None,
-                'q': self.dyn.q if hasattr(self.dyn, 'q') else None,
-                'speed': self.dyn.speed,
-                'elevator deflection': self.elevator_deflection,
-                'CL': self.CL,
+                'q':
+                self.dyn.q if hasattr(self.dyn, 'q') else None,
+                'speed':
+                self.dyn.speed,
+                'elevator deflection':
+                self.elevator_deflection,
+                'CL':
+                self.CL,
                 # 'thrust level': self.thrust_level,
-                'thrust': self.thrust,
-                'max power': self.max_power,
-                'power': self.power,
-                'total energy': self.total_energy,
+                'thrust':
+                self.thrust,
+                'max power':
+                self.max_power,
+                'power':
+                self.power,
+                'total energy':
+                self.total_energy,
             }.items() if v is not None
         }
 
