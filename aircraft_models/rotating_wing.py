@@ -10,7 +10,6 @@ from aerosandbox.numpy import tan, tand
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
 
-
 sys.path.append(parent_dir)
 
 from data.concept_parameters.aircraft import Aircraft, AC
@@ -71,10 +70,12 @@ parametric = Airplane(
                     ],
                 ),
                 WingXSec(  # tip
-                    xyz_le=[4.348 / 2 * tan(np.radians(36.86)),
-                             4.348 /2 * cos(np.radians(37.62)), 
-                            -4.348 / 2 * sin(np.radians(37.62))],
-                    chord=1.896*0.4,
+                    xyz_le=[
+                        4.348 / 2 * tan(np.radians(36.86)),
+                        4.348 / 2 * cos(np.radians(37.62)),
+                        -4.348 / 2 * sin(np.radians(37.62))
+                    ],
+                    chord=1.896 * 0.4,
                     twist=0,
                     airfoil=tail_airfoil)
             ],
