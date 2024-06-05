@@ -57,10 +57,10 @@ class Optimalisation(Model, ABC):
         self.params: dict[str, float | np.ndarray] = {
             k: v
             for k, v in {
-                'end time': self.end_time,
+                # 'end time': self.end_time,
                 'time': self.time,
                 'x': self.dyn.x_e,
-                'z': self.dyn.z_e,
+                # 'z': self.dyn.z_e,
                 'altitude': self.dyn.altitude,
                 'u':
                 self.dyn.u_b if hasattr(self.dyn, 'u_b') else self.dyn.u_e,
@@ -73,7 +73,7 @@ class Optimalisation(Model, ABC):
                 'alpha': self.dyn.alpha,
                 'elevator deflection': self.elevator_deflection,
                 'CL': self.CL,
-                'thrust level': self.thrust_level,
+                # 'thrust level': self.thrust_level,
                 'thrust': self.thrust,
                 'max power': self.max_power,
                 'power': self.power,

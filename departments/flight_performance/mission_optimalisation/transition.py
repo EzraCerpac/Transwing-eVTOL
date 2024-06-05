@@ -39,10 +39,7 @@ class TransitionOpt(Optimalisation):
         self.end_time = self.opti.variable(init_guess=20, log_transform=True)
         self.time = np.linspace(0, self.end_time, self.n_timesteps)
         self.dyn = asb.DynamicsRigidBody2DBody(
-            mass_props=asb.MassProperties(mass=self.aircraft.total_mass,
-                                          Ixx=1000,
-                                          Iyy=500,
-                                          Izz=500),
+            mass_props=asb.mass_properties_from_radius_of_gyration(self.aircraft.total_mass, radius_of_gyration_x=1, radius_of_gyration_y=5, radius_of_gyration_z=1),
             x_e=self.opti.variable(init_guess=np.linspace(
                 0, 100, self.n_timesteps),
                                    lower_bound=0,
@@ -143,11 +140,17 @@ class TransitionOpt(Optimalisation):
             axes='wind',
         )
 
-        self.dyn.add_force(
-            Fx=self.thrust * np.cos(ALPHA_i),
-            Fz=self.thrust * np.sin(ALPHA_i),
-            axes='body',
-        )
+        thrust_per_engine = self.thrust / len(self.parametric.propulsors)
+        for propulsor in self.parametric.propulsors:
+            self.dyn.add_force(
+                Fx=thrust_per_engine * propulsor.xyz_normal[0],
+                Fz=thrust_per_engine * propulsor.xyz_normal[2],
+                axes='body',
+            )
+            self.dyn.add_moment(
+                My=thrust_per_engine * np.cross(propulsor.xyz_normal, propulsor.xyz_c)[1],
+                axes='body',
+            )
 
 
 if __name__ == '__main__':
