@@ -8,6 +8,8 @@ from data.concept_parameters.mission_profile import MissionProfile, MissionPhase
 from utility.log import logger
 from utility.unit_conversion import convert_float
 
+MOST_RECENT_VERSION = 'V1.1'
+
 
 class Aircraft(BaseModel):
     id: Optional[str] = Field('Aircraft', min_length=1)
@@ -175,23 +177,29 @@ class Aircraft(BaseModel):
     def save(self, verbose: bool = True) -> None:
         from utility.data_management.save_and_load_object import save
         save(self,
-             name=self.full_name.replace(' ', '_').replace('.', '_'),
+             name=self.id.replace('.', '_'),
              verbose=verbose)
 
     @classmethod
     def load(cls,
-             id: str = 'C2.1',
-             directory: str = 'end_of_trade-off_concepts') -> 'Aircraft':
+             version: Optional[str] = None,
+             id: Optional[str] = None,
+             directory: Optional[str] = None) -> 'Aircraft':
         from utility.data_management.save_and_load_object import load
-        full_name = {
-            'C1.5': 'Concept_C1_5_(Winged_Rotorcraft)',
-            'C2.1': 'Concept_C2_1_(Rotating_Wing)',
-            'C2.6': 'Concept_C2_6_(Folding_Wing)',
-            'C2.10': 'Concept_C2_10_(Variable_Skew_QuadPlane)',
-        }
-        ac = load(f'{directory}/{full_name[id]}')
+        if id:
+            directory = directory or 'end_of_trade-off_concepts'
+            full_name = {
+                'C1.5': 'Concept_C1_5_(Winged_Rotorcraft)',
+                'C2.1': 'Concept_C2_1_(Rotating_Wing)',
+                'C2.6': 'Concept_C2_6_(Folding_Wing)',
+                'C2.10': 'Concept_C2_10_(Variable_Skew_QuadPlane)',
+            }
+            ac = load(f'{directory}/{full_name[id]}')
+        else:
+            version = version or MOST_RECENT_VERSION
+            directory = directory or 'aircraft'
+            ac = load(f'{directory}/V{version.strip("V").replace(".", "_")}')
         assert isinstance(ac, Aircraft)
-        assert ac.id == id
         return ac
 
     def __repr__(self) -> str:

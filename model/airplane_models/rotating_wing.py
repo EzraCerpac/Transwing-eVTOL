@@ -7,7 +7,7 @@ from aerosandbox.numpy import tan, tand
 from data.concept_parameters.aircraft import Aircraft, AC
 from sizing_tools.wing_planform import WingModel
 
-ac = Aircraft.load()
+ac = Aircraft.load(version='1.1')
 wing_model = WingModel(ac, altitude=ac.cruise_altitude)
 
 wing_airfoil = Airfoil("E560")
@@ -98,6 +98,8 @@ rot_wing = AC(
 
 if __name__ == '__main__':
     parametric.draw_three_view()
+    print(parametric.wings[0].area())
+    print(ac.wing.area)
 
     # vlm = asb.VortexLatticeMethod(
     #     airplane=parametric,
