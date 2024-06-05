@@ -117,9 +117,9 @@ def concept_iteration(concepts: list[Aircraft]):
 if __name__ == '__main__':
     from data.concept_parameters.concepts import concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10
 
-    concept_iteration(
-        [concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10])
+    # concept_iteration(
+    #     [concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10])
 
     concept_iteration([
-        joby_s4,
+        concept_C2_1,
     ])
