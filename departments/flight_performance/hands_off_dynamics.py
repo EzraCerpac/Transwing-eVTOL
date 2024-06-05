@@ -16,11 +16,8 @@ def get_dyn(y: np.ndarray) -> asb.DynamicsPointMass2DCartesian:
             ac.data.total_mass,
             radius_of_gyration_x=1,
             radius_of_gyration_y=5,
-            radius_of_gyration_z=1),
-    )
-    return dyn.get_new_instance_with_state(
-        dyn.pack_state(y)
-    )
+            radius_of_gyration_z=1), )
+    return dyn.get_new_instance_with_state(dyn.pack_state(y))
 
 
 thrust = 2e4
@@ -53,7 +50,7 @@ def equations_of_motion(t: float, y: np.ndarray) -> tuple[float | ndarray]:
         )
         dyn.add_moment(
             My=thrust_per_engine *
-               np.cross(propulsor.xyz_normal, propulsor.xyz_c)[1],
+            np.cross(propulsor.xyz_normal, propulsor.xyz_c)[1],
             axes='body',
         )
 
@@ -92,6 +89,7 @@ res = integrate.solve_ivp(
 time = res.t
 dyn = get_dyn(res.y)
 
+
 def plot_dynamics(time: np.ndarray, dyn: asb.DynamicsRigidBody2DBody):
     import matplotlib.pyplot as plt
 
@@ -123,6 +121,7 @@ def plot_dynamics(time: np.ndarray, dyn: asb.DynamicsRigidBody2DBody):
 
     plt.tight_layout()
     plt.show()
+
 
 plot_dynamics(time, dyn)
 dyn.draw(ac.parametric, scale_vehicle_model=5)
