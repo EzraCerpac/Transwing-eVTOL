@@ -15,7 +15,10 @@ from utility.plotting import show
 
 
 class OptParam(Enum):
-    TIME = 'time'
+    MIN_TIME = 'minimum time'
+    MIN_DISTANCE = 'minimum distance'
+    MAX_TIME = 'maximum time'
+    MAX_DISTANCE = 'maximum distance'
     ENERGY = 'energy'
     MAX_POWER = 'maximum power'
     TRADE_OFF = 'time * energy'
@@ -128,7 +131,10 @@ class Optimalisation(Model, ABC):
 
     def run(self, verbose: bool = True):
         opt_param = {
-            OptParam.TIME: self.time[-1],
+            OptParam.MIN_TIME: self.time[-1],
+            OptParam.MIN_DISTANCE: self.dyn.x_e[-1],
+            OptParam.MAX_TIME: -self.time[-1],
+            OptParam.MAX_DISTANCE: -self.dyn.x_e[-1],
             OptParam.ENERGY: self.total_energy,
             OptParam.MAX_POWER: self.max_power,
             OptParam.TRADE_OFF: self.time[-1] * self.total_energy,
@@ -144,6 +150,8 @@ class Optimalisation(Model, ABC):
             behavior_on_failure='return_last',
         )
         self.params = {k: sol(v) for k, v in self.params.items()}
+        self.time = sol(self.time)
+        self.dyn = sol(self.dyn)
         if verbose:
             self.print_results()
 
@@ -151,6 +159,7 @@ class Optimalisation(Model, ABC):
         print(f"\nOptimized for {self.opt_param.value}:")
         print(f"Total energy: {self.params['total energy'] / 3600000:.1f} kWh")
         print(f"Total time: {self.params['time'][-1]:.1f} s")
+        print(f"Total distance: {self.params['x'][-1] / 1000:.1f} km")
         print(f"Max power: {self.params['max power'] / 1000:.1f} kW")
 
     def to_dataframe(self, i_log: int = None) -> pd.DataFrame:
@@ -197,7 +206,7 @@ class Optimalisation(Model, ABC):
         n_logs = len(self.logs)
         fig, axs = self.plot_over(x_name)
         for i_log in range(n_logs):
-            alpha = (i_log / n_logs)**6
+            alpha = (i_log / n_logs)**2
             df = self.to_dataframe(i_log)
             xx = df[x_name]
             df = df.drop(columns=[x_name])
