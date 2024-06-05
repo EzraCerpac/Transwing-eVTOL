@@ -29,15 +29,18 @@ ac = Aircraft.load()
 wing_model = WingModel(ac, altitude=ac.cruise_altitude)
 
 
-def generate_models(q: float=110, n:int=10, alpha:float=45, beta:float=40) -> dict:
-    
+def generate_models(q: float = 110,
+                    n: int = 10,
+                    alpha: float = 45,
+                    beta: float = 40) -> dict:
+
     # DICTIONARY STORING THE MODELS
     models = {}
 
     # DEFINE AIRFOILS
     wing_airfoil = Airfoil("E560")
     tail_airfoil = Airfoil("naca0012")
-    
+
     # DEFINE SPANWISE HINGE LOCATION AND THE LOCAL CHORD LENGHT TODO: IMPLEMENT THIS TO THE AIRCRAFT CLASS
     cut = 0.2
     chord_cut = wing_model.rootcrt - (wing_model.rootcrt -
@@ -54,7 +57,6 @@ def generate_models(q: float=110, n:int=10, alpha:float=45, beta:float=40) -> di
                                      [rot_axis[2, 0], 0, -rot_axis[0, 0]],
                                      [-rot_axis[1, 0], rot_axis[0, 0], 0]]) +
               (1 - np.cos(dq)) * rot_axis * rot_axis.T)
-
 
     # DEFINE MAIN WINGPLANFORM POINTS (te-trailing edge, le-leading edge)
     p_tip_le = np.array([
@@ -82,7 +84,6 @@ def generate_models(q: float=110, n:int=10, alpha:float=45, beta:float=40) -> di
     ])
     p_root_le = np.array([0, 0, 0])
 
-
     # DEFINE PROPULSION SYSTEM LOCATION AND NORMAL VECTOR
     p_prop = np.array([
         ac.wing.span * (0 + 0.5) / 2 * tan(wing_model.le_sweep),
@@ -90,14 +91,12 @@ def generate_models(q: float=110, n:int=10, alpha:float=45, beta:float=40) -> di
     ])
     n_prop = np.array([-1, 0, 0])
 
-    
     # JOINT LOCATION
     r_joint = p_cut_le - 0.8 * (p_cut_te - p_cut_le)
 
-
     # Create models for all working points
     for i in np.linspace(0, q, n):
-        
+
         # CALCULATE TWIST ANGLE OF THE AIRFOIL
         v_cut_0 = np.array([[-1], [0], [0]])
         v_cut = np.reshape(p_cut_te - p_cut_le, (-1, 1))
@@ -105,7 +104,6 @@ def generate_models(q: float=110, n:int=10, alpha:float=45, beta:float=40) -> di
         twist_cut = float(
             np.arccos(v_cut.T @ v_cut_0 / (np.linalg.norm(v_cut))))
         print(np.rad2deg(twist_cut))
-        
 
         parametric = Airplane(
             name=ac.full_name,
@@ -134,7 +132,6 @@ def generate_models(q: float=110, n:int=10, alpha:float=45, beta:float=40) -> di
                             airfoil=wing_airfoil),
                     ],
                 ).translate([0, 0, 0]),
-                
                 Wing(
                     name='Rotating Main Wing',
                     symmetric=True,
@@ -143,15 +140,16 @@ def generate_models(q: float=110, n:int=10, alpha:float=45, beta:float=40) -> di
                             xyz_le=p_cut_le,
                             chord=chord_cut,
                             #twist=90,
-                            airfoil=wing_airfoil.rotate(-twist_cut)),#.rotate(twist_cut),
+                            airfoil=wing_airfoil.rotate(
+                                -twist_cut)),  #.rotate(twist_cut),
                         WingXSec(  # Tip
                             xyz_le=p_tip_le,
                             chord=wing_model.tipcrt,
                             twist=0,
-                            airfoil=wing_airfoil.rotate(-twist_cut)),#.rotate(twist_cut)
+                            airfoil=wing_airfoil.rotate(
+                                -twist_cut)),  #.rotate(twist_cut)
                     ],
                 ).translate([0, 0, 0]),
-                
                 Wing(
                     name='Horizontal Stabilizer',
                     symmetric=True,
@@ -218,22 +216,19 @@ def generate_models(q: float=110, n:int=10, alpha:float=45, beta:float=40) -> di
         ax.set_xlabel('$X$')
         ax.set_ylabel('$Y$')
         ax.set_zlabel('$Z$')
-        ax.quiver(0, 0,
-                                           0,
-                                           rot_axis[0, 0],
-                                           rot_axis[1, 0],
-                                           rot_axis[2, 0],
-                                           arrow_length_ratio=0.1,
-                                           color='red')
-        ax.quiver(0, 0,
-                                           0,
-                                           -1,
-                                           0,
-                                           0,
-                                           arrow_length_ratio=0.1,
-                                           color='green')
-        ax.plot([p_cut_le[0], p_tip_le[0]], [p_cut_le[1], p_tip_le[1]], [p_cut_le[2], p_tip_le[2]])
-        ax.plot([p_cut_te[0], p_tip_te[0]], [p_cut_te[1], p_tip_te[1]], [p_cut_te[2], p_tip_te[2]])
+        ax.quiver(0,
+                  0,
+                  0,
+                  rot_axis[0, 0],
+                  rot_axis[1, 0],
+                  rot_axis[2, 0],
+                  arrow_length_ratio=0.1,
+                  color='red')
+        ax.quiver(0, 0, 0, -1, 0, 0, arrow_length_ratio=0.1, color='green')
+        ax.plot([p_cut_le[0], p_tip_le[0]], [p_cut_le[1], p_tip_le[1]],
+                [p_cut_le[2], p_tip_le[2]])
+        ax.plot([p_cut_te[0], p_tip_te[0]], [p_cut_te[1], p_tip_te[1]],
+                [p_cut_te[2], p_tip_te[2]])
         plt.show()
 
         # Rotate Points
