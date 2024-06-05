@@ -163,10 +163,8 @@ if __name__ == '__main__':
 
     ac = rot_wing
     ac.data.v_stall = 20.
-    mission_profile_optimization = TransitionOpt(ac,
-                                                 opt_param=OptParam.MAX_DISTANCE,
-                                                 n_timesteps=20,
-                                                 max_iter=1000)
+    mission_profile_optimization = TransitionOpt(
+        ac, opt_param=OptParam.MAX_DISTANCE, n_timesteps=20, max_iter=1000)
     mission_profile_optimization.run()
 
     # df = mission_profile_optimization.to_dataframe()
@@ -176,7 +174,8 @@ if __name__ == '__main__':
     mission_profile_optimization.plot_logs_over_time()
     mission_profile_optimization.plot_over_distance()
     # mission_profile_optimization.plot_over_time()
-    mission_profile_optimization.dyn.draw(vehicle_model=ac.parametric, scale_vehicle_model=5)
+    mission_profile_optimization.dyn.draw(vehicle_model=ac.parametric,
+                                          scale_vehicle_model=5)
 
     # aero = Aero(ac.parametric,
     #             velocity=ac.data.cruise_velocity,
