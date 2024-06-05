@@ -10,9 +10,11 @@ from model.airplane_models.rotating_wing import rot_wing
 from utility.plotting import show
 
 
-def airplane_with_control_surface_deflection(ac: AC, deflection) -> asb.Airplane:
+def airplane_with_control_surface_deflection(ac: AC,
+                                             deflection) -> asb.Airplane:
     airplane = ac.parametric
-    airplane.wings[-1].set_control_surface_deflections({'Elevator': deflection})
+    airplane.wings[-1].set_control_surface_deflections(
+        {'Elevator': deflection})
     return airplane
 
 
@@ -39,7 +41,11 @@ contour_params = {
 
 
 class AeroAnalyser:
-    def __init__(self, ac: AC, alpha: np.ndarray = DEFAULT_DEGREE_RANGE, delta_e: np.ndarray = DEFAULT_DEGREE_RANGE):
+
+    def __init__(self,
+                 ac: AC,
+                 alpha: np.ndarray = DEFAULT_DEGREE_RANGE,
+                 delta_e: np.ndarray = DEFAULT_DEGREE_RANGE):
         self.ac = ac
         self.atmosphere = asb.Atmosphere(altitude=self.ac.data.cruise_altitude)
 
@@ -55,7 +61,8 @@ class AeroAnalyser:
     def calc_aero(self):
         self.alpha, self.delta_e = np.meshgrid(self.alpha, self.delta_e)
         self.aero = asb.AeroBuildup(
-            airplane=airplane_with_control_surface_deflection(self.ac, self.delta_e.flatten()),
+            airplane=airplane_with_control_surface_deflection(
+                self.ac, self.delta_e.flatten()),
             op_point=asb.OperatingPoint(
                 atmosphere=self.atmosphere,
                 velocity=self.ac.data.cruise_velocity,
@@ -64,14 +71,15 @@ class AeroAnalyser:
         ).run()
 
     @show
-    def plot_over_alpha_delta_e(self, value_name: str) -> tuple[plt.Figure, plt.Axes]:
+    def plot_over_alpha_delta_e(
+            self, value_name: str) -> tuple[plt.Figure, plt.Axes]:
         fig, ax = plt.subplots(figsize=(10, 8))
-        p.contour(
-            self.delta_e, self.alpha, self.aero[value_name].reshape(self.alpha.shape),
-            **contour_params[value_name]
-        )
+        p.contour(self.delta_e, self.alpha,
+                  self.aero[value_name].reshape(self.alpha.shape),
+                  **contour_params[value_name])
         if not contour_params[value_name]['z_log_scale']:
-            plt.clim(*np.array([-1, 1]) * np.max(np.abs(self.aero[value_name])))
+            plt.clim(*np.array([-1, 1]) *
+                     np.max(np.abs(self.aero[value_name])))
         plt.xlabel(r"Elevator Deflection $\delta_e$ [deg]")
         plt.ylabel(r"Angle of Attack $\alpha$ [deg]")
         p.set_ticks(15, 5, 15, 5)

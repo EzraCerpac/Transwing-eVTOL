@@ -92,7 +92,7 @@ def main():
     #         # hinge_loading=True,
     #         class1_diagram=False,
     #     )
-        # model.print_all_parameters()
+    # model.print_all_parameters()
 
 
 if __name__ == '__main__':
