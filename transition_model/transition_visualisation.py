@@ -133,7 +133,6 @@ class TransitionAnim:
         theta_grid, z_grid = np.meshgrid(theta, z)
         x_grid = radius * np.cos(theta_grid) + center_x
         y_grid = radius * np.sin(theta_grid) + center_y
-
         return x_grid, y_grid, z_grid
 
     def draw_wing(self, i) -> None:
@@ -214,7 +213,7 @@ class TransitionAnim:
                                       interval=50,
                                       repeat=True,
                                       init_func=self.init_animation)
-        ani.save(filename="./rotation.gif", writer="pillow", dpi=300)
+        #ani.save(filename="./rotation.gif", writer="pillow", dpi=300)
 
         self.A = np.array([[0.1], [-0.75], [0]])
         self.B = np.array([[0.1], [0.25], [0]])
