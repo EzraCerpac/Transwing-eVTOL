@@ -16,11 +16,8 @@ def get_dyn(y: np.ndarray) -> asb.DynamicsPointMass2DCartesian:
             ac.data.total_mass,
             radius_of_gyration_x=1,
             radius_of_gyration_y=5,
-            radius_of_gyration_z=1),
-    )
-    return dyn.get_new_instance_with_state(
-        dyn.pack_state(y)
-    )
+            radius_of_gyration_z=1), )
+    return dyn.get_new_instance_with_state(dyn.pack_state(y))
 
 
 thrust = 2e4
