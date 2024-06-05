@@ -100,11 +100,10 @@ class MissionProfileOptimization(Model):
                                                n_vars=self.n_timesteps,
                                                log_transform=True,
                                                upper_bound=1)
-        self.elevator_deflection = self.opti.variable(
-            init_guess=-1,
-            n_vars=self.n_timesteps,
-            lower_bound=30,
-            upper_bound=30)
+        self.elevator_deflection = self.opti.variable(init_guess=-1,
+                                                      n_vars=self.n_timesteps,
+                                                      lower_bound=30,
+                                                      upper_bound=30)
         self.parametric.wings[1].set_control_surface_deflections({
             'Elevator':
             self.elevator_deflection,
@@ -137,12 +136,12 @@ class MissionProfileOptimization(Model):
         #                                             self.time, .1)
 
         self.opti.subject_to([
-        #     pitchrate < .05,
-        #     pitchrate > -.05,
-        #     alpha_derivative < .5,
-        #     alpha_derivative > -.5,
-        #     # thrust_derivative < .001,
-        #     # thrust_derivative > -.01,
+            #     pitchrate < .05,
+            #     pitchrate > -.05,
+            #     alpha_derivative < .5,
+            #     alpha_derivative > -.5,
+            #     # thrust_derivative < .001,
+            #     # thrust_derivative > -.01,
             np.diff(self.thrust_level) < 0.01,
             np.diff(self.thrust_level) > -0.01,
             np.diff(self.elevator_deflection) < 0.1,
