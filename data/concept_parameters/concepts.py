@@ -114,21 +114,22 @@ example_cg_dict = {
     'propellers': 0.4,
 }
 
-rot_wing_starting_params = Aircraft(id='V1.1',
-                                    name="Rotating Wing with 3 engines per wing",
-                                    motor_prop_count=6,
-                                    motor_wing_count=6,
-                                    propeller_radius=1.85 / 2,
-                                    propeller_blade_number=5,
-                                    hinge_location=0.15,
-                                    wing=Wing(
-                                        area=16,
-                                        span=14,
-                                    ),
-                                    fuselage=Fuselage(
-                                        length=8,
-                                        maximum_section_perimeter=2.5,
-                                    ),
-                                    estimated_CD0=0.028,
-                                    s_fus=12.5,
-                                    TA=400)
+rot_wing_starting_params = Aircraft(
+    id='V1.1',
+    name="Rotating Wing with 3 engines per wing",
+    motor_prop_count=6,
+    motor_wing_count=6,
+    propeller_radius=1.85 / 2,
+    propeller_blade_number=5,
+    hinge_location=0.15,
+    wing=Wing(
+        area=16,
+        span=14,
+    ),
+    fuselage=Fuselage(
+        length=8,
+        maximum_section_perimeter=2.5,
+    ),
+    estimated_CD0=0.028,
+    s_fus=12.5,
+    TA=400)
