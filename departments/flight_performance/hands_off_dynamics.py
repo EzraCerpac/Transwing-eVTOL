@@ -3,7 +3,7 @@ import aerosandbox.numpy as np
 from numpy import ndarray
 from scipy import integrate
 
-from model.airplane_models.rotating_wing import rot_wing
+from aircraft_models import rot_wing
 
 ac = rot_wing
 
