@@ -24,7 +24,7 @@ tail_airfoil = Airfoil("naca0012")
 
 parametric = Airplane(
     name=ac.full_name,
-    xyz_ref=None,  # CG location
+    xyz_ref=[0, 1, 0],  # CG location
     wings=[
         Wing(
             name='Main Wing',
@@ -96,7 +96,8 @@ parametric = Airplane(
     propulsors=[
         Propulsor(
             xyz_c=np.array(
-                [0, ((i + .5) / ac.motor_prop_count - .5) * ac.wing.span, 0]),
+                [0, ((i + .5) / ac.motor_prop_count - .5) * ac.wing.span, 0.1]),
+            xyz_normal=np.array([-1, 0, 0.1]),
             radius=ac.propeller_radius,
         ) for i in range(ac.motor_prop_count)
     ],
