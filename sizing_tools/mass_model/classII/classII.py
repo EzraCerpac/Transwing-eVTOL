@@ -6,6 +6,8 @@ import os
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
+parent_dir = os.path.abspath(os.path.join(parent_dir, '..'))
+parent_dir = os.path.abspath(os.path.join(parent_dir, '..'))
 sys.path.append(parent_dir)
 
 from data.concept_parameters.aircraft import Aircraft
