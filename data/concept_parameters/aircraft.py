@@ -176,9 +176,7 @@ class Aircraft(BaseModel):
 
     def save(self, verbose: bool = True) -> None:
         from utility.data_management.save_and_load_object import save
-        save(self,
-             name=self.id.replace('.', '_'),
-             verbose=verbose)
+        save(self, name=self.id.replace('.', '_'), verbose=verbose)
 
     @classmethod
     def load(cls,
