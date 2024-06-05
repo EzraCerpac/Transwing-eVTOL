@@ -29,37 +29,34 @@ ac = Aircraft.load()
 wing_model = WingModel(ac, altitude=ac.cruise_altitude)
 
 
-def generate_models(q: np.ndarray, alpha: float, beta: float) -> dict:
-    # Spanwise location of wing cut
+def generate_models(q: float=110, n:int=10, alpha:float=45, beta:float=40) -> dict:
+    
+    # DICTIONARY STORING THE MODELS
+    models = {}
+
+    # DEFINE AIRFOILS
+    wing_airfoil = Airfoil("E560")
+    tail_airfoil = Airfoil("naca0012")
+    
+    # DEFINE SPANWISE HINGE LOCATION AND THE LOCAL CHORD LENGHT TODO: IMPLEMENT THIS TO THE AIRCRAFT CLASS
     cut = 0.2
     chord_cut = wing_model.rootcrt - (wing_model.rootcrt -
                                       wing_model.tipcrt) * cut
 
-    models = {}
-    q = np.deg2rad(q)
+    #DEFINE AXIS OF ROTATION AND CREATE ROTATIONAL MATRIX
     alpha = np.deg2rad(alpha)
     beta = np.deg2rad(beta)
-    C_z = np.array([[np.cos(alpha), -np.sin(alpha), 0],
-                    [np.sin(alpha), np.cos(alpha), 0], [0, 0, 1]])
-
-    C_y = np.array([[np.cos(np.pi / 2 - beta), 0,
-                     np.sin(np.pi / 2 - beta)], [0, 1, 0],
-                    [-np.sin(np.pi / 2 - beta), 0,
-                     np.cos(np.pi / 2 - beta)]])
-
-    C_x = np.array([[1, 0, 0], [0, np.cos(beta), -np.sin(beta)],
-                    [0, np.sin(beta), np.cos(beta)]])
-
-    rot_axis = C_z @ C_y @ np.array([[0], [0], [1]])
     rot_axis = np.array([[-np.sin(alpha)], [-np.cos(alpha)], [np.sin(beta)]])
 
-    dq = -np.deg2rad(110 / len(q))
+    dq = -np.deg2rad(q / n)
     C_axis = (np.cos(dq) * np.eye(3, 3) +
               np.sin(dq) * np.array([[0, -rot_axis[2, 0], rot_axis[1, 0]],
                                      [rot_axis[2, 0], 0, -rot_axis[0, 0]],
                                      [-rot_axis[1, 0], rot_axis[0, 0], 0]]) +
               (1 - np.cos(dq)) * rot_axis * rot_axis.T)
 
+
+    # DEFINE MAIN WINGPLANFORM POINTS (te-trailing edge, le-leading edge)
     p_tip_le = np.array([
         ac.wing.span / 2 * tan(wing_model.le_sweep), ac.wing.span / 2,
         ac.wing.span / 2 * tand(wing_model.dihedral)
@@ -68,7 +65,6 @@ def generate_models(q: np.ndarray, alpha: float, beta: float) -> dict:
         ac.wing.span / 2 * tan(wing_model.le_sweep) - wing_model.tipcrt,
         ac.wing.span / 2, ac.wing.span / 2 * tand(wing_model.dihedral)
     ])
-
     p_cut_le0 = np.array([
         ac.wing.span * cut / 2 * tan(wing_model.le_sweep),
         ac.wing.span * cut / 2,
@@ -79,36 +75,37 @@ def generate_models(q: np.ndarray, alpha: float, beta: float) -> dict:
         ac.wing.span * cut / 2,
         ac.wing.span * cut / 2 * tand(wing_model.dihedral)
     ])
-
-    print(p_cut_le)
     p_cut_te = np.array([
         ac.wing.span * cut / 2 * tan(wing_model.le_sweep) - wing_model.tipcrt,
         ac.wing.span * cut / 2,
         ac.wing.span * cut / 2 * tand(wing_model.dihedral)
     ])
+    p_root_le = np.array([0, 0, 0])
 
-    #Prop system location
+
+    # DEFINE PROPULSION SYSTEM LOCATION AND NORMAL VECTOR
     p_prop = np.array([
         ac.wing.span * (0 + 0.5) / 2 * tan(wing_model.le_sweep),
         ((0 + .5) / ac.motor_prop_count - .5) * ac.wing.span, 0
     ])
     n_prop = np.array([-1, 0, 0])
 
-    p_root_le = np.array([0, 0, 0])
+    
+    # JOINT LOCATION
+    r_joint = p_cut_le - 0.8 * (p_cut_te - p_cut_le)
 
-    r_joint = p_cut_le0 - 0.25 * (p_cut_te - p_cut_le)
-    #print(r_joint)
 
-    for i in q:
-
+    # Create models for all working points
+    for i in np.linspace(0, q, n):
+        
+        # CALCULATE TWIST ANGLE OF THE AIRFOIL
         v_cut_0 = np.array([[-1], [0], [0]])
         v_cut = np.reshape(p_cut_te - p_cut_le, (-1, 1))
+        v_cut[1] = 0
         twist_cut = float(
-            np.rad2deg(np.arccos(v_cut.T @ v_cut_0 / (np.linalg.norm(v_cut)))))
-        print(twist_cut)
-        wing_airfoil = Airfoil("E560")
-        # wing_airfoil = Airfoil("E423")
-        tail_airfoil = Airfoil("naca0012")
+            np.arccos(v_cut.T @ v_cut_0 / (np.linalg.norm(v_cut))))
+        print(np.rad2deg(twist_cut))
+        
 
         parametric = Airplane(
             name=ac.full_name,
@@ -137,6 +134,7 @@ def generate_models(q: np.ndarray, alpha: float, beta: float) -> dict:
                             airfoil=wing_airfoil),
                     ],
                 ).translate([0, 0, 0]),
+                
                 Wing(
                     name='Rotating Main Wing',
                     symmetric=True,
@@ -144,15 +142,16 @@ def generate_models(q: np.ndarray, alpha: float, beta: float) -> dict:
                         WingXSec(  # cut
                             xyz_le=p_cut_le,
                             chord=chord_cut,
-                            twist=twist_cut,
-                            airfoil=wing_airfoil),
+                            #twist=90,
+                            airfoil=wing_airfoil.rotate(-twist_cut)),#.rotate(twist_cut),
                         WingXSec(  # Tip
                             xyz_le=p_tip_le,
                             chord=wing_model.tipcrt,
-                            twist=twist_cut,
-                            airfoil=wing_airfoil)
+                            twist=0,
+                            airfoil=wing_airfoil.rotate(-twist_cut)),#.rotate(twist_cut)
                     ],
                 ).translate([0, 0, 0]),
+                
                 Wing(
                     name='Horizontal Stabilizer',
                     symmetric=True,
@@ -208,7 +207,8 @@ def generate_models(q: np.ndarray, alpha: float, beta: float) -> dict:
             data=ac,
             parametric=parametric,
         )
-        '''parametric.draw_three_view()
+        #DEBUG CODE
+        parametric.draw()
         fig = plt.figure()
         ax = fig.add_subplot(projection='3d')
         ax.set_aspect('equal')
@@ -225,24 +225,33 @@ def generate_models(q: np.ndarray, alpha: float, beta: float) -> dict:
                                            rot_axis[2, 0],
                                            arrow_length_ratio=0.1,
                                            color='red')
+        ax.quiver(0, 0,
+                                           0,
+                                           -1,
+                                           0,
+                                           0,
+                                           arrow_length_ratio=0.1,
+                                           color='green')
         ax.plot([p_cut_le[0], p_tip_le[0]], [p_cut_le[1], p_tip_le[1]], [p_cut_le[2], p_tip_le[2]])
         ax.plot([p_cut_te[0], p_tip_te[0]], [p_cut_te[1], p_tip_te[1]], [p_cut_te[2], p_tip_te[2]])
-        plt.show()'''
+        plt.show()
+
         # Rotate Points
         p_tip_le = C_axis @ (p_tip_le - r_joint) + r_joint
         p_cut_le = C_axis @ (p_cut_le - r_joint) + r_joint
         p_tip_te = C_axis @ (p_tip_te - r_joint) + r_joint
         p_cut_te = C_axis @ (p_cut_te - r_joint) + r_joint
         n_prop = C_axis @ n_prop
-        #p_prop = 0.3*(-p_tip_le+p_cut_le)
+
     return r_joint, models
 
 
 if __name__ == '__main__':
-    r_joint, models = generate_models(np.arange(0, 110, 10), 45, 40)
+    r_joint, models = generate_models(120, 5, 45, 40)
     keys = models.keys()
     import aerosandbox as asb
     #models[list(keys)[-1]].parametric.draw_three_view()
     for key in keys:
         #plt.plot(r_joint)
-        models[key].parametric.draw_three_view()
+        models[key].parametric.draw()
+        #print(models[key].parametric.wings[1].xsecs[0].__dict__.keys())
