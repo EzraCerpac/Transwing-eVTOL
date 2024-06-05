@@ -45,8 +45,8 @@ class TransitionOpt(Optimalisation):
                                           Izz=500),
             x_e=self.opti.variable(init_guess=np.linspace(
                 0, 100, self.n_timesteps),
-                lower_bound=0,
-                upper_bound=self.aircraft.range),
+                                   lower_bound=0,
+                                   upper_bound=self.aircraft.range),
             z_e=self.opti.variable(init_guess=-100,
                                    n_vars=self.n_timesteps,
                                    upper_bound=0),
@@ -78,7 +78,7 @@ class TransitionOpt(Optimalisation):
                                                       upper_bound=30)
         self.parametric.wings[1].set_control_surface_deflections({
             'Elevator':
-                self.elevator_deflection,
+            self.elevator_deflection,
         })
 
         self.opti.subject_to([
@@ -156,8 +156,10 @@ if __name__ == '__main__':
     ac = rot_wing
     ac.data.v_stall = 20.
     ac.data.wing.area = 16
-    mission_profile_optimization = TransitionOpt(
-        ac, opt_param=OptParam.ENERGY, n_timesteps=20, max_iter=30)
+    mission_profile_optimization = TransitionOpt(ac,
+                                                 opt_param=OptParam.ENERGY,
+                                                 n_timesteps=20,
+                                                 max_iter=30)
     mission_profile_optimization.run()
 
     df = mission_profile_optimization.to_dataframe()

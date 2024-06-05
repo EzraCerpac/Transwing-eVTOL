@@ -16,7 +16,8 @@ class CruiseOpt(Optimalisation):
         aero = Aero(aircraft.parametric,
                     altitude=aircraft.data.cruise_altitude,
                     velocity=aircraft.data.cruise_velocity)
-        self.c_l_over_alpha_func = lambda alpha: aero.c_l_over_alpha_func(alpha)
+        self.c_l_over_alpha_func = lambda alpha: aero.c_l_over_alpha_func(alpha
+                                                                          )
         super().__init__(aircraft, opt_param, *args, **kwargs)
         self.parametric = aircraft.parametric
         # self.aero = asb.AeroBuildup(
@@ -57,11 +58,11 @@ class CruiseOpt(Optimalisation):
                                           Izz=500),
             x_e=self.opti.variable(init_guess=np.cosspace(
                 0, self.aircraft.range, self.n_timesteps),
-                lower_bound=0,
-                upper_bound=self.aircraft.range),
+                                   lower_bound=0,
+                                   upper_bound=self.aircraft.range),
             z_e=self.opti.variable(init_guess=np.linspace(
                 0, -self.aircraft.cruise_altitude, self.n_timesteps),
-                upper_bound=0),
+                                   upper_bound=0),
             speed=self.opti.variable(init_guess=self.aircraft.cruise_velocity,
                                      n_vars=self.n_timesteps,
                                      log_transform=True),
@@ -215,8 +216,10 @@ if __name__ == '__main__':
     ac = rot_wing
     ac.data.v_stall = 20.
     ac.data.wing.area = 16
-    mission_profile_optimization = CruiseOpt(
-        ac, opt_param=OptParam.ENERGY, n_timesteps=90, max_iter=1000)
+    mission_profile_optimization = CruiseOpt(ac,
+                                             opt_param=OptParam.ENERGY,
+                                             n_timesteps=90,
+                                             max_iter=1000)
     mission_profile_optimization.run()
 
     # df = mission_profile_optimization.to_dataframe()

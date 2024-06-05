@@ -22,7 +22,13 @@ class OptParam(Enum):
 
 
 class Optimalisation(Model, ABC):
-    def __init__(self, aircraft: AC, opt_param: OptParam, n_timesteps=100, max_iter=1000, n_logs=50):
+
+    def __init__(self,
+                 aircraft: AC,
+                 opt_param: OptParam,
+                 n_timesteps=100,
+                 max_iter=1000,
+                 n_logs=50):
         super().__init__(aircraft.data)
         self.parametric = aircraft.parametric
 
@@ -35,26 +41,33 @@ class Optimalisation(Model, ABC):
         self.end_time: Optional[float | np.ndarray | asb.Opti.variable] = None
         self.time: Optional[float | np.ndarray | asb.Opti.variable] = None
         self.dyn: Optional[_DynamicsPointMassBaseClass] = None
-        self.elevator_deflection: Optional[float | np.ndarray | asb.Opti.variable] = None
+        self.elevator_deflection: Optional[float | np.ndarray
+                                           | asb.Opti.variable] = None
         self.CL: Optional[float | np.ndarray | asb.Opti.variable] = None
-        self.thrust_level: Optional[float | np.ndarray | asb.Opti.variable] = None
+        self.thrust_level: Optional[float | np.ndarray
+                                    | asb.Opti.variable] = None
         self.thrust: Optional[float | np.ndarray | asb.Opti.variable] = None
         self.max_power: Optional[float | np.ndarray | asb.Opti.variable] = None
         self.power: Optional[float | np.ndarray | asb.Opti.variable] = None
-        self.total_energy: Optional[float | np.ndarray | asb.Opti.variable] = None
+        self.total_energy: Optional[float | np.ndarray
+                                    | asb.Opti.variable] = None
 
         self.init()
 
         self.params: dict[str, float | np.ndarray] = {
-            k: v for k, v in {
+            k: v
+            for k, v in {
                 'end time': self.end_time,
                 'time': self.time,
                 'x': self.dyn.x_e,
                 'z': self.dyn.z_e,
                 'altitude': self.dyn.altitude,
-                'u': self.dyn.u_b if hasattr(self.dyn, 'u_b') else self.dyn.u_e,
-                'w': self.dyn.w_b if hasattr(self.dyn, 'w_b') else self.dyn.w_e,
-                'theta': self.dyn.theta if hasattr(self.dyn, 'theta') else None,
+                'u':
+                self.dyn.u_b if hasattr(self.dyn, 'u_b') else self.dyn.u_e,
+                'w':
+                self.dyn.w_b if hasattr(self.dyn, 'w_b') else self.dyn.w_e,
+                'theta':
+                self.dyn.theta if hasattr(self.dyn, 'theta') else None,
                 'q': self.dyn.q if hasattr(self.dyn, 'q') else None,
                 'speed': self.dyn.speed,
                 'alpha': self.dyn.alpha,
@@ -81,7 +94,10 @@ class Optimalisation(Model, ABC):
     def log_values(self, iteration: int):
         if iteration % (self.max_iter / self.n_logs) == 0:
             logger.info(f"Logging iteration {iteration}")
-            self.logs.append({k: self.opti.debug.value(v) for k, v in self.params.items()})
+            self.logs.append({
+                k: self.opti.debug.value(v)
+                for k, v in self.params.items()
+            })
 
     @abstractmethod
     def init(self):
@@ -106,11 +122,12 @@ class Optimalisation(Model, ABC):
         self.opti.minimize(opt_param)
 
         # Post-process
-        sol = self.opti.solve(verbose=verbose,
-                              max_iter=self.max_iter,
-                              callback=self.log_values,
-                              behavior_on_failure='return_last',
-                              )
+        sol = self.opti.solve(
+            verbose=verbose,
+            max_iter=self.max_iter,
+            callback=self.log_values,
+            behavior_on_failure='return_last',
+        )
         self.params = {k: sol(v) for k, v in self.params.items()}
         if verbose:
             self.print_results()
@@ -123,15 +140,19 @@ class Optimalisation(Model, ABC):
 
     def to_dataframe(self, i_log: int = None) -> pd.DataFrame:
         if i_log is not None:
-            assert i_log < len(self.logs), f"Only {len(self.logs)} iterations have been logged"
-            return pd.DataFrame.from_dict(
-                {k: v
-                 for k, v in self.logs[i_log].items() if isinstance(v, np.ndarray) and v.size > 1}
-            )
-        return pd.DataFrame.from_dict(
-            {k: v
-             for k, v in self.params.items() if isinstance(v, np.ndarray) and v.size > 1}
-        )
+            assert i_log < len(
+                self.logs
+            ), f"Only {len(self.logs)} iterations have been logged"
+            return pd.DataFrame.from_dict({
+                k: v
+                for k, v in self.logs[i_log].items()
+                if isinstance(v, np.ndarray) and v.size > 1
+            })
+        return pd.DataFrame.from_dict({
+            k: v
+            for k, v in self.params.items()
+            if isinstance(v, np.ndarray) and v.size > 1
+        })
 
     def plot_over(self, x_name: str) -> tuple[plt.Figure, plt.Axes]:
         df = self.to_dataframe()
@@ -161,7 +182,7 @@ class Optimalisation(Model, ABC):
         n_logs = len(self.logs)
         fig, axs = self.plot_over(x_name)
         for i_log in range(n_logs):
-            alpha = (i_log / n_logs) ** 6
+            alpha = (i_log / n_logs)**6
             df = self.to_dataframe(i_log)
             for i, (col, values) in enumerate(df.items()):
                 if col == x_name:

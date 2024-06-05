@@ -22,7 +22,8 @@ class VerticalOpt(Optimalisation):
         aero = Aero(aircraft.parametric,
                     altitude=aircraft.data.cruise_altitude,
                     velocity=aircraft.data.cruise_velocity)
-        self.c_l_over_alpha_func = lambda alpha: aero.c_l_over_alpha_func(alpha)
+        self.c_l_over_alpha_func = lambda alpha: aero.c_l_over_alpha_func(alpha
+                                                                          )
         super().__init__(aircraft, opt_param, *args, **kwargs)
         self.parametric = aircraft.parametric
 
@@ -66,7 +67,7 @@ class VerticalOpt(Optimalisation):
                                           Izz=500),
             z_e=self.opti.variable(init_guess=np.linspace(
                 0, -self.trans_altitude, self.n_timesteps),
-                upper_bound=0),
+                                   upper_bound=0),
             w_e=self.opti.variable(init_guess=np.concatenate([
                 np.linspace(0, -self.aircraft.rate_of_climb,
                             self.n_timesteps // 2),
@@ -124,18 +125,23 @@ class VerticalOpt(Optimalisation):
         self.dyn.add_force(Fz=-self.thrust)
 
     def plot_over_distance(self) -> tuple[plt.Figure, plt.Axes]:
-        raise TypeError("1D vertical optimization does not have a distance axis")
+        raise TypeError(
+            "1D vertical optimization does not have a distance axis")
 
     def plot_logs_over_distance(self) -> tuple[plt.Figure, plt.Axes]:
-        raise TypeError("1D vertical optimization does not have a distance axis")
+        raise TypeError(
+            "1D vertical optimization does not have a distance axis")
 
 
 if __name__ == '__main__':
     ac = rot_wing
     ac.data.v_stall = 20.
     ac.data.wing.area = 16
-    mission_profile_optimization = VerticalOpt(
-        ac, opt_param=OptParam.MAX_POWER, n_timesteps=80, max_iter=1000, n_logs=100)
+    mission_profile_optimization = VerticalOpt(ac,
+                                               opt_param=OptParam.MAX_POWER,
+                                               n_timesteps=80,
+                                               max_iter=1000,
+                                               n_logs=100)
     mission_profile_optimization.run()
 
     df = mission_profile_optimization.to_dataframe()
