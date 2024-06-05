@@ -39,7 +39,11 @@ class TransitionOpt(Optimalisation):
         self.end_time = self.opti.variable(init_guess=20, log_transform=True)
         self.time = np.linspace(0, self.end_time, self.n_timesteps)
         self.dyn = asb.DynamicsRigidBody2DBody(
-            mass_props=asb.mass_properties_from_radius_of_gyration(self.aircraft.total_mass, radius_of_gyration_x=1, radius_of_gyration_y=5, radius_of_gyration_z=1),
+            mass_props=asb.mass_properties_from_radius_of_gyration(
+                self.aircraft.total_mass,
+                radius_of_gyration_x=1,
+                radius_of_gyration_y=5,
+                radius_of_gyration_z=1),
             x_e=self.opti.variable(init_guess=np.linspace(
                 0, 100, self.n_timesteps),
                                    lower_bound=0,
