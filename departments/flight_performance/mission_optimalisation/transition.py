@@ -171,7 +171,7 @@ if __name__ == '__main__':
     mission_profile_optimization.plot_logs_over_distance()
     mission_profile_optimization.plot_logs_over_time()
     mission_profile_optimization.plot_over_distance()
-    mission_profile_optimization.plot_over_time()
+    # mission_profile_optimization.plot_over_time()
     mission_profile_optimization.dyn.draw(vehicle_model=ac.parametric, scale_vehicle_model=5)
 
     # aero = Aero(ac.parametric,
