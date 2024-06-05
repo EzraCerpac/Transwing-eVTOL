@@ -6,7 +6,6 @@ import aerosandbox.tools.pretty_plots as p
 from matplotlib import pyplot as plt
 
 from data.concept_parameters.aircraft import AC
-from model.airplane_models.rotating_wing import rot_wing
 from utility.plotting import show
 
 
@@ -88,5 +87,6 @@ class AeroAnalyser:
 
 
 if __name__ == '__main__':
+    from aircraft_models import rot_wing
     a = AeroAnalyser(rot_wing)
     a.plot_cl_cd_cm_over_alpha_delta_e()
