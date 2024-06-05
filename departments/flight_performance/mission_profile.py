@@ -5,9 +5,12 @@ from pathlib import Path
 from typing import Optional
 
 import numpy as np
+import pandas as pd
+from matplotlib import pyplot as plt
 from pydantic import BaseModel, Field
 
 from utility.log import logger
+from utility.plotting import show
 
 
 class State(BaseModel):
@@ -185,3 +188,34 @@ class Phase(Enum):
 
     def __int__(self):
         return self.value - 1
+
+@show
+def plot_per_phase(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
+    fig, axs = plt.subplots(7, 1, figsize=(30, 20), sharex=True)
+    axs[0].bar(df["Phase"], df["Duration [s]"])
+    axs[0].set_ylabel("Duration [s]")
+
+    axs[1].bar(df["Phase"], df["Horizontal Speed [m/s]"])
+    axs[1].set_ylabel("Horizontal Speed [m/s]")
+
+    axs[2].bar(df["Phase"], df["Vertical Speed [m/s]"])
+    axs[2].set_ylabel("Vertical Speed [m/s]")
+
+    axs[3].bar(df["Phase"], df["Altitude [m]"])
+    axs[3].set_ylabel("Altitude [m]")
+
+    axs[4].bar(df["Phase"], df["Distance [m]"])
+    axs[4].set_ylabel("Distance [m]")
+
+    axs[5].bar(df["Phase"], df["Power [W]"])
+    axs[5].set_ylabel("Power [W]")
+
+    axs[6].bar(df["Phase"], df["Energy [J]"])
+    axs[6].set_ylabel("Energy [J]")
+
+    for ax in axs:
+        for label in ax.get_xticklabels():
+            label.set_rotation(45)
+
+    plt.tight_layout()
+    return fig, axs
