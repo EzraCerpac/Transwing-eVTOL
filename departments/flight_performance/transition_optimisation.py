@@ -64,7 +64,7 @@ class MissionProfileOptimization(Model):
         #     self.total_energy <= self.aircraft.mission_profile.energy)
 
     def horizontal_constraints(self):
-        self.end_time = self.opti.variable(init_guess=2000, log_transform=True)
+        self.end_time = self.opti.variable(init_guess=20, log_transform=True)
         self.time = np.linspace(0, self.end_time, self.n_timesteps)
         self.dyn = asb.DynamicsRigidBody2DBody(
             mass_props=asb.MassProperties(mass=self.aircraft.total_mass,
@@ -72,7 +72,7 @@ class MissionProfileOptimization(Model):
                                           Iyy=500,
                                           Izz=500),
             x_e=self.opti.variable(init_guess=np.linspace(
-                0, 10, self.n_timesteps),
+                0, 100, self.n_timesteps),
                                    lower_bound=0,
                                    upper_bound=self.aircraft.range),
             z_e=self.opti.variable(init_guess=-100,
@@ -101,10 +101,10 @@ class MissionProfileOptimization(Model):
                                                log_transform=True,
                                                upper_bound=1)
         self.elevator_deflection = self.opti.variable(
-            init_guess=0,
+            init_guess=-1,
             n_vars=self.n_timesteps,
-            lower_bound=-np.radians(20),
-            upper_bound=np.radians(20))
+            lower_bound=30,
+            upper_bound=30)
         self.parametric.wings[1].set_control_surface_deflections({
             'Elevator':
             self.elevator_deflection,
@@ -112,15 +112,21 @@ class MissionProfileOptimization(Model):
 
         self.opti.subject_to([
             self.dyn.x_e[0] == 0,
-            np.diff(self.dyn.x_e) > 0,
-            self.dyn.x_e[-1] == 10,
-            np.diff(self.dyn.x_e) > 0,
-            self.dyn.altitude[0] == 100,
-            self.dyn.altitude >= 0,
-            self.dyn.altitude[-1] == 100,
-            self.dyn.speed[0] == self.aircraft.v_stall,
+            # np.diff(self.dyn.x_e) > 0,
+            self.dyn.x_e[-1] == 100,
+            # self.dyn.altitude[0] == 100,
+            # self.dyn.altitude >= 90,
+            # self.dyn.altitude[-1] == 100,
+            self.dyn.altitude == 100,
+            self.dyn.u_b[0] == self.aircraft.v_stall,
+            self.dyn.u_b >= self.aircraft.v_stall,
+            # self.dyn.w_b == 0,
             # self.dyn.speed >= self.dyn.speed[-1],
             # self.dyn.speed[-1] <= self.aircraft.v_stall,
+            self.dyn.q[0] == 0,
+            # self.dyn.theta[0] == 0,
+            # self.dyn.alpha[0] == -9,
+            self.thrust_level[0] == 0.5,
             self.thrust_level < 1,
         ])
 
@@ -129,19 +135,19 @@ class MissionProfileOptimization(Model):
         #                                            .1)
         # thrust_derivative = self.opti.derivative_of(self.thrust_level,
         #                                             self.time, .1)
-        # acceleration = self.dyn.state_derivatives()['speed']
-        # self.opti.subject_to([
+
+        self.opti.subject_to([
         #     pitchrate < .05,
         #     pitchrate > -.05,
         #     alpha_derivative < .5,
         #     alpha_derivative > -.5,
         #     # thrust_derivative < .001,
         #     # thrust_derivative > -.01,
-        #     # np.diff(self.thrust_level) < 0.01,
-        #     # np.diff(self.thrust_level) > -0.01,
-        #     acceleration < .1,
-        #     acceleration > -.1,
-        # ])
+            np.diff(self.thrust_level) < 0.01,
+            np.diff(self.thrust_level) > -0.01,
+            np.diff(self.elevator_deflection) < 0.1,
+            np.diff(self.elevator_deflection) > -0.1,
+        ])
         # self.opti.subject_to([
         #     # np.diff(self.dyn.speed) < 2,
         #     # np.diff(self.dyn.speed) > -2,
@@ -196,7 +202,7 @@ class MissionProfileOptimization(Model):
         self.total_energy = sol(self.total_energy)
         self.CL = sol(self.CL)
         print(f"\nOptimized for {self.opt_param.value}:")
-        print(f"Total energy: {self.total_energy / 3600000:.1f} kWh")
+        # print(f"Total energy: {self.total_energy / 3600000:.1f} kWh")
         print(f"Total time: {self.time[-1]:.1f} s")
         print(f"Max power: {self.max_power / 1000:.1f} kW")
 
@@ -238,8 +244,8 @@ if __name__ == '__main__':
     ac.data.v_stall = 20.
     ac.data.wing.area = 16
     mission_profile_optimization = MissionProfileOptimization(
-        ac, opt_param=OptParam.ENERGY, n_timesteps=10)
-    mission_profile_optimization.run(max_iter=100)
+        ac, opt_param=OptParam.ENERGY, n_timesteps=33)
+    mission_profile_optimization.run(max_iter=1000)
 
     df = mission_profile_optimization.to_dataframe()
     # print(df.to_string())
