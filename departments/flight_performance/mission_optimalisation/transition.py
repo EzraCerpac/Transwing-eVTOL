@@ -72,11 +72,10 @@ class TransitionOpt(Optimalisation):
                                                n_vars=self.n_timesteps,
                                                log_transform=True,
                                                upper_bound=1)
-        self.elevator_deflection = self.opti.variable(
-            init_guess=-1,
-            n_vars=self.n_timesteps,
-            lower_bound=30,
-            upper_bound=30)
+        self.elevator_deflection = self.opti.variable(init_guess=-1,
+                                                      n_vars=self.n_timesteps,
+                                                      lower_bound=30,
+                                                      upper_bound=30)
         self.parametric.wings[1].set_control_surface_deflections({
             'Elevator':
                 self.elevator_deflection,
