@@ -63,8 +63,6 @@ class TransitionOpt(Optimalisation):
                                  lower_bound=-np.radians(5),
                                  upper_bound=np.radians(5)),
         )
-        # self.gamma = np.arctan(self.dyn.w_b / self.dyn.u_b)
-        # self.alpha = self.dyn.theta - self.gamma
         self.thrust_level = self.opti.variable(init_guess=0.5,
                                                n_vars=self.n_timesteps,
                                                log_transform=True,
@@ -168,7 +166,7 @@ if __name__ == '__main__':
     df = mission_profile_optimization.to_dataframe()
     # print(df.to_string())
     mission_profile_optimization.plot_over_distance()
-    mission_profile_optimization.plot_logs_over_distance()
+    # mission_profile_optimization.plot_logs_over_distance()
 
     # aero = Aero(ac.parametric,
     #             velocity=ac.data.cruise_velocity,
