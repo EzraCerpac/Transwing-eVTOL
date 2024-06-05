@@ -66,11 +66,12 @@ class Optimalisation(Model, ABC):
                 self.dyn.u_b if hasattr(self.dyn, 'u_b') else self.dyn.u_e,
                 'w':
                 self.dyn.w_b if hasattr(self.dyn, 'w_b') else self.dyn.w_e,
+                'gamma': self.dyn.theta - self.dyn.alpha if hasattr(self.dyn, 'theta') else None,
+                'alpha': self.dyn.alpha,
                 'theta':
                 self.dyn.theta if hasattr(self.dyn, 'theta') else None,
                 'q': self.dyn.q if hasattr(self.dyn, 'q') else None,
                 'speed': self.dyn.speed,
-                'alpha': self.dyn.alpha,
                 'elevator deflection': self.elevator_deflection,
                 'CL': self.CL,
                 # 'thrust level': self.thrust_level,
@@ -139,23 +140,23 @@ class Optimalisation(Model, ABC):
         print(f"Max power: {self.params['max power'] / 1000:.1f} kW")
 
     def to_dataframe(self, i_log: int = None) -> pd.DataFrame:
-        if i_log is not None:
+        if i_log is None:
+            param_dict = self.params
+        else:
             assert i_log < len(
                 self.logs
             ), f"Only {len(self.logs)} iterations have been logged"
-            return pd.DataFrame.from_dict({
-                k: v
-                for k, v in self.logs[i_log].items()
-                if isinstance(v, np.ndarray) and v.size > 1
-            })
+            param_dict = self.logs[i_log]
         return pd.DataFrame.from_dict({
             k: v
-            for k, v in self.params.items()
+            for k, v in param_dict.items()
             if isinstance(v, np.ndarray) and v.size > 1
         })
 
     def plot_over(self, x_name: str) -> tuple[plt.Figure, plt.Axes]:
         df = self.to_dataframe()
+        xx = df[x_name]
+        df = df.drop(columns=[x_name])
         n_plots = len(df.columns) - 1
         n_rows = 3
         n_cols = n_plots // n_rows + 1
@@ -164,8 +165,8 @@ class Optimalisation(Model, ABC):
         for i, (col, values) in enumerate(df.items()):
             if col == x_name:
                 continue
-            axs[i].plot(df[x_name], values)
-            axs[i].set_xlim(df[x_name].min(), df[x_name].max())
+            axs[i].plot(xx, values)
+            axs[i].set_xlim(xx.min(), xx.max())
             axs[i].set_title(col)
             axs[i].set_xlabel(x_name)
         return fig, axs
@@ -184,11 +185,13 @@ class Optimalisation(Model, ABC):
         for i_log in range(n_logs):
             alpha = (i_log / n_logs)**6
             df = self.to_dataframe(i_log)
+            xx = df[x_name]
+            df = df.drop(columns=[x_name])
             for i, (col, values) in enumerate(df.items()):
                 if col == x_name:
                     continue
-                axs[i].plot(df[x_name], values, alpha=alpha)
-                axs[i].set_xlim(df[x_name].min(), df[x_name].max())
+                axs[i].plot(xx, values, alpha=alpha)
+                axs[i].set_xlim(xx.min(), xx.max())
         return fig, axs
 
     @show
