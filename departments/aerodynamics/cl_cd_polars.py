@@ -71,6 +71,10 @@ class Aero:
 
 
 if __name__ == '__main__':
-    aero = Aero(rot_wing.parametric)
+    ac = rot_wing.parametric
+    ac.wings[1].set_control_surface_deflections({
+        'Elevator': -2,
+    })
+    aero = Aero(ac)
     print(aero.glide_ratio)
     aero.plot_cl_cd_polars()
