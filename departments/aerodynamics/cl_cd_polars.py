@@ -6,7 +6,7 @@ import aerosandbox.numpy as np
 import matplotlib.pyplot as plt
 from casadi import interp1d
 
-from model.airplane_models.rotating_wing import rot_wing
+from aircraft_models import rot_wing
 from utility.plotting import show
 
 
@@ -72,9 +72,9 @@ class Aero:
 
 if __name__ == '__main__':
     ac = rot_wing.parametric
-    ac.wings[1].set_control_surface_deflections({
-        'Elevator': -2,
-    })
+    # ac.wings[1].set_control_surface_deflections({
+    #     'Elevator': -2,
+    # })
     aero = Aero(ac)
     print(aero.glide_ratio)
     aero.plot_cl_cd_polars()
