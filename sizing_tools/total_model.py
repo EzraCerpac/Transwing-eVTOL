@@ -1,6 +1,6 @@
 import departments.flight_performance.power_calculations
 from data.concept_parameters.aircraft import Aircraft
-from data.concept_parameters.concepts import all_concepts, rotating_wings, rot_wing_starting_params
+from data.concept_parameters.concepts import rot_wing_starting_params
 from sizing_tools.hinge_loading import HingeLoadingModel
 from sizing_tools.mass_model.classI import ClassIModel
 from sizing_tools.mass_model.iteration import Iteration
@@ -33,16 +33,16 @@ class TotalModel(Model):
             logger.debug("No save method for this aircraft")
 
     def print_results(
-        self,
-        mass_breakdown: bool = False,
-        energy_breakdown: bool = False,
-        hinge_loading: bool = False,
-        class1_diagram: bool = False,
+            self,
+            mass_breakdown: bool = False,
+            energy_breakdown: bool = False,
+            hinge_loading: bool = False,
+            class1_diagram: bool = False,
     ):
         if not all([
-                self.aircraft.total_mass,
-                self.aircraft.hinge_load,
-                self.aircraft.hinge_moment,
+            self.aircraft.total_mass,
+            self.aircraft.hinge_load,
+            self.aircraft.hinge_moment,
         ]):
             self.run()
         print(f"Concept: {self.aircraft.full_name}")
@@ -72,7 +72,7 @@ class TotalModel(Model):
             print(f"{parameter}: {self.aircraft.dict()[parameter]}")
 
 
-def main():
+if __name__ == '__main__':
     aircraft = rot_wing_starting_params
     model = TotalModel(aircraft)
     model.run()
@@ -82,7 +82,6 @@ def main():
         hinge_loading=True,
         class1_diagram=True,
     )
-
     # for concept in rotating_wings:
     #     model = TotalModel(concept)
     #     model.run()
@@ -93,7 +92,3 @@ def main():
     #         class1_diagram=False,
     #     )
     # model.print_all_parameters()
-
-
-if __name__ == '__main__':
-    main()

@@ -123,7 +123,7 @@ rot_wing_starting_params = Aircraft(
     propeller_blade_number=5,
     hinge_location=0.15,
     wing=Wing(
-        area=16,
+        area=14,
         span=12,
     ),
     fuselage=Fuselage(
