@@ -1,3 +1,5 @@
+from enum import Enum
+
 import aerosandbox as asb
 import aerosandbox.numpy as np
 
@@ -17,20 +19,32 @@ def airplane_with_control_surface_deflection(ac: AC,
     return airplane
 
 
+class OutputVal(Enum):
+    CL = 'CL'
+    CD = 'CD'
+    CM = 'Cm'
+
+
+class AxisVal(Enum):
+    ALPHA = 'alpha'
+    DELTA_E = 'delta_e'
+    TRANS_VAl = 'trans_val'
+
+
 contour_params = {
-    'CL': {
+    OutputVal.CL: {
         'colorbar_label': r"Lift Coefficient $C_L$ [-]",
         'linelabels_format': lambda x: f"{x:.2f}",
         'z_log_scale': False,
         'cmap': "RdBu",
     },
-    'CD': {
+    OutputVal.CD: {
         'colorbar_label': r"Drag Coefficient $C_D$ [-]",
         'linelabels_format': lambda x: f"{x:.2f}",
         'z_log_scale': True,
         'cmap': "YlOrRd",
     },
-    'Cm': {
+    OutputVal.CM: {
         'colorbar_label': r"Pitching Moment Coefficient $C_m$ [-]",
         'linelabels_format': lambda x: f"{x:.2f}",
         'z_log_scale': False,
@@ -44,20 +58,44 @@ class AeroAnalyser:
     def __init__(self,
                  ac: AC,
                  alpha: np.ndarray = DEFAULT_DEGREE_RANGE,
-                 delta_e: np.ndarray = DEFAULT_DEGREE_RANGE):
+                 delta_e: np.ndarray = DEFAULT_DEGREE_RANGE,
+                 trans_val: np.ndarray = np.linspace(0, 1, 11)
+                 ):
         self.ac = ac
         self.atmosphere = asb.Atmosphere(altitude=self.ac.data.cruise_altitude)
 
         self.alpha = alpha
         self.delta_e = delta_e
+        self.trans_val = trans_val
+
+        self.param_dict = {
+            AxisVal.ALPHA: {
+                'values': self.alpha,
+                'label': r"Angle of Attack $\alpha$ [deg]",
+            },
+            AxisVal.DELTA_E: {
+                'values': self.delta_e,
+                'label': r"Elevator Deflection $\delta_e$ [deg]",
+            },
+            AxisVal.TRANS_VAl: {
+                'values': self.trans_val,
+                'label': r"Transition Value",
+            },
+        }
 
     def plot_cl_cd_cm_over_alpha_delta_e(self):
-        self.calc_aero()
-        self.plot_over_alpha_delta_e('CL')
-        self.plot_over_alpha_delta_e('CD')
-        self.plot_over_alpha_delta_e('Cm')
+        self.calc_aero_alpha_delta_e()
+        self.plot_gradient(OutputVal.CL, AxisVal.DELTA_E, AxisVal.ALPHA)
+        self.plot_gradient(OutputVal.CD, AxisVal.DELTA_E, AxisVal.ALPHA)
+        self.plot_gradient(OutputVal.CM, AxisVal.DELTA_E, AxisVal.ALPHA)
 
-    def calc_aero(self):
+    def plot_cl_cd_cm_over_alpha_trans(self):
+        self.calc_aero_alpha_trans()
+        self.plot_gradient(OutputVal.CL, AxisVal.TRANS_VAl, AxisVal.ALPHA)
+        self.plot_gradient(OutputVal.CD, AxisVal.TRANS_VAl, AxisVal.ALPHA)
+        self.plot_gradient(OutputVal.CM, AxisVal.TRANS_VAl, AxisVal.ALPHA)
+
+    def calc_aero_alpha_delta_e(self):
         self.alpha, self.delta_e = np.meshgrid(self.alpha, self.delta_e)
         self.aero = asb.AeroBuildup(
             airplane=airplane_with_control_surface_deflection(
@@ -69,24 +107,51 @@ class AeroAnalyser:
             ),
         ).run()
 
+    def calc_aero_alpha_trans(self):
+        self.alpha, self.trans_val = np.meshgrid(self.alpha, self.trans_val)
+        self.aero = asb.AeroBuildup(
+            airplane=ac.parametric_fn(self.trans_val.flatten()),
+            op_point=asb.OperatingPoint(
+                atmosphere=self.atmosphere,
+                velocity=self.ac.data.cruise_velocity,
+                alpha=self.alpha.flatten(),
+            ),
+        ).run()
+
     @show
-    def plot_over_alpha_delta_e(
-            self, value_name: str) -> tuple[plt.Figure, plt.Axes]:
+    def plot_gradient(
+            self,
+            ouput_val: OutputVal,
+            x_val: AxisVal = AxisVal.DELTA_E,
+            y_val: AxisVal = AxisVal.ALPHA,
+    ) -> tuple[plt.Figure, plt.Axes]:
         fig, ax = plt.subplots(figsize=(10, 8))
-        p.contour(self.delta_e, self.alpha,
-                  self.aero[value_name].reshape(self.alpha.shape),
-                  **contour_params[value_name])
-        if not contour_params[value_name]['z_log_scale']:
+        p.contour(self.param_dict[x_val]['values'],
+                  self.param_dict[y_val]['values'],
+                  self.aero[ouput_val.value].reshape(self.alpha.shape),
+                  **contour_params[ouput_val])
+        if not contour_params[ouput_val]['z_log_scale']:
             plt.clim(*np.array([-1, 1]) *
-                     np.max(np.abs(self.aero[value_name])))
-        plt.xlabel(r"Elevator Deflection $\delta_e$ [deg]")
-        plt.ylabel(r"Angle of Attack $\alpha$ [deg]")
-        p.set_ticks(15, 5, 15, 5)
-        p.equal()
+                      np.max(np.abs(self.aero[ouput_val.value])))
+        plt.xlabel(self.param_dict[x_val]['label'])
+        plt.ylabel(self.param_dict[y_val]['label'])
+        # p.set_ticks(15, 5, 15, 5)
+        # p.equal()
         return fig, ax
 
 
 if __name__ == '__main__':
-    from aircraft_models import rot_wing
+    from aircraft_models import rot_wing, trans_wing
+
+    ac = trans_wing
     a = AeroAnalyser(rot_wing)
-    a.plot_cl_cd_cm_over_alpha_delta_e()
+    a.plot_cl_cd_cm_over_alpha_trans()
+
+    # vlm = asb.VortexLatticeMethod(
+    #     airplane=ac.parametric,
+    #     op_point=asb.OperatingPoint(
+    #         velocity=5,  # m/s
+    #         alpha=-90,  # degree
+    #     )
+    # )
+    # vlm.draw()

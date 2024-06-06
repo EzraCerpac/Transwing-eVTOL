@@ -15,7 +15,7 @@ sys.path.append(parent_dir)
 from data.concept_parameters.aircraft import Aircraft, AC
 from sizing_tools.wing_planform import WingModel
 
-ac = Aircraft.load(version='1.1')
+ac = Aircraft.load(version='1.3')
 wing_model = WingModel(ac, altitude=ac.cruise_altitude)
 
 wing_airfoil = Airfoil("E560")

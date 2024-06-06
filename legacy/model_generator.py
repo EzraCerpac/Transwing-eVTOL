@@ -25,7 +25,7 @@ from aerosandbox.numpy import tan, tand
 from data.concept_parameters.aircraft import Aircraft, AC
 from sizing_tools.wing_planform import WingModel
 
-ac = Aircraft.load(version='1.1')
+ac = Aircraft.load(version='1.3')
 wing_model = WingModel(ac, altitude=ac.cruise_altitude)
 
 
@@ -49,7 +49,7 @@ def generate_model(trans_val: float) -> Airplane:
     tail_airfoil = Airfoil("naca0012")
 
     # DEFINE SPANWISE HINGE LOCATION AND THE LOCAL CHORD LENGHT TODO: IMPLEMENT THIS TO THE AIRCRAFT CLASS
-    cut = 0.2
+    cut = ac.hinge_location
     chord_cut = wing_model.rootcrt - (wing_model.rootcrt -
                                       wing_model.tipcrt) * cut
 
@@ -213,5 +213,5 @@ def generate_model(trans_val: float) -> Airplane:
 
 
 if __name__ == '__main__':
-    ac = generate_model(0)
+    ac = generate_model(.7)
     ac.draw_three_view()
