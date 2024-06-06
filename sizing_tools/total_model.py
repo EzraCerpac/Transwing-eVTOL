@@ -40,7 +40,7 @@ class TotalModel(Model):
         class1_diagram: bool = False,
     ):
         if not all([
-            self.aircraft.total_mass,
+                self.aircraft.total_mass,
                 self.aircraft.hinge_load,
                 self.aircraft.hinge_moment,
         ]):
