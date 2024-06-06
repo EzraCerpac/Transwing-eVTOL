@@ -115,7 +115,7 @@ example_cg_dict = {
 }
 
 rot_wing_starting_params = Aircraft(
-    id='V1.1',
+    id='V1.2',
     name="Rotating Wing with 3 engines per wing",
     motor_prop_count=6,
     motor_wing_count=6,
@@ -124,7 +124,7 @@ rot_wing_starting_params = Aircraft(
     hinge_location=0.15,
     wing=Wing(
         area=16,
-        span=14,
+        span=12,
     ),
     fuselage=Fuselage(
         length=8,

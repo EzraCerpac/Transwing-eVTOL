@@ -35,7 +35,7 @@ class WingModel(Model):
         self.rho = self.atmosphere.density()
         self.mu = self.atmosphere.dynamic_viscosity()
         self.sweep = 0
-        self.wing_position = WingPosition.MID
+        self.wing_position = WingPosition.HIGH
         self.dihedral = (dihedral_ranges[self.wing_position][0] +
                          dihedral_ranges[self.wing_position][1]) / 2
 
@@ -84,7 +84,7 @@ class WingModel(Model):
 
 if __name__ == '__main__':
     aircraft = Aircraft.load()
-    # aircraft.wing.area = 25.4
+   
     model = WingModel(aircraft)
-    print(model.Reynolds())
+    print(model.rootcrt, model.tipcrt)
     print(model.aircraft.wing.area)
