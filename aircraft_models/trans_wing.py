@@ -224,6 +224,6 @@ if __name__ == '__main__':
     # airplane.draw_three_view()
     # airplane.draw()
 
-    para = trans_wing.parametric_fn(0.5)
-    para.wings[0].xsecs[0].xyz_le = np.array([0, 0, 0])
-    para.draw()
+    for val in np.linspace(0, 1, 31):
+        para = trans_wing.parametric_fn(val)
+        para.draw_three_view()
