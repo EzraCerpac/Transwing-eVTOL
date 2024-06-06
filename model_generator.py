@@ -65,7 +65,6 @@ def generate_model(trans_val: float) -> Airplane:
                                      [-rot_axis[1, 0], rot_axis[0, 0], 0]]) +
               (1 - np.cos(dq)) * rot_axis * rot_axis.T)
 
-
     # DEFINE MAIN WINGPLANFORM POINTS (te-trailing edge, le-leading edge)
     p_tip_le = np.array([
         ac.wing.span / 2 * tan(wing_model.le_sweep), ac.wing.span / 2,
@@ -113,8 +112,7 @@ def generate_model(trans_val: float) -> Airplane:
     v_cut_0 = np.array([[-1], [0], [0]])
     v_cut = np.reshape(p_cut_te - p_cut_le, (-1, 1))
     v_cut[1] = 0
-    twist_cut = float(
-        np.arccos(v_cut.T @ v_cut_0 / (np.linalg.norm(v_cut))))
+    twist_cut = float(np.arccos(v_cut.T @ v_cut_0 / (np.linalg.norm(v_cut))))
     print(np.rad2deg(twist_cut))
 
     parametric = Airplane(
@@ -187,23 +185,21 @@ def generate_model(trans_val: float) -> Airplane:
             ).translate([4, 0, 0.06])
         ],
         fuselages=[
-            Fuselage(
-                name='Fuselage',
-                xsecs=[
-                    FuselageXSec(
-                        xyz_c=[(0.8 * xi - 0.2) * ac.fuselage.length, 0,
-                               0.1 * xi - 0.03],
-                        radius=.75 *
-                        Airfoil("dae51").local_thickness(x_over_c=xi) /
-                        Airfoil("dae51").max_thickness())
-                    for xi in np.cosspace(0, 1, 30)
-                ])
+            Fuselage(name='Fuselage',
+                     xsecs=[
+                         FuselageXSec(
+                             xyz_c=[(0.8 * xi - 0.2) * ac.fuselage.length, 0,
+                                    0.1 * xi - 0.03],
+                             radius=.75 *
+                             Airfoil("dae51").local_thickness(x_over_c=xi) /
+                             Airfoil("dae51").max_thickness())
+                         for xi in np.cosspace(0, 1, 30)
+                     ])
         ],
         propulsors=[
             Propulsor(
                 xyz_c=np.array([
-                    0,
-                    ((1 + .5) / ac.motor_prop_count - .5) * ac.wing.span, 0
+                    0, ((1 + .5) / ac.motor_prop_count - .5) * ac.wing.span, 0
                 ]),
                 radius=ac.propeller_radius,
             ),
@@ -219,4 +215,3 @@ def generate_model(trans_val: float) -> Airplane:
 if __name__ == '__main__':
     ac = generate_model(0)
     ac.draw_three_view()
-
