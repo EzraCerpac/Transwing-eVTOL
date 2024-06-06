@@ -99,7 +99,7 @@ class ClassIModel(Model):
         # ws = ws_range[np.argmin(np.abs(self._wp(ws_range) - wp_vertical_climb))]
         ws = 900  # arbitrary value to get surface area = 16 m2
         wp_vertical_climb = self.ver_climb(ws)
-        self.aircraft.wing.area = g * self.aircraft.total_mass / ws
+        # self.aircraft.wing.area = g * self.aircraft.total_mass / ws
         departments.flight_performance.power_calculations.power = g * self.aircraft.total_mass / wp_vertical_climb
         return self.aircraft.wing.area, departments.flight_performance.power_calculations.power
 
