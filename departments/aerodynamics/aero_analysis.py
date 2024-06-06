@@ -1,7 +1,7 @@
 import aerosandbox as asb
 import aerosandbox.numpy as np
 
-DEFAULT_DEGREE_RANGE = np.linspace(-20, 20, 51)
+DEFAULT_DEGREE_RANGE = np.linspace(-20, 20, 101)
 import aerosandbox.tools.pretty_plots as p
 from matplotlib import pyplot as plt
 
