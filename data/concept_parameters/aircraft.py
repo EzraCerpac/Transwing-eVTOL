@@ -4,7 +4,8 @@ from aerosandbox import Airplane
 from pydantic import BaseModel, field_validator, Field
 
 from data.concept_parameters.aircraft_components import Propeller, Tail, Fuselage, Wing, MassObject
-from data.concept_parameters.mission_profile import MissionProfile, MissionPhase, Phase
+from data.concept_parameters.mission_profile import MissionProfile, MissionPhase, Phase, default_mission_profile, \
+    updated_mission_profile_from_cruise_opt
 from utility.log import logger
 from utility.unit_conversion import convert_float
 
@@ -12,7 +13,7 @@ MOST_RECENT_VERSION = 'V1.1'
 
 
 class Aircraft(BaseModel):
-    id: Optional[str] = Field('Aircraft', min_length=1)
+    id: Optional[str] = Field('Unversioned', min_length=1)
     name: Optional[str] = Field('Unnamed', min_length=1)
     full_name: Optional[str] = None
 
@@ -100,59 +101,7 @@ class Aircraft(BaseModel):
         ]
 
     def initialize_default_mission_profile(self):
-        self.mission_profile = MissionProfile(
-            name='default',
-            phases={
-                Phase.TAKEOFF:
-                    MissionPhase(phase=Phase.TAKEOFF,
-                                 duration=0.17 * 60,
-                                 horizontal_speed=0,
-                                 distance=0,
-                                 vertical_speed=0 * 60,
-                                 ending_altitude=1.5),
-                Phase.HOVER_CLIMB:
-                    MissionPhase(
-                        phase=Phase.HOVER_CLIMB,
-                        duration=self.cruise_altitude / self.rate_of_climb,
-                        horizontal_speed=self.cruise_velocity,  # gets adjusted in model
-                        distance=self.cruise_velocity * self.cruise_altitude /
-                                 self.rate_of_climb,  # gets adjusted in model
-                        vertical_speed=self.rate_of_climb,
-                        ending_altitude=self.cruise_altitude),
-                Phase.CLIMB:  # set to 0
-                    MissionPhase(
-                        phase=Phase.CLIMB,
-                        duration=0,
-                        horizontal_speed=self.
-                        cruise_velocity,  # gets adjusted in model
-                        distance=0,
-                        vertical_speed=0,
-                        ending_altitude=self.cruise_altitude),
-                Phase.CRUISE:
-                    MissionPhase(phase=Phase.CRUISE,
-                                 duration=self.range / self.cruise_velocity,
-                                 horizontal_speed=self.cruise_velocity,
-                                 distance=self.range,
-                                 vertical_speed=0,
-                                 ending_altitude=self.cruise_altitude),
-                Phase.DESCENT:
-                    MissionPhase(
-                        phase=Phase.DESCENT,
-                        duration=self.cruise_altitude / self.rate_of_climb,
-                        horizontal_speed=self.
-                        cruise_velocity,  # gets adjusted in model
-                        distance=self.cruise_velocity * self.cruise_altitude /
-                                 self.rate_of_climb,  # gets adjusted in model
-                        vertical_speed=-self.rate_of_climb,  # weird assumption
-                        ending_altitude=1.5),
-                Phase.LANDING:
-                    MissionPhase(phase=Phase.LANDING,
-                                 duration=1 * 60,
-                                 horizontal_speed=0,
-                                 distance=0,
-                                 vertical_speed=0 * 60,
-                                 ending_altitude=0),
-            })
+        self.mission_profile = updated_mission_profile_from_cruise_opt(self)
 
     @classmethod
     @field_validator('id')
