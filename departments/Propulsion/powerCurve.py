@@ -6,9 +6,9 @@ from scipy.optimize import brentq
 
 
 def profilePower(c, Vcurrent):
-    mu = Vcurrent / (c.omega * c.R)
-    return (c.sigma * c.CDpbar / 8 * rho * (c.omega * c.R)**3 * pi * c.R**2 *
-            (1 + 4.65 * mu**2))
+    mu = Vcurrent/(c.omega*c.R)
+    return (c.sigma*c.CDpbar/8*rho*(c.omega*c.R)**3 *
+            pi*c.R**2*(1+4.65*mu**2))
 
 
 def viFunction(x, Vcurrent=0):
@@ -38,6 +38,7 @@ def totalPower(c, Vcurrent):
 
 
 # Power loss: 3-6% of main rotors (total) power
+
 
 if __name__ == '__main__':
     c = sixengs()
