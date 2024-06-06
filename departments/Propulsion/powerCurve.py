@@ -39,7 +39,6 @@ def totalPower(c, Vcurrent):
 
 # Power loss: 3-6% of main rotors (total) power
 
-
 if __name__ == '__main__':
     c = sixengs()
     class_to_dict(sixengs())
