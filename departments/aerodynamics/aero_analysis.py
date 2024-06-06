@@ -59,7 +59,7 @@ class AeroAnalyser:
                  ac: AC,
                  alpha: np.ndarray = DEFAULT_DEGREE_RANGE,
                  delta_e: np.ndarray = DEFAULT_DEGREE_RANGE,
-                 trans_val: np.ndarray = np.linspace(0, 1, 11)
+                 trans_val: np.ndarray = np.linspace(0, 1, 51)
                  ):
         self.ac = ac
         self.atmosphere = asb.Atmosphere(altitude=self.ac.data.cruise_altitude)
@@ -108,15 +108,16 @@ class AeroAnalyser:
         ).run()
 
     def calc_aero_alpha_trans(self):
-        self.alpha, self.trans_val = np.meshgrid(self.alpha, self.trans_val)
-        self.aero = asb.AeroBuildup(
-            airplane=ac.parametric_fn(self.trans_val.flatten()),
+        aero = [asb.AeroBuildup(
+            airplane=ac.parametric_fn(trans_val),
             op_point=asb.OperatingPoint(
                 atmosphere=self.atmosphere,
                 velocity=self.ac.data.cruise_velocity,
-                alpha=self.alpha.flatten(),
+                alpha=self.alpha,
             ),
-        ).run()
+        ).run() for trans_val in self.trans_val]
+        self.aero = {output_val.value: np.concatenate([a[output_val.value] for a in aero])
+                     for output_val in OutputVal}
 
     @show
     def plot_gradient(
@@ -125,11 +126,17 @@ class AeroAnalyser:
             x_val: AxisVal = AxisVal.DELTA_E,
             y_val: AxisVal = AxisVal.ALPHA,
     ) -> tuple[plt.Figure, plt.Axes]:
+        yy, xx = np.meshgrid(
+            self.param_dict[y_val]['values'],
+            self.param_dict[x_val]['values'],
+        )
         fig, ax = plt.subplots(figsize=(10, 8))
-        p.contour(self.param_dict[x_val]['values'],
-                  self.param_dict[y_val]['values'],
-                  self.aero[ouput_val.value].reshape(self.alpha.shape),
-                  **contour_params[ouput_val])
+        p.contour(
+              xx,
+              yy,
+            self.aero[ouput_val.value].reshape(xx.shape),
+              **contour_params[ouput_val]
+        )
         if not contour_params[ouput_val]['z_log_scale']:
             plt.clim(*np.array([-1, 1]) *
                       np.max(np.abs(self.aero[ouput_val.value])))
@@ -144,14 +151,16 @@ if __name__ == '__main__':
     from aircraft_models import rot_wing, trans_wing
 
     ac = trans_wing
-    a = AeroAnalyser(rot_wing)
+    a = AeroAnalyser(ac)
+    # a.plot_cl_cd_cm_over_alpha_delta_e()
     a.plot_cl_cd_cm_over_alpha_trans()
 
     # vlm = asb.VortexLatticeMethod(
     #     airplane=ac.parametric,
     #     op_point=asb.OperatingPoint(
-    #         velocity=5,  # m/s
-    #         alpha=-90,  # degree
+    #         velocity=ac.data.cruise_velocity,  # m/s
+    #         alpha=0,  # degree
     #     )
     # )
+    # vlm.run()
     # vlm.draw()
