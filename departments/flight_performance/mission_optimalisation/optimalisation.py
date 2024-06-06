@@ -156,11 +156,11 @@ class Optimalisation(Model, ABC):
             self.print_results()
 
     def print_results(self):
-        print(f"\nOptimized for {self.opt_param.value}:")
-        print(f"Total energy: {self.params['total energy'] / 3600000:.1f} kWh")
-        print(f"Total time: {self.params['time'][-1]:.1f} s")
-        print(f"Total distance: {self.params['x'][-1] / 1000:.1f} km")
-        print(f"Max power: {self.params['max power'] / 1000:.1f} kW")
+        logger.info(f"\nOptimized for {self.opt_param.value}:")
+        logger.info(f"Total energy: {self.params['total energy'] / 3600000:.1f} kWh")
+        logger.info(f"Total time: {self.params['time'][-1]:.1f} s")
+        logger.info(f"Total distance: {self.params['x'][-1] / 1000:.1f} km")
+        logger.info(f"Max power: {self.params['max power'] / 1000:.1f} kW")
 
     def to_dataframe(self, i_log: int = None) -> pd.DataFrame:
         if i_log is None:
@@ -190,6 +190,7 @@ class Optimalisation(Model, ABC):
                 continue
             axs[i].plot(xx, values)
             axs[i].set_xlim(xx.min(), xx.max())
+            # axs[i].set_ylim(values.min(), values.max())
             axs[i].set_title(col)
             axs[i].set_xlabel(x_name)
         return fig, axs
@@ -206,7 +207,7 @@ class Optimalisation(Model, ABC):
         n_logs = len(self.logs)
         fig, axs = self.plot_over(x_name)
         for i_log in range(n_logs):
-            alpha = (i_log / n_logs)**2
+            alpha = (i_log / n_logs)
             df = self.to_dataframe(i_log)
             xx = df[x_name]
             df = df.drop(columns=[x_name])
@@ -215,6 +216,7 @@ class Optimalisation(Model, ABC):
                     continue
                 axs[i].plot(xx, values, alpha=alpha)
                 axs[i].set_xlim(xx.min(), xx.max())
+                # axs[i].set_ylim(values.min(), values.max())
         return fig, axs
 
     @show
