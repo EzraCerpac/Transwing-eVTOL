@@ -237,9 +237,13 @@ class Aircraft(BaseModel):
 
 
 class AC:
-    def __init__(self, name: str, data: Aircraft, parametric: Airplane = None, parametric_fn: Callable[[float], Airplane] = None):
+
+    def __init__(self,
+                 name: str,
+                 data: Aircraft,
+                 parametric: Airplane = None,
+                 parametric_fn: Callable[[float], Airplane] = None):
         self.name = name
         self.data = data
         self.parametric = parametric or parametric_fn(0)
         self.parametric_fn = parametric_fn
-
