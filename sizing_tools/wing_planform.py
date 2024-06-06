@@ -88,3 +88,4 @@ if __name__ == '__main__':
     model = WingModel(aircraft)
     print(model.rootcrt, model.tipcrt)
     print(model.aircraft.wing.area)
+    print(model.MAC)
