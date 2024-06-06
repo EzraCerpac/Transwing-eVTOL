@@ -65,9 +65,11 @@ class sixengs:
         self.ZD = Z / toimp_dist(self.D)
         self.fn = self.B * self.rpm / 60
         self.omega = self.Vt / self.R
-        self.CT = Mto*9.81/(rho*pi*self.R**2*(self.omega*self.R)**2)
-        self.c = 0.0108*(Mto*9.81)**0.539/(self.Neng*self.B)**0.714
-        self.sigma = self.Neng*self.B*self.c/(pi*self.R)  # rotor solidity
+        self.CT = Mto * 9.81 / (rho * pi * self.R**2 *
+                                (self.omega * self.R)**2)
+        self.c = 0.0108 * (Mto * 9.81)**0.539 / (self.Neng * self.B)**0.714
+        self.sigma = self.Neng * self.B * self.c / (pi * self.R
+                                                    )  # rotor solidity
         self.CLbar = 6.6 * self.CT / self.sigma
         self.vih = np.sqrt(Mto * 9.81 / (2 * rho * pi * self.R**2))
         self.Vbar = V / self.vih
@@ -109,8 +111,9 @@ def AFactor(freq):
             ACorr = a_weighting[w]
             break
         elif freq - frequencies[w + 1] < 0:
-            slope = (a_weighting[w+1] - a_weighting[w])/(frequencies[w+1] - frequencies[w])
-            ACorr = a_weighting[w] + (slope * (freq-frequencies[w]))
+            slope = (a_weighting[w + 1] -
+                     a_weighting[w]) / (frequencies[w + 1] - frequencies[w])
+            ACorr = a_weighting[w] + (slope * (freq - frequencies[w]))
             break
         w += 1
     return ACorr
@@ -122,16 +125,11 @@ six = {
     "B8": 4,
 }
 
-eight = {
-    "L1": 113,
-    "B3": -4,
-    "B8": 4
-}
+eight = {"L1": 113, "B3": -4, "B8": 4}
 
 correction = np.array([-2, -9, -13, -16, -18, -19, -20, -20, -20,
                        -20])  # for harmonics
 
-correction = np.array([-2, -9, -13, -16, -18, -19, -20, -20, -20, -20]) # for harmonics
 
 # type="six" or "eight" or "ten"
 # noise is in dB!
