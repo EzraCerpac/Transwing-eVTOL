@@ -157,7 +157,8 @@ class Optimalisation(Model, ABC):
 
     def print_results(self):
         logger.info(f"\nOptimized for {self.opt_param.value}:")
-        logger.info(f"Total energy: {self.params['total energy'] / 3600000:.1f} kWh")
+        logger.info(
+            f"Total energy: {self.params['total energy'] / 3600000:.1f} kWh")
         logger.info(f"Total time: {self.params['time'][-1]:.1f} s")
         logger.info(f"Total distance: {self.params['x'][-1] / 1000:.1f} km")
         logger.info(f"Max power: {self.params['max power'] / 1000:.1f} kW")

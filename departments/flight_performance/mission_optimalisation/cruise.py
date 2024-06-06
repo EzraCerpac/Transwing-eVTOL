@@ -44,8 +44,7 @@ class CruiseOpt(Optimalisation):
         self.dyn.add_gravity_force()
         self.dyn.constrain_derivatives(self.opti, self.time, method='simpson')
 
-        self.total_energy = np.sum(
-            np.trapz(self.power) * np.diff(self.time))
+        self.total_energy = np.sum(np.trapz(self.power) * np.diff(self.time))
         # self.opti.subject_to(
         #     self.total_energy <= self.aircraft.mission_profile.energy)
 
