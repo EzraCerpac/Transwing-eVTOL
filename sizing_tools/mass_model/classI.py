@@ -1,7 +1,6 @@
 import os
 import sys
 
-from numpy.testing import assert_almost_equal
 from scipy.constants import g
 
 import departments.flight_performance.power_calculations
