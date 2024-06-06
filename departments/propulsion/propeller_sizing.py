@@ -33,8 +33,8 @@ for i in range(N):
     V_total = omega * r[i] / np.cos(phi)
 
     # Lift and drag forces
-    L = 0.5 * rho * V_total ** 2 * c * C_L
-    D = 0.5 * rho * V_total ** 2 * c * C_D
+    L = 0.5 * rho * V_total**2 * c * C_L
+    D = 0.5 * rho * V_total**2 * c * C_D
 
     # Thrust and torque contributions from each blade element
     dT[i] = L * np.cos(phi) - D * np.sin(phi)

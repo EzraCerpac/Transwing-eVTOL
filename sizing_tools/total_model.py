@@ -33,16 +33,16 @@ class TotalModel(Model):
             logger.debug("No save method for this aircraft")
 
     def print_results(
-            self,
-            mass_breakdown: bool = False,
-            energy_breakdown: bool = False,
-            hinge_loading: bool = False,
-            class1_diagram: bool = False,
+        self,
+        mass_breakdown: bool = False,
+        energy_breakdown: bool = False,
+        hinge_loading: bool = False,
+        class1_diagram: bool = False,
     ):
         if not all([
-            self.aircraft.total_mass,
-            self.aircraft.hinge_load,
-            self.aircraft.hinge_moment,
+                self.aircraft.total_mass,
+                self.aircraft.hinge_load,
+                self.aircraft.hinge_moment,
         ]):
             self.run()
         print(f"Concept: {self.aircraft.full_name}")
