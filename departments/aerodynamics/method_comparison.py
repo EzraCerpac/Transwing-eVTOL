@@ -1,11 +1,12 @@
 from typing import Callable
 
+import aerosandbox as asb
 import aerosandbox.numpy as np
 from matplotlib import pyplot as plt
 
 from aircraft_models import rot_wing
 from data.concept_parameters.aircraft import AC
-from departments.aerodynamics.helper import OutputVal, label
+from departments.aerodynamics.helper import OutputVal, label, AxisVal
 from sizing_tools.drag_model.class_II_drag import ClassIIDrag
 from utility.plotting import show
 
@@ -32,11 +33,22 @@ class AeroMethodComparison:
         for i, ov in enumerate(output_val):
             for method_name, result in self.results.items():
                 axs[i].plot(self.alpha, result[ov.value], label=method_name)
-            axs[i].set_xlabel('Angle of Attack [deg]')
+            axs[i].set_xlabel(label[AxisVal.ALPHA])
             axs[i].set_ylabel(label[ov])
-            axs[i].legend()
+        axs[0].legend(loc='upper left')
         return fig, axs
 
+
+def vlm(ac: AC, alpha: np.ndarray) -> dict[str, any]:
+    data = [asb.VortexLatticeMethod(
+        airplane=ac.parametric,
+        op_point=asb.OperatingPoint(
+            velocity=ac.data.cruise_velocity,
+            alpha=a,
+        )
+    ).run() for a in alpha]
+    return {output_val.value: np.array([a[output_val.value] for a in data])
+            for output_val in OutputVal}
 
 if __name__ == '__main__':
     from data.concept_parameters.aircraft import AC
@@ -44,7 +56,8 @@ if __name__ == '__main__':
 
     methods = {
         'AeroBuildup': lambda ac, alpha: Aero(ac=ac, alpha=alpha).get_aero_data(),
-        'Class II': lambda ac, alpha: ClassIIDrag(ac=ac).aero_dict(alpha=alpha)
+        'Class II': lambda ac, alpha: ClassIIDrag(ac=ac).aero_dict(alpha=alpha),
+        'VLM': vlm,
     }
     aero_method_comparison = AeroMethodComparison(ac=rot_wing, methods=methods)
     aero_method_comparison.run()
