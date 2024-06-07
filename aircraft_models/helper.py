@@ -13,9 +13,9 @@ def xyz_direction_func(
 ) -> np.ndarray:
     xyz_1 = airplane.wings[0].xsecs[-2].xyz_le
     xyz_2 = airplane.wings[0].xsecs[-1].xyz_le
-    twist = np.radians(
-        airplane.wings[0].xsecs[-2].twist + x *
-        (airplane.wings[0].xsecs[-1].twist - airplane.wings[0].xsecs[-2].twist))
+    twist = np.radians(airplane.wings[0].xsecs[-2].twist + x *
+                       (airplane.wings[0].xsecs[-1].twist -
+                        airplane.wings[0].xsecs[-2].twist))
     dir = xyz_2 - xyz_1
     dir_normal_xy = np.array([dir[1], -dir[0], 0])
     return xyz_n0 @ np.rotation_matrix_3D(twist, dir_normal_xy)

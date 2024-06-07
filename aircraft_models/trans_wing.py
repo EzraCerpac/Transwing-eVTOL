@@ -36,6 +36,7 @@ def gen_wing_connection(root_wing: Wing, rotating_wing: Wing) -> Wing:
         ],
     )
 
+
 total_wing = Wing(
     name='Main Wing',
     symmetric=True,
