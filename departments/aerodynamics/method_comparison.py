@@ -24,7 +24,7 @@ class AeroMethodComparison:
                 Aero(ac=self.ac, alpha=self.alpha).get_aero_data,
             'AeroBuildup (no wave drag)':
                 lambda: Aero(ac=self.ac, alpha=self.alpha).get_aero_data(include_wave_drag=False),
-            'Aerobuildup with cut':
+            'AeroBuildup with cut':
                 Aero(ac=trans_wing, alpha=self.alpha).get_aero_data,
             'Class II':
                 lambda: ClassIIDrag(ac=self.ac).aero_dict(alpha=self.alpha),

@@ -6,7 +6,7 @@ from data.concept_parameters.aircraft import AC
 from sizing_tools.model import Model
 from sizing_tools.wing_planform import WingModel
 
-EXTRA_DRAG_MARGIN = 1.20
+EXTRA_DRAG_MARGIN = 1  # was 1.2
 
 
 class ClassIIDrag(Model):
@@ -18,6 +18,7 @@ class ClassIIDrag(Model):
                  altitude: float = None) -> None:
         super().__init__(ac.data)
         self.ac = ac
+        self.parametric = ac.parametric
         self.velocity = velocity if velocity is not None else self.aircraft.cruise_velocity
         self.altitude = altitude if altitude is not None else self.aircraft.cruise_altitude
         wing_model = WingModel(self.aircraft, altitude)
@@ -32,14 +33,13 @@ class ClassIIDrag(Model):
         self.mu = self.atmosphere.dynamic_viscosity()
         self.Reynolds = lambda l: self.operating_point.reynolds(l)
 
-        #### INPUTS #####
         # Fuselage
-        self.l_fus = self.aircraft.fuselage.length  # m
-        self.d_fus = self.aircraft.fuselage.maximum_section_perimeter  # m
+        self.l_fus = self.parametric.fuselages[0].length()
+        self.d_fus = np.max([sec.width for sec in self.parametric.fuselages[0].xsecs])
 
         # Airfoil # double check all of these
         airfoil = ac.parametric.wings[0].xsecs[0].airfoil
-        self.root_cord = wing_model.rootcrt  # m
+        self.root_cord = ac.parametric.wings[0].xsecs[0].chord
         self.MAC = wing_model.MAC
         x_over_c_sample = np.linspace(0, 1, 101)
         self.t_over_c = airfoil.max_thickness(x_over_c_sample)

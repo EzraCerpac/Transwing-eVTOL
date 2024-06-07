@@ -16,7 +16,7 @@ class Aero:
             airplane=self.ac.parametric,
             op_point=asb.OperatingPoint(
                 atmosphere=asb.Atmosphere(altitude=self.ac.data.cruise_altitude),
-                velocity=self.ac.data.v_stall,
+                velocity=self.ac.data.cruise_velocity,
                 alpha=self.alpha,
             ),
             include_wave_drag=include_wave_drag,

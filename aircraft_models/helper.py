@@ -50,7 +50,13 @@ def generate_fuselage(wing_pos: np.ndarray, res: int = 101) -> asb.Fuselage:
         xsecs=[asb.FuselageXSec(
             xyz_c=[x, 0, z],
             radius=r,
-        ) for x, z, r in zip(xx, mid, radius)]
+        ) for x, z, r in zip(xx, mid, radius)],
+        analysis_specific_options={
+            asb.AeroBuildup: dict(
+                E_wave_drag=8,
+                nose_fineness_ratio=1/2,
+            )
+        },
     ).translate(-wing_pos)
 
 if __name__ == '__main__':

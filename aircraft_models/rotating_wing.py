@@ -7,6 +7,7 @@ import aerosandbox.numpy as np
 from aerosandbox.numpy import tan, tand
 
 from aircraft_models.helper import xyz_le_func, xyz_direction_func, generate_fuselage
+from data.concept_parameters.aircraft_components import Fuselage
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
@@ -22,6 +23,16 @@ wing_model = WingModel(ac, altitude=ac.cruise_altitude)
 wing_airfoil = Airfoil("E560")
 # wing_airfoil = Airfoil("E423")
 tail_airfoil = Airfoil("naca0012")
+
+# analysis_specific_options = {
+#     Airplane: {asb.AeroBuildup: dict(
+#         profile_drag_coefficient=0.8,
+#     )},
+#     Fuselage: {asb.AeroBuildup: dict(
+#         E_wave_drag=5,  # Wave drag efficiency factor
+#         nose_fineness_ratio=1,  # Fineness ratio (length / diameter) of the nose section of the fuselage.
+#     )},
+# }
 
 cut = ac.hinge_location
 chord_cut = wing_model.rootcrt - (wing_model.rootcrt - wing_model.tipcrt) * cut
@@ -135,6 +146,7 @@ parametric = Airplane(
         horizontal_tail,
     ],
     fuselages=[fuselage],
+    # analysis_specific_options=analysis_specific_options[Airplane],
 )
 
 
