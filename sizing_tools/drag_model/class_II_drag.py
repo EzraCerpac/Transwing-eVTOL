@@ -35,7 +35,8 @@ class ClassIIDrag(Model):
 
         # Fuselage
         self.l_fus = self.parametric.fuselages[0].length()
-        self.d_fus = np.max([sec.width for sec in self.parametric.fuselages[0].xsecs])
+        self.d_fus = np.max(
+            [sec.width for sec in self.parametric.fuselages[0].xsecs])
 
         # Airfoil # double check all of these
         airfoil = ac.parametric.wings[0].xsecs[0].airfoil
