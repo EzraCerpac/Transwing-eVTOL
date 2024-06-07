@@ -35,13 +35,22 @@ def gen_wing_connection(root_wing: Wing, rotating_wing: Wing) -> Wing:
         ],
     )
 
+total_wing = Wing(
+    name='Main Wing',
+    symmetric=True,
+    xsecs=[
+        root_wing.xsecs[0],
+        root_wing.xsecs[1],
+        rotating_wing.xsecs[0],
+        rotating_wing.xsecs[1],
+    ],
+)
+
 base_airplane = Airplane(
     name=ac.full_name,
     xyz_ref=[1, 0, 0],
     wings=[
-        rotating_wing,
-        root_wing,
-        gen_wing_connection(root_wing, rotating_wing),
+        total_wing,
         horizontal_tail,
     ],
     fuselages=[fuselage],
@@ -113,12 +122,12 @@ def rotate_wing(trans_val: float, airplane: Airplane = base_airplane) -> Wing:
         twist_cut_new = twist_cut_new[:, 0].T
 
     # UPDATE THE WING
-    airplane.wings[0].xsecs[0].xyz_le = p_cut_le_new
-    airplane.wings[0].xsecs[0].chord = chord_cut
-    airplane.wings[0].xsecs[0].twist = np.degrees(twist_cut_new)
-    airplane.wings[0].xsecs[1].xyz_le = p_tip_le_new
-    airplane.wings[0].xsecs[1].chord = wing_model.tipcrt
-    airplane.wings[0].xsecs[1].twist = np.degrees(twist_cut_new)
+    airplane.wings[0].xsecs[2].xyz_le = p_cut_le_new
+    airplane.wings[0].xsecs[2].chord = chord_cut
+    airplane.wings[0].xsecs[2].twist = np.degrees(twist_cut_new)
+    airplane.wings[0].xsecs[3].xyz_le = p_tip_le_new
+    airplane.wings[0].xsecs[3].chord = wing_model.tipcrt
+    airplane.wings[0].xsecs[3].twist = np.degrees(twist_cut_new)
     # UPDATE THE WING CONNECTION
     # airplane.wings[2].xsecs[0] = airplane.wings[1].xsecs[-1]
     # airplane.wings[2].xsecs[1] = airplane.wings[0].xsecs[0]
@@ -146,7 +155,7 @@ trans_wing = AC(
 )
 
 if __name__ == '__main__':
-    airplane = trans_wing.parametric_fn(0)
+    airplane = trans_wing.parametric_fn(0.9)
     airplane.draw_three_view()
     airplane.draw()
 
