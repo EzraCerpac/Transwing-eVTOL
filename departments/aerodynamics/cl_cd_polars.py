@@ -10,13 +10,13 @@ from aircraft_models import trans_wing, rot_wing
 from utility.plotting import show
 
 
-class Aero:
+class CLCDPolar:
 
     def __init__(self,
                  airplane: asb.Airplane,
                  altitude: float = 0,
                  velocity: float = 55,
-                 alpha: float | np.ndarray = np.linspace(-20, 20, 500)):
+                 alpha: float | np.ndarray = np.linspace(-20, 20, 501)):
         self.airplane = airplane
         self.altitude = altitude
         self.velocity = velocity
@@ -40,6 +40,10 @@ class Aero:
     @property
     def glide_ratio(self) -> float:
         return np.max(self.aero_data["CL"] / self.aero_data["CD"])
+
+    @property
+    def CL_0(self) -> float:
+        return self.aero_data["CL"][np.argmin(np.abs(self.alpha))]
 
     @show
     def plot_cl_cd_polars(self) -> tuple[plt.Figure, plt.Axes]:
@@ -72,6 +76,9 @@ class Aero:
 
 if __name__ == '__main__':
     ac = trans_wing.parametric
-    aero = Aero(ac)
-    print(aero.glide_ratio)
+    # ac.wings[1].set_control_surface_deflections({
+    #     'Elevator': -2,
+    # })
+    aero = CLCDPolar(ac)
+    print(aero.CL_0)
     aero.plot_cl_cd_polars()

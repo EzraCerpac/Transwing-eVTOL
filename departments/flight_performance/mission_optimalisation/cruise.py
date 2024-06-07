@@ -2,9 +2,8 @@ import aerosandbox as asb
 import aerosandbox.numpy as np
 
 from data.concept_parameters.aircraft import AC
-from departments.aerodynamics.cl_cd_polars import Aero
+from departments.aerodynamics.cl_cd_polars import CLCDPolar
 from departments.flight_performance.mission_optimalisation.optimalisation import Optimalisation, OptParam
-from model.airplane_models.rotating_wing import rot_wing
 from sizing_tools.formula.aero import C_D_from_CL
 
 ALPHA_i = 0
@@ -13,9 +12,9 @@ ALPHA_i = 0
 class CruiseOpt(Optimalisation):
 
     def __init__(self, aircraft: AC, opt_param: OptParam, *args, **kwargs):
-        aero = Aero(aircraft.parametric,
-                    altitude=aircraft.data.cruise_altitude,
-                    velocity=aircraft.data.cruise_velocity)
+        aero = CLCDPolar(aircraft.parametric,
+                         altitude=aircraft.data.cruise_altitude,
+                         velocity=aircraft.data.cruise_velocity)
         self.c_l_over_alpha_func = lambda alpha: aero.c_l_over_alpha_func(alpha
                                                                           )
         super().__init__(aircraft, opt_param, *args, **kwargs)
@@ -38,15 +37,14 @@ class CruiseOpt(Optimalisation):
             init_guess=self.aircraft.mission_profile.TAKEOFF.power / 3,
             log_transform=True,
             upper_bound=self.aircraft.mission_profile.TAKEOFF.power / 2)
-        self.power_available = self.thrust_level * self.max_power
-        self.thrust = self.power_available * self.aircraft.propulsion_efficiency / self.dyn.speed
+        self.power = self.thrust_level * self.max_power
+        self.thrust = self.power * self.aircraft.propulsion_efficiency / self.dyn.speed
 
         self.dynamics()
         self.dyn.add_gravity_force()
         self.dyn.constrain_derivatives(self.opti, self.time, method='simpson')
 
-        self.total_energy = np.sum(
-            np.trapz(self.power_available) * np.diff(self.time))
+        self.total_energy = np.sum(np.trapz(self.power) * np.diff(self.time))
         # self.opti.subject_to(
         #     self.total_energy <= self.aircraft.mission_profile.energy)
 
@@ -108,6 +106,7 @@ class CruiseOpt(Optimalisation):
         thrust_derivative = self.opti.derivative_of(self.thrust_level,
                                                     self.time, .1)
         acceleration = self.dyn.state_derivatives()['speed']
+        vertical_acceleration = np.diff(self.dyn.w_e) / np.diff(self.time)
         self.opti.subject_to([
             pitchrate < .05,
             pitchrate > -.05,
@@ -119,6 +118,8 @@ class CruiseOpt(Optimalisation):
             # np.diff(self.thrust_level) > -0.01,
             acceleration < .1,
             acceleration > -.1,
+            vertical_acceleration < .1,
+            vertical_acceleration > -.1,
         ])
         self.opti.subject_to([
             # np.diff(self.dyn.speed) < 2,
@@ -151,12 +152,10 @@ class CruiseOpt(Optimalisation):
         cruise_altitude = self.opti.variable(
             init_guess=self.aircraft.cruise_altitude, log_transform=True)
         cruise_speed = self.opti.variable(
-            init_guess=self.aircraft.cruise_velocity,
-            log_transform=True,
-            lower_bound=self.aircraft.cruise_velocity)
+            init_guess=self.aircraft.cruise_velocity, log_transform=True)
         self.opti.subject_to([
             cruise_altitude >= self.aircraft.cruise_altitude,
-            # cruise_speed >= self.aircraft.cruise_velocity,
+            cruise_speed >= self.aircraft.cruise_velocity,
         ])
         self.opti.subject_to([
             self.dyn.altitude[start_cruise_index:end_cruise_index] ==
@@ -171,7 +170,7 @@ class CruiseOpt(Optimalisation):
             self.thrust_level[end_cruise_index],
         ])
         self.opti.subject_to([
-            # self.dyn.altitude <= cruise_altitude,
+            self.dyn.altitude <= cruise_altitude,
             self.dyn.speed <= cruise_speed,
             # self.dyn.op_point.energy_altitude() <= self.dyn.op_point[start_cruise_index].energy_altitude(),
         ])
@@ -213,21 +212,22 @@ class CruiseOpt(Optimalisation):
 
 
 if __name__ == '__main__':
+    from aircraft_models import rot_wing
     ac = rot_wing
     ac.data.v_stall = 20.
-    ac.data.wing.area = 16
     mission_profile_optimization = CruiseOpt(ac,
                                              opt_param=OptParam.ENERGY,
-                                             n_timesteps=90,
-                                             max_iter=1000)
+                                             n_timesteps=60,
+                                             max_iter=3000)
     mission_profile_optimization.run()
 
     # df = mission_profile_optimization.to_dataframe()
     # print(df.to_string())
 
+    mission_profile_optimization.plot_logs_over_time()
     mission_profile_optimization.plot_over_distance()
 
-    aero = Aero(ac.parametric,
-                velocity=ac.data.cruise_velocity,
-                altitude=ac.data.cruise_altitude)
-    aero.plot_cl_cd_polars()
+    # aero = CLCDPolar(ac.parametric,
+         #             velocity=ac.data.cruise_velocity,
+    #             altitude=ac.data.cruise_altitude)
+    # aero.plot_cl_cd_polars()

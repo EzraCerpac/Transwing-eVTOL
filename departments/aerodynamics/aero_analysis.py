@@ -2,21 +2,15 @@ from enum import Enum
 
 import aerosandbox as asb
 import aerosandbox.numpy as np
-
 import aerosandbox.tools.pretty_plots as p
 from matplotlib import pyplot as plt
 
 from data.concept_parameters.aircraft import AC
+from departments.aerodynamics.helper import airplane_with_control_surface_deflection
 from utility.plotting import show
 
 RESOLUTION = 51
 DEFAULT_DEGREE_RANGE = np.linspace(-20, 20, RESOLUTION)
-def airplane_with_control_surface_deflection(ac: AC,
-                                             deflection) -> asb.Airplane:
-    airplane = ac.parametric
-    airplane.wings[-1].set_control_surface_deflections(
-        {'Elevator': deflection})
-    return airplane
 
 
 class OutputVal(Enum):
@@ -162,10 +156,10 @@ class AeroAnalyser:
         )
         fig, ax = plt.subplots(figsize=(10, 8))
         p.contour(
-              xx,
-              yy,
+            xx,
+            yy,
             self.aero[ouput_val.value].reshape(xx.shape),
-              **contour_params[ouput_val]
+            **contour_params[ouput_val]
         )
         if not contour_params[ouput_val]['z_log_scale']:
             plt.clim(*np.array([-1, 1]) *
@@ -178,19 +172,11 @@ class AeroAnalyser:
 
 
 if __name__ == '__main__':
-    from aircraft_models import rot_wing, trans_wing
-
+    from aircraft_models import trans_wing, rot_wing
     ac = trans_wing
     a = AeroAnalyser(ac)
-    # a.plot_cl_cd_cm_over_alpha_delta_e()
-    a.run(AxisVal.ALPHA, AxisVal.TRANS_VAl)
+    a.run(AxisVal.ALPHA, AxisVal.DELTA_E)
 
-    vlm = asb.VortexLatticeMethod(
-        airplane=ac.parametric_fn(0.8),
-        op_point=asb.OperatingPoint(
-            velocity=ac.data.cruise_velocity,  # m/s
-            alpha=0,  # degree
-        )
-    )
-    vlm.run()
-    vlm.draw()
+    ac = rot_wing
+    a = AeroAnalyser(ac)
+    a.run(AxisVal.ALPHA, AxisVal.DELTA_E)

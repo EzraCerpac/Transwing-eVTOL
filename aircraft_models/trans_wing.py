@@ -2,7 +2,7 @@ import aerosandbox.numpy as np
 from aerosandbox import Airplane, Wing, WingXSec
 
 from aircraft_models.rotating_wing import chord_cut, p_tip_le, p_tip_te, p_cut_le, p_cut_te, root_wing, horizontal_tail, \
-    fuselage, wing_airfoil, wing_model, ac
+    fuselage, wing_airfoil, wing_model, ac, propulsor_fn
 from data.concept_parameters.aircraft import AC
 
 r_joint = p_cut_le - 0.8 * (p_cut_te - p_cut_le)  # JOINT LOCATION
@@ -107,6 +107,7 @@ def rotate_wing(trans_val: float, airplane: Airplane = base_airplane) -> Wing:
     airplane.wings[0].xsecs[1].xyz_le = p_tip_le_new
     airplane.wings[0].xsecs[1].chord = wing_model.tipcrt
     airplane.wings[0].xsecs[1].twist = np.degrees(twist_cut_new)
+    airplane.propulsors = propulsor_fn(airplane)
     return airplane.wings[0]
 
 
@@ -128,11 +129,11 @@ trans_wing = AC(
 )
 
 if __name__ == '__main__':
-    # airplane = trans_wing.parametric
+    # airplane = trans_wing.parametric_fn(1)
     # airplane.draw_three_view()
     # airplane.draw()
 
-    for val in np.linspace(0, 1, 31):
+    for val in np.linspace(0, 1, 11):
         para = trans_wing.parametric_fn(val)
         para.draw_three_view()
-    para.draw()
+    # para.draw()

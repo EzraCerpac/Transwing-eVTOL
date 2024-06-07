@@ -1,13 +1,12 @@
-from math import tan, cos, sin
-
 import sys
 import os
 
 import aerosandbox as asb
-from aerosandbox import Airplane, Propulsor, Wing, Fuselage, WingXSec, FuselageXSec, Airfoil, ControlSurface, \
-    numpy as np
+from aerosandbox import Airplane, Wing, WingXSec, Airfoil, ControlSurface
 import aerosandbox.numpy as np
 from aerosandbox.numpy import tan, tand
+
+from aircraft_models.helper import xyz_le_func, xyz_direction_func
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
@@ -143,14 +142,32 @@ parametric = Airplane(
         horizontal_tail,
     ],
     fuselages=[fuselage],
-    propulsors=[
-        Propulsor(
-            xyz_c=np.array(
-                [0, ((i + .5) / ac.motor_prop_count - .5) * ac.wing.span, 0]),
-            radius=ac.propeller_radius,
-        ) for i in range(ac.motor_prop_count)
-    ],
 )
+
+def propulsor_fn(airplane: Airplane = parametric) -> list[asb.Propulsor]:
+    root_offset = 0.2
+    tip_offset = 0.1
+    le_offset = np.array([-.2, 0, 0])
+    xyz_normal = np.array([-1, 0, 0])
+    left_props = [
+        asb.Propulsor(
+            name=f"Left {i+1}",
+            xyz_c=xyz_le_func(x, airplane, offset=le_offset),
+            xyz_normal=xyz_direction_func(x, airplane, xyz_n0=xyz_normal),
+            radius=ac.propeller_radius,
+        ) for i, x in enumerate(np.linspace(root_offset, 1 - tip_offset, ac.motor_prop_count // 2))
+    ]
+    props = left_props.copy()
+    for prop in left_props:
+        right_prop = prop.deepcopy()
+        right_prop.name.replace('Left', 'Right')
+        right_prop.xyz_c[1] *= -1
+        right_prop.xyz_normal[1] *= -1
+        props.append(right_prop)
+    return props
+
+
+parametric.propulsors = propulsor_fn(parametric)
 
 rot_wing = AC(
     name=ac.full_name,
