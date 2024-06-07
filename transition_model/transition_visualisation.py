@@ -5,14 +5,12 @@ import matplotlib.animation as animation
 import matplotlib
 from casadi import *
 import random as random
-
+from aircraft_models.rotating_wing import ac
+from data.concept_parameters.aircraft import AC
 from aircraft_models.trans_wing import generate_airplane
 from departments.aerodynamics.aero import Aero
 
-airplane = generate_airplane(0)
-airplane.draw()
-aero = Aero(airplane)
-aero.c_l_over_alpha_func(alpha=0)
+
 class TransitionAnim:
 
     def __init__(self, alpha: float = 45, beta: float = 35) -> None:
@@ -221,8 +219,52 @@ class TransitionAnim:
         self.animation_ax.set_aspect('equal')
 
     def plot_lift(self):
-        s = 0
-        norm_lift = 1/2 *  np.cos(self.sweep)**2
+        S = 14
+        rho = 1.225
+        airplane = generate_airplane(0)
+        airplane.draw()
+        airplane = AC(
+            name=ac.full_name,
+            data=ac,
+            parametric=airplane,
+        )
+        aero = Aero(airplane)
+
+        cl = []
+        for alpha in self.alpha:
+            cl.append(aero.CL(np.rad2deg(alpha)))
+        print(cl)
+        norm_lift = 1/2 * np.cos(np.array(self.lmbd))**2 * max(np.array(cl)) * S * np.cos(self.gamma) * rho * 32**2 *np.cos(self.alpha)
+
+        plt.plot(np.arange(len(self.alpha))/len(self.alpha), norm_lift)
+        plt.show()
+
+    def conversion_corridor(self):
+        v = np.linspace(32, 200, len(self.alpha))
+        MTOW = 1500*9.81
+        S = 14
+        rho = 1.225
+        airplane = generate_airplane(0)
+        airplane = AC(
+            name=ac.full_name,
+            data=ac,
+            parametric=airplane,
+        )
+        aero = Aero(airplane)
+
+        cl = []
+        for alpha in self.alpha:
+            cl.append(aero.CL(alpha))
+
+        L = 1 / 2 * np.cos(np.array(self.lmbd)) ** 2 * np.array(cl) * S * np.cos(self.gamma) * rho
+
+        stall = MTOW/(L*v**2)
+
+        plt.plot(np.flip(stall), (self.alpha))
+        plt.xlabel('v [m/s]')
+        plt.ylabel('n [deg]')
+        plt.show()
+
     def run_animation(self,
                       q: float = -110,
                       n: int = 150,
@@ -239,8 +281,8 @@ class TransitionAnim:
         ani = animation.FuncAnimation(self.animation_fig,
                                       self.draw_wing,
                                       frames=n,
-                                      interval=500,
-                                      repeat=True,
+                                      interval=20,
+                                      repeat=False,
                                       init_func=self.init_animation)
         #ani.save(filename="./rotation.gif", writer="pillow", dpi=300)
 
@@ -459,3 +501,5 @@ if __name__ == '__main__':
 
     sim = TransitionAnim()
     sim.run_animation()
+    sim.plot_lift()
+    sim.conversion_corridor()
