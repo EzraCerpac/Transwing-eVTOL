@@ -25,6 +25,7 @@ rotating_wing = Wing(
     ],
 ).translate([0, 0, 0])
 
+
 def gen_wing_connection(root_wing: Wing, rotating_wing: Wing) -> Wing:
     return Wing(
         name='Wing Connection',
