@@ -1,30 +1,14 @@
-from enum import Enum
-
 import aerosandbox as asb
 import aerosandbox.numpy as np
 import aerosandbox.tools.pretty_plots as p
 from matplotlib import pyplot as plt
 
 from data.concept_parameters.aircraft import AC
-from departments.aerodynamics.helper import airplane_with_control_surface_deflection
+from departments.aerodynamics.helper import airplane_with_control_surface_deflection, OutputVal, AxisVal
 from utility.plotting import show
 
 RESOLUTION = 51
 DEFAULT_DEGREE_RANGE = np.linspace(-20, 20, RESOLUTION)
-
-
-class OutputVal(Enum):
-    CL = 'CL'
-    CD = 'CD'
-    CM = 'Cm'
-
-
-class AxisVal(Enum):
-    ALPHA = 'alpha'
-    VELOCITY = 'velocity'
-    DELTA_E = 'delta_e'
-    TRANS_VAl = 'trans_val'
-
 
 contour_params = {
     OutputVal.CL: {
