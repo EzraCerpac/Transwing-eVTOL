@@ -38,6 +38,7 @@ def gen_wing_connection(root_wing: Wing, rotating_wing: Wing) -> Wing:
         ],
     )
 
+
 root_and_connection = Wing(
     name='Root and Connection',
     symmetric=True,
@@ -46,7 +47,6 @@ root_and_connection = Wing(
         root_wing.xsecs[1],
         rotating_wing.xsecs[0],
     ],
-
 )
 
 total_wing = Wing(
@@ -60,7 +60,9 @@ total_wing = Wing(
     ],
 )
 
-wings = [total_wing, horizontal_tail] if FLUENT_MODEL else [rotating_wing, root_and_connection, horizontal_tail]
+wings = [total_wing, horizontal_tail] if FLUENT_MODEL else [
+    rotating_wing, root_and_connection, horizontal_tail
+]
 
 base_airplane = Airplane(
     name=ac.full_name,
