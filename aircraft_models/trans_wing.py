@@ -1,72 +1,13 @@
-import aerosandbox as asb
 import aerosandbox.numpy as np
-from aerosandbox import Airplane, Wing, WingXSec, Airfoil, ControlSurface
+from aerosandbox import Airplane, Wing, WingXSec
 
-from data.concept_parameters.aircraft import Aircraft, AC
-from sizing_tools.wing_planform import WingModel
-
-ac = Aircraft.load(version='1.3')
-wing_model = WingModel(ac, altitude=ac.cruise_altitude)
-
-wing_airfoil = Airfoil("E560")
-tail_airfoil = Airfoil("naca0012")
-
-cut = ac.hinge_location
-chord_cut = wing_model.rootcrt - (wing_model.rootcrt -
-                                  wing_model.tipcrt) * cut
-p_tip_le = np.array([
-    ac.wing.span / 2 * np.tan(wing_model.le_sweep),
-    ac.wing.span / 2,
-    ac.wing.span / 2 * np.tand(wing_model.dihedral)
-])
-p_tip_te = np.array([
-    ac.wing.span / 2 * np.tan(wing_model.le_sweep) - wing_model.tipcrt,
-    ac.wing.span / 2,
-    ac.wing.span / 2 * np.tand(wing_model.dihedral)
-])
-p_cut_le0 = np.array([
-    ac.wing.span * cut / 2 * np.tan(wing_model.le_sweep),
-    ac.wing.span * cut / 2,
-    ac.wing.span * cut / 2 * np.tand(wing_model.dihedral)
-])
-p_cut_le = np.array([
-    ac.wing.span * cut / 2 * np.tan(wing_model.le_sweep),
-    ac.wing.span * cut / 2,
-    ac.wing.span * cut / 2 * np.tand(wing_model.dihedral)
-])
-p_cut_te = np.array([
-    ac.wing.span * cut / 2 * np.tan(wing_model.le_sweep) - wing_model.tipcrt,
-    ac.wing.span * cut / 2,
-    ac.wing.span * cut / 2 * np.tand(wing_model.dihedral)
-])
-p_root_le = np.array([0, 0, 0])
+from aircraft_models.rotating_wing import chord_cut, p_tip_le, p_tip_te, p_cut_le, p_cut_te, root_wing, horizontal_tail, \
+    fuselage, wing_airfoil, wing_model, ac
+from data.concept_parameters.aircraft import AC
 
 r_joint = p_cut_le - 0.8 * (p_cut_te - p_cut_le)  # JOINT LOCATION
 twist_cut = 0
 
-root_wing = asb.Wing(
-    name='Root Wing',
-    symmetric=True,
-    xsecs=[
-        asb.WingXSec(  # Root
-            xyz_le=p_root_le,
-            chord=wing_model.rootcrt,
-            twist=0,
-            airfoil=wing_airfoil,
-            control_surfaces=[
-                ControlSurface(
-                    name='Aileron',
-                    symmetric=False,
-                ),
-            ],
-        ),
-        asb.WingXSec(  # cut
-            xyz_le=p_cut_le0,
-            chord=chord_cut,
-            twist=0,
-            airfoil=wing_airfoil),
-    ],
-).translate([0, 0, 0])
 rotating_wing = Wing(
     name='Rotating Main Wing',
     symmetric=True,
@@ -83,43 +24,6 @@ rotating_wing = Wing(
             airfoil=wing_airfoil),  # .rotate(twist_cut)
     ],
 ).translate([0, 0, 0])
-horizontal_tail = asb.Wing(
-    name='Horizontal Stabilizer',
-    symmetric=True,
-    xsecs=[
-        asb.WingXSec(  # root
-            xyz_le=[0, 0, 0],
-            chord=1.896,
-            twist=0,
-            airfoil=tail_airfoil,
-            control_surfaces=[
-                asb.ControlSurface(
-                    name='Elevator',
-                    symmetric=True,
-                ),
-            ],
-        ),
-        asb.WingXSec(  # tip
-            xyz_le=[
-                4.348 / 2 * np.tan(np.radians(36.86)),
-                4.348 / 2 * np.cos(np.radians(37.62)),
-                -4.348 / 2 * np.sin(np.radians(37.62))
-            ],
-            chord=1.896 * 0.4,
-            twist=0,
-            airfoil=tail_airfoil)
-    ],
-).translate([4, 0, 0.06])
-fuselage = asb.Fuselage(
-    name='Fuselage',
-    xsecs=[
-        asb.FuselageXSec(xyz_c=[(0.8 * xi - 0.2) * ac.fuselage.length, 0,
-                                0.1 * xi - 0.03],
-                         radius=.75 *
-                                Airfoil("dae51").local_thickness(x_over_c=xi) /
-                                Airfoil("dae51").max_thickness())
-        for xi in np.cosspace(0, 1, 30)
-    ])
 
 base_airplane = Airplane(
     name=ac.full_name,
@@ -138,7 +42,8 @@ base_airplane = Airplane(
 
 def rotate_wing(trans_val: float, airplane: Airplane = base_airplane) -> Wing:
     """
-    Generate a wing for a given transition value
+    Rotate the wing for a given transition value
+    :param airplane: Airplane object
     :param trans_val: Transition percentage value (between 0 and 1)
     :return: Wing object
     """
@@ -219,7 +124,6 @@ trans_wing = AC(
 )
 
 if __name__ == '__main__':
-    # array = np.linspace(0.5, 1, 10)
     # airplane = trans_wing.parametric
     # airplane.draw_three_view()
     # airplane.draw()
@@ -227,3 +131,4 @@ if __name__ == '__main__':
     for val in np.linspace(0, 1, 31):
         para = trans_wing.parametric_fn(val)
         para.draw_three_view()
+    para.draw()
