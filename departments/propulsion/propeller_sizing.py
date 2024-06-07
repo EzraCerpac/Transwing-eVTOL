@@ -4,16 +4,17 @@ import aerosandbox as asb
 from aircraft_models import rot_wing
 
 # Constants
-B = rot_wing.data.propeller_blade_number
-R = 1.0
-c = 0.1
+B = 6
+#B = rot_wing.data.propeller_blade_number
+R = 0.9
+c = 0.147
 theta_root = np.deg2rad(10)  # radians
 theta_tip = np.deg2rad(5)  # radians
 N = 100  # Number of elements
 
 atmosphere = asb.Atmosphere(altitude=rot_wing.data.cruise_altitude)
 rho = atmosphere.density()
-omega = 200  # Rotational speed (rad/s)
+omega = 148.28  # Rotational speed (rad/s)
 C_L = 1.2
 C_D = rot_wing.data.estimated_CD0
 
@@ -47,7 +48,7 @@ Q = B * np.sum(dQ * dr)
 # Power required
 P = Q * omega
 
-rot_wing.data.propeller_blade_number = 6
+#rot_wing.data.propeller_blade_number = 6
 
 # Print results
 print(f"Total Thrust: {T:.2f} N")
