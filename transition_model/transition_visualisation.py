@@ -5,11 +5,14 @@ import matplotlib.animation as animation
 import matplotlib
 from casadi import *
 import random as random
-from matplotlib import cm
-from
 
-aero = Aero()
-aero.c_l_over_alpha_func(alpha=)
+from aircraft_models.trans_wing import generate_airplane
+from departments.aerodynamics.aero import Aero
+
+airplane = generate_airplane(0)
+airplane.draw()
+aero = Aero(airplane)
+aero.c_l_over_alpha_func(alpha=0)
 class TransitionAnim:
 
     def __init__(self, alpha: float = 45, beta: float = 35) -> None:
