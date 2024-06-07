@@ -144,6 +144,7 @@ parametric = Airplane(
     fuselages=[fuselage],
 )
 
+
 def propulsor_fn(airplane: Airplane = parametric) -> list[asb.Propulsor]:
     root_offset = 0.2
     tip_offset = 0.1
@@ -155,7 +156,8 @@ def propulsor_fn(airplane: Airplane = parametric) -> list[asb.Propulsor]:
             xyz_c=xyz_le_func(x, airplane, offset=le_offset),
             xyz_normal=xyz_direction_func(x, airplane, xyz_n0=xyz_normal),
             radius=ac.propeller_radius,
-        ) for i, x in enumerate(np.linspace(root_offset, 1 - tip_offset, ac.motor_prop_count // 2))
+        ) for i, x in enumerate(
+            np.linspace(root_offset, 1 - tip_offset, ac.motor_prop_count // 2))
     ]
     props = left_props.copy()
     for prop in left_props:
