@@ -3,7 +3,7 @@ import aerosandbox.numpy as np
 
 from data.concept_parameters.aircraft import AC
 from departments.flight_performance.mission_optimalisation.optimalisation import Optimalisation, OptParam
-from model.airplane_models.rotating_wing import rot_wing
+from aircraft_models import rot_wing
 
 ALPHA_i = 0
 
@@ -39,10 +39,11 @@ class TransitionOpt(Optimalisation):
         self.end_time = self.opti.variable(init_guess=20, log_transform=True)
         self.time = np.linspace(0, self.end_time, self.n_timesteps)
         self.dyn = asb.DynamicsRigidBody2DBody(
-            mass_props=asb.MassProperties(mass=self.aircraft.total_mass,
-                                          Ixx=1000,
-                                          Iyy=500,
-                                          Izz=500),
+            mass_props=asb.mass_properties_from_radius_of_gyration(
+                self.aircraft.total_mass,
+                radius_of_gyration_x=1,
+                radius_of_gyration_y=5,
+                radius_of_gyration_z=1),
             x_e=self.opti.variable(init_guess=np.linspace(
                 0, 100, self.n_timesteps),
                                    lower_bound=0,
@@ -66,8 +67,6 @@ class TransitionOpt(Optimalisation):
                                  lower_bound=-np.radians(5),
                                  upper_bound=np.radians(5)),
         )
-        # self.gamma = np.arctan(self.dyn.w_b / self.dyn.u_b)
-        # self.alpha = self.dyn.theta - self.gamma
         self.thrust_level = self.opti.variable(init_guess=0.5,
                                                n_vars=self.n_timesteps,
                                                log_transform=True,
@@ -83,19 +82,21 @@ class TransitionOpt(Optimalisation):
 
         self.opti.subject_to([
             self.dyn.x_e[0] == 0,
-            # np.diff(self.dyn.x_e) > 0,
-            self.dyn.x_e[-1] == 100,
-            # self.dyn.altitude[0] == 100,
-            # self.dyn.altitude >= 90,
-            # self.dyn.altitude[-1] == 100,
-            self.dyn.altitude == 100,
-            self.dyn.u_b[0] == self.aircraft.v_stall,
+            np.diff(self.dyn.x_e) > 0,
+            # self.dyn.x_e[-1] == 100,
+            # self.end_time == 100,
+            self.dyn.altitude[0] == 100,
+            self.dyn.altitude >= 0,
+            self.dyn.altitude[-1] == 0,
+            # self.dyn.altitude == 100,
+            self.dyn.u_b[0] == self.aircraft.cruise_velocity,
             self.dyn.u_b >= self.aircraft.v_stall,
             # self.dyn.w_b == 0,
             # self.dyn.speed >= self.dyn.speed[-1],
             # self.dyn.speed[-1] <= self.aircraft.v_stall,
             self.dyn.q[0] == 0,
-            # self.dyn.theta[0] == 0,
+            # self.dyn.theta[0] - self.dyn.alpha[0] == 0,
+            self.dyn.theta[0] == 0,
             # self.dyn.alpha[0] == -9,
             self.thrust_level[0] == 0.5,
             self.thrust_level < 1,
@@ -143,11 +144,18 @@ class TransitionOpt(Optimalisation):
             axes='wind',
         )
 
-        self.dyn.add_force(
-            Fx=self.thrust * np.cos(ALPHA_i),
-            Fz=self.thrust * np.sin(ALPHA_i),
-            axes='body',
-        )
+        thrust_per_engine = self.thrust / len(self.parametric.propulsors)
+        for propulsor in self.parametric.propulsors:
+            self.dyn.add_force(
+                Fx=thrust_per_engine * propulsor.xyz_normal[0],
+                Fz=thrust_per_engine * propulsor.xyz_normal[2],
+                axes='body',
+            )
+            self.dyn.add_moment(
+                My=thrust_per_engine *
+                np.cross(propulsor.xyz_normal, propulsor.xyz_c)[1],
+                axes='body',
+            )
 
 
 if __name__ == '__main__':
@@ -155,17 +163,19 @@ if __name__ == '__main__':
 
     ac = rot_wing
     ac.data.v_stall = 20.
-    ac.data.wing.area = 16
-    mission_profile_optimization = TransitionOpt(ac,
-                                                 opt_param=OptParam.ENERGY,
-                                                 n_timesteps=20,
-                                                 max_iter=30)
+    mission_profile_optimization = TransitionOpt(
+        ac, opt_param=OptParam.MAX_DISTANCE, n_timesteps=20, max_iter=1000)
     mission_profile_optimization.run()
 
-    df = mission_profile_optimization.to_dataframe()
+    # df = mission_profile_optimization.to_dataframe()
     # print(df.to_string())
-    mission_profile_optimization.plot_over_distance()
+
     mission_profile_optimization.plot_logs_over_distance()
+    mission_profile_optimization.plot_logs_over_time()
+    mission_profile_optimization.plot_over_distance()
+    # mission_profile_optimization.plot_over_time()
+    mission_profile_optimization.dyn.draw(vehicle_model=ac.parametric,
+                                          scale_vehicle_model=5)
 
     # aero = Aero(ac.parametric,
     #             velocity=ac.data.cruise_velocity,
