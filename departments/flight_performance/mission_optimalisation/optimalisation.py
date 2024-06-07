@@ -34,6 +34,7 @@ class Optimalisation(Model, ABC):
                  n_logs=50):
         super().__init__(aircraft.data)
         self.parametric = aircraft.parametric
+        self.parametric_fn = aircraft.parametric_fn
 
         self.opti = asb.Opti()
         self.opt_param = opt_param
