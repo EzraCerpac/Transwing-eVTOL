@@ -5,10 +5,10 @@ from data.concept_parameters.aircraft import AC
 
 
 class Aero:
-    def __init__(self, ac: AC):
+    def __init__(self, ac: AC, alpha: np.ndarray = np.linspace(-20, 20, 500)):
         self.ac = ac
 
-        self.alpha = np.linspace(-20, 20, 500)
+        self.alpha = alpha
         self.aero_data: dict = self.get_aero_data()
 
     def get_aero_data(self) -> dict:
@@ -20,6 +20,9 @@ class Aero:
                 alpha=self.alpha,
             )
         ).run()
+
+    def CL(self, alpha: float) -> float:
+        return np.interp(alpha, self.alpha, self.aero_data["CL"])
 
     @property
     def CL_max(self) -> float:
