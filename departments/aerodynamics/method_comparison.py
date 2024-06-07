@@ -1,6 +1,5 @@
 from typing import Callable
 
-import aerosandbox as asb
 import aerosandbox.numpy as np
 from matplotlib import pyplot as plt
 
@@ -8,6 +7,7 @@ from aircraft_models import rot_wing, trans_wing
 from data.concept_parameters.aircraft import AC
 from departments.aerodynamics.aero import Aero
 from departments.aerodynamics.helper import OutputVal, label, AxisVal
+from departments.aerodynamics.vlm import vlm
 from sizing_tools.drag_model.class_II_drag import ClassIIDrag
 from utility.plotting import show
 
@@ -53,18 +53,6 @@ class AeroMethodComparison:
             axs[i].set_ylabel(label[ov])
         axs[0].legend(loc='upper left')
         return fig, axs
-
-
-def vlm(ac: AC, alpha: np.ndarray) -> dict[str, any]:
-    data = [asb.VortexLatticeMethod(
-        airplane=ac.parametric,
-        op_point=asb.OperatingPoint(
-            velocity=ac.data.cruise_velocity,
-            alpha=a,
-        )
-    ).run() for a in alpha]
-    return {output_val.value: np.array([a[output_val.value] for a in data])
-            for output_val in OutputVal}
 
 
 if __name__ == '__main__':

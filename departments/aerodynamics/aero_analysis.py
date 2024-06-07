@@ -159,7 +159,7 @@ if __name__ == '__main__':
     from aircraft_models import trans_wing, rot_wing
     ac = trans_wing
     a = AeroAnalyser(ac)
-    a.run(AxisVal.ALPHA, AxisVal.DELTA_E)
+    a.run(AxisVal.ALPHA, AxisVal.TRANS_VAl)
     #
     # ac = rot_wing
     # a = AeroAnalyser(ac)

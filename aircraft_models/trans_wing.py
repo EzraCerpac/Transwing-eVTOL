@@ -25,12 +25,23 @@ rotating_wing = Wing(
     ],
 ).translate([0, 0, 0])
 
+def gen_wing_connection(root_wing: Wing, rotating_wing: Wing) -> Wing:
+    return Wing(
+        name='Wing Connection',
+        symmetric=True,
+        xsecs=[
+            root_wing.xsecs[-1],
+            rotating_wing.xsecs[0],
+        ],
+    )
+
 base_airplane = Airplane(
     name=ac.full_name,
     xyz_ref=[1, 0, 0],
     wings=[
         rotating_wing,
         root_wing,
+        gen_wing_connection(root_wing, rotating_wing),
         horizontal_tail,
     ],
     fuselages=[fuselage],
@@ -101,12 +112,17 @@ def rotate_wing(trans_val: float, airplane: Airplane = base_airplane) -> Wing:
     else:
         twist_cut_new = twist_cut_new[:, 0].T
 
+    # UPDATE THE WING
     airplane.wings[0].xsecs[0].xyz_le = p_cut_le_new
     airplane.wings[0].xsecs[0].chord = chord_cut
     airplane.wings[0].xsecs[0].twist = np.degrees(twist_cut_new)
     airplane.wings[0].xsecs[1].xyz_le = p_tip_le_new
     airplane.wings[0].xsecs[1].chord = wing_model.tipcrt
     airplane.wings[0].xsecs[1].twist = np.degrees(twist_cut_new)
+    # UPDATE THE WING CONNECTION
+    # airplane.wings[2].xsecs[0] = airplane.wings[1].xsecs[-1]
+    # airplane.wings[2].xsecs[1] = airplane.wings[0].xsecs[0]
+    # UPDATE THE PROPULSION SYSTEM
     airplane.propulsors = propulsor_fn(airplane)
     return airplane.wings[0]
 
@@ -117,6 +133,7 @@ def generate_airplane(trans_val: float) -> Airplane:
     :param trans_val: Transition percentage value (between 0 and 1)
     :return: Airplane object
     """
+    trans_val = trans_val or 1e-8
     airplane = base_airplane.copy()
     rotate_wing(trans_val, airplane)
     return airplane
@@ -129,7 +146,7 @@ trans_wing = AC(
 )
 
 if __name__ == '__main__':
-    airplane = trans_wing.parametric_fn(1)
+    airplane = trans_wing.parametric_fn(0)
     airplane.draw_three_view()
     airplane.draw()
 
