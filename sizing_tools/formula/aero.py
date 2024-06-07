@@ -1,4 +1,4 @@
-from math import sqrt, pi
+from aerosandbox.numpy import sqrt, pi
 
 from scipy.optimize import minimize
 
@@ -87,9 +87,9 @@ def C_L_cruise_opt(C_D0: float, aspect_ratio: float, e: float) -> float:
 
 
 # Function to calculate the power required for propulsion
-def power_required(drag: float,
-                   velocity: float,
-                   propulsion_efficiency: float = 1) -> float:
+def cruise_power_required(drag: float,
+                          velocity: float,
+                          propulsion_efficiency: float = 1) -> float:
     """
     Calculate the power required for propulsion.
 
@@ -115,6 +115,21 @@ def hover_power(rotor_disk_thrust: float, rotor_disk_area: float,
     """
     return rotor_disk_thrust**(3 / 2) / (figure_of_merit *
                                          sqrt(2 * rho * rotor_disk_area))
+
+
+def hover_thrust_from_power(hover_power: float, rotor_disk_area: float,
+                            figure_of_merit: float, rho: float) -> float:
+    """
+        Calculate the rotor disk thrust from the power required for hovering.
+
+        :param hover_power: The power required for hovering in W
+        :param rotor_disk_area: The rotor disk area in m^2
+        :param figure_of_merit: The figure of merit
+        :param rho: The air density in kg/m^3
+        :return: The rotor disk thrust in N
+        """
+    return (hover_power * figure_of_merit *
+            sqrt(2 * rho * rotor_disk_area))**(2 / 3)
 
 
 def hover_velocity(hover_power: float, rotor_disk_thrust: float):

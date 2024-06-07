@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 
+import utility.misc
 from utility.plotting import plot_functions
 
 
@@ -26,7 +27,7 @@ class TestPlotFunctions(unittest.TestCase):
         mock_frame.f_back.f_back.f_globals = {"__file__": "/path/to/caller.py"}
         mock_currentframe.return_value = mock_frame
 
-        result = plot_functions._get_caller_file_name()
+        result = utility.misc.get_caller_file_name()
 
         self.assertEqual(result, "to/caller")
 

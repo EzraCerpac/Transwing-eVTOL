@@ -24,9 +24,8 @@ vtol_data = df_from_markdown("""
 
 data_from_philip = pd.DataFrame({
     "Name": [
-        "CityAirbus NG", "Prosperity (V1500M)", "Joby S4",
-        "Jaunt AM Journey", "Archer AM",
-        "Volocopter VoloCity", "Lilium Jet", "Ehang 216-S"
+        "CityAirbus NG", "Prosperity (V1500M)", "Joby S4", "Jaunt AM Journey",
+        "Archer AM", "Volocopter VoloCity", "Lilium Jet", "Ehang 216-S"
     ],
     "Range (km)": [80, 250, 161, 129, 161, 45, 250, 35],
     "Mass (kg)": [2200, 1500, 2404, 2722, 3175, 900, 3175, 600],

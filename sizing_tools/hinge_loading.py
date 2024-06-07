@@ -56,7 +56,7 @@ class HingeLoadingModel(Model):
         l__ = (np.logical_and(l_2 > eta, eta >= l_1))
         eta2 = eta * l__
 
-        if self.aircraft.motor_wing_count == 4:
+        if self.aircraft.motor_wing_count == 4 or self.aircraft.motor_wing_count == 6:  # 6 should be checked
             V1 = -2 * mass_engine_and_prop * g * (l_1 > eta)
             M1 = -((l_1 - eta) +
                    (l_2 - eta)) * mass_engine_and_prop * g * (l_1 > eta)

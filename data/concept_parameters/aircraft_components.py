@@ -174,7 +174,6 @@ class Wing(BaseModel):
         return base_dict
 
 
-
 class Tail(BaseModel):
     S_th: Optional[float] = Field(0.5, gt=0)  # m^2
     AR_th: Optional[float] = Field(4.0, gt=0)

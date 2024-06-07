@@ -39,6 +39,27 @@ concept_C2_1 = Aircraft(id='C2.1',
                         s_fus=12.5,
                         TA=400)
 
+concept_C2_1_6engine = Aircraft(id='C2.1',
+                                name="Rotating Wing with 3 engines per wing",
+                                motor_prop_count=6,
+                                motor_wing_count=6,
+                                propeller_radius=0.75,
+                                propeller_blade_number=4,
+                                hinge_location=0.15,
+                                wing=Wing(
+                                    area=20,
+                                    span=14,
+                                ),
+                                fuselage=Fuselage(
+                                    length=8,
+                                    maximum_section_perimeter=2.5,
+                                ),
+                                estimated_CD0=0.03,
+                                s_fus=12.5,
+                                TA=400)
+
+rotating_wings = [concept_C2_1, concept_C2_1_6engine]
+
 concept_C2_6 = Aircraft(id='C2.6',
                         name="Folding Wing",
                         motor_prop_count=4,
@@ -92,3 +113,23 @@ example_cg_dict = {
     'motors': 0.4,
     'propellers': 0.4,
 }
+
+rot_wing_starting_params = Aircraft(
+    id='V1.3',
+    name="Using updated Class II weight and drag estimates and energy estimate from cruise opt",
+    motor_prop_count=6,
+    motor_wing_count=6,
+    propeller_radius=1.85 / 2,
+    propeller_blade_number=6,
+    hinge_location=0.2,
+    wing=Wing(
+        area=14,
+        span=12,
+    ),
+    fuselage=Fuselage(
+        length=8,
+        maximum_section_perimeter=2.5,
+    ),
+    estimated_CD0=0.028,
+    s_fus=12.5,
+    TA=400)
