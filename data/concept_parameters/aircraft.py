@@ -1,4 +1,4 @@
-from typing import Optional, NamedTuple, Any
+from typing import Optional, NamedTuple, Any, Callable
 
 from aerosandbox import Airplane
 from pydantic import BaseModel, field_validator, Field
@@ -185,7 +185,14 @@ class Aircraft(BaseModel):
         return base_dict
 
 
-class AC(NamedTuple):
-    name: str
-    data: Aircraft
-    parametric: Airplane
+class AC:
+
+    def __init__(self,
+                 name: str,
+                 data: Aircraft,
+                 parametric: Airplane = None,
+                 parametric_fn: Callable[[float], Airplane] = None):
+        self.name = name
+        self.data = data
+        self.parametric = parametric or parametric_fn(0)
+        self.parametric_fn = parametric_fn
