@@ -113,3 +113,24 @@ example_cg_dict = {
     'motors': 0.4,
     'propellers': 0.4,
 }
+
+rot_wing_starting_params = Aircraft(
+    id='V1.3',
+    name=
+    "Using updated Class II weight and drag estimates and energy estimate from cruise opt",
+    motor_prop_count=6,
+    motor_wing_count=6,
+    propeller_radius=1.85 / 2,
+    propeller_blade_number=6,
+    hinge_location=0.2,
+    wing=Wing(
+        area=14,
+        span=12,
+    ),
+    fuselage=Fuselage(
+        length=8,
+        maximum_section_perimeter=2.5,
+    ),
+    estimated_CD0=0.028,
+    s_fus=12.5,
+    TA=400)

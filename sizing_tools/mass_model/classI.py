@@ -70,7 +70,7 @@ class ClassIModel(Model):
     def ver_climb(self, ws):
         T_over_W = self.aircraft.takeoff_load_factor * (
             1 + 1 / ws * self.rho * self.aircraft.mission_profile.phases[
-                Phase.CLIMB].vertical_speed**2 *
+                Phase.TAKEOFF].vertical_speed**2 *
             (self.aircraft.s_fus + self.aircraft.wing.area) /
             self.aircraft.wing.area)
         W_over_p = 1 / (T_over_W * (1 /
@@ -93,10 +93,13 @@ class ClassIModel(Model):
         return W_P
 
     def output(self) -> tuple[float, float]:
-        ws_output = self.w_s_stall_speed()
-        wp_output = self.ver_climb(ws_output)
-        self.aircraft.wing.area = g * self.aircraft.total_mass / ws_output
-        departments.flight_performance.power_calculations.power = g * self.aircraft.total_mass / wp_output
+        # wp_vertical_climb = self.ver_climb(250)
+        # ws_range = np.linspace(1, 1000, 1000001)
+        # ws = ws_range[np.argmin(np.abs(self._wp(ws_range) - wp_vertical_climb))]
+        ws = 900  # arbitrary value to get surface area = 16 m2
+        wp_vertical_climb = self.ver_climb(ws)
+        # self.aircraft.wing.area = g * self.aircraft.total_mass / ws
+        departments.flight_performance.power_calculations.power = g * self.aircraft.total_mass / wp_vertical_climb
         return self.aircraft.wing.area, departments.flight_performance.power_calculations.power
 
     # @show
@@ -105,7 +108,7 @@ class ClassIModel(Model):
         fig, ax = plt.subplots(figsize=(7, 7))
         xx = np.arange(1, max_x)
 
-        plt.axvline(x=self.w_s_stall_speed(), label='Stall Speed', color='red')
+        # plt.axvline(x=self.w_s_stall_speed(), label='Stall Speed', color='red')
         plt.plot(
             xx,
             self._wp(xx),
@@ -129,4 +132,4 @@ if __name__ == '__main__':
     for concept in [concept_C1_5, concept_C2_1, concept_C2_6, concept_C2_10]:
         concept.total_mass = 2150
         wing_loading = ClassIModel(concept)
-        wing_loading.plot_wp_ws(concept)
+        wing_loading.plot_wp_ws()

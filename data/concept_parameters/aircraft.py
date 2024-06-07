@@ -1,16 +1,19 @@
-from typing import Optional, NamedTuple, Any
+from typing import Optional, NamedTuple, Any, Callable
 
 from aerosandbox import Airplane
 from pydantic import BaseModel, field_validator, Field
 
 from data.concept_parameters.aircraft_components import Propeller, Tail, Fuselage, Wing, MassObject
-from data.concept_parameters.mission_profile import MissionProfile, MissionPhase, Phase
+from data.concept_parameters.mission_profile import MissionProfile, MissionPhase, Phase, default_mission_profile, \
+    updated_mission_profile_from_cruise_opt
 from utility.log import logger
 from utility.unit_conversion import convert_float
 
+MOST_RECENT_VERSION = 'V1.1'
+
 
 class Aircraft(BaseModel):
-    id: Optional[str] = Field('Aircraft', min_length=1)
+    id: Optional[str] = Field('Unversioned', min_length=1)
     name: Optional[str] = Field('Unnamed', min_length=1)
     full_name: Optional[str] = None
 
@@ -98,59 +101,7 @@ class Aircraft(BaseModel):
         ]
 
     def initialize_default_mission_profile(self):
-        self.mission_profile = MissionProfile(
-            name='default',
-            phases={
-                Phase.TAKEOFF:
-                    MissionPhase(phase=Phase.TAKEOFF,
-                                 duration=0.17 * 60,
-                                 horizontal_speed=0,
-                                 distance=0,
-                                 vertical_speed=0 * 60,
-                                 ending_altitude=1.5),
-                Phase.HOVER_CLIMB:
-                    MissionPhase(
-                        phase=Phase.HOVER_CLIMB,
-                        duration=self.cruise_altitude / self.rate_of_climb,
-                        horizontal_speed=self.cruise_velocity,  # gets adjusted in model
-                        distance=self.cruise_velocity * self.cruise_altitude /
-                                 self.rate_of_climb,  # gets adjusted in model
-                        vertical_speed=self.rate_of_climb,
-                        ending_altitude=self.cruise_altitude),
-                Phase.CLIMB:  # set to 0
-                    MissionPhase(
-                        phase=Phase.CLIMB,
-                        duration=0,
-                        horizontal_speed=self.
-                        cruise_velocity,  # gets adjusted in model
-                        distance=0,
-                        vertical_speed=0,
-                        ending_altitude=self.cruise_altitude),
-                Phase.CRUISE:
-                    MissionPhase(phase=Phase.CRUISE,
-                                 duration=self.range / self.cruise_velocity,
-                                 horizontal_speed=self.cruise_velocity,
-                                 distance=self.range,
-                                 vertical_speed=0,
-                                 ending_altitude=self.cruise_altitude),
-                Phase.DESCENT:
-                    MissionPhase(
-                        phase=Phase.DESCENT,
-                        duration=self.cruise_altitude / self.rate_of_climb,
-                        horizontal_speed=self.
-                        cruise_velocity,  # gets adjusted in model
-                        distance=self.cruise_velocity * self.cruise_altitude /
-                                 self.rate_of_climb,  # gets adjusted in model
-                        vertical_speed=-self.rate_of_climb,  # weird assumption
-                        ending_altitude=1.5),
-                Phase.LANDING:
-                    MissionPhase(phase=Phase.LANDING,
-                                 duration=1 * 60,
-                                 horizontal_speed=0,
-                                 distance=0,
-                                 vertical_speed=0 * 60,
-                                 ending_altitude=0),
-            })
+        self.mission_profile = updated_mission_profile_from_cruise_opt(self)
 
     @classmethod
     @field_validator('id')
@@ -174,24 +125,28 @@ class Aircraft(BaseModel):
 
     def save(self, verbose: bool = True) -> None:
         from utility.data_management.save_and_load_object import save
-        save(self,
-             name=self.full_name.replace(' ', '_').replace('.', '_'),
-             verbose=verbose)
+        save(self, name=self.id.replace('.', '_'), verbose=verbose)
 
     @classmethod
     def load(cls,
-             id: str = 'C2.1',
-             directory: str = 'end_of_trade-off_concepts') -> 'Aircraft':
+             version: Optional[str] = None,
+             id: Optional[str] = None,
+             directory: Optional[str] = None) -> 'Aircraft':
         from utility.data_management.save_and_load_object import load
-        full_name = {
-            'C1.5': 'Concept_C1_5_(Winged_Rotorcraft)',
-            'C2.1': 'Concept_C2_1_(Rotating_Wing)',
-            'C2.6': 'Concept_C2_6_(Folding_Wing)',
-            'C2.10': 'Concept_C2_10_(Variable_Skew_QuadPlane)',
-        }
-        ac = load(f'{directory}/{full_name[id]}')
+        if id:
+            directory = directory or 'end_of_trade-off_concepts'
+            full_name = {
+                'C1.5': 'Concept_C1_5_(Winged_Rotorcraft)',
+                'C2.1': 'Concept_C2_1_(Rotating_Wing)',
+                'C2.6': 'Concept_C2_6_(Folding_Wing)',
+                'C2.10': 'Concept_C2_10_(Variable_Skew_QuadPlane)',
+            }
+            ac = load(f'{directory}/{full_name[id]}')
+        else:
+            version = version or MOST_RECENT_VERSION
+            directory = directory or 'aircraft'
+            ac = load(f'{directory}/V{version.strip("V").replace(".", "_")}')
         assert isinstance(ac, Aircraft)
-        assert ac.id == id
         return ac
 
     def __repr__(self) -> str:
@@ -230,7 +185,14 @@ class Aircraft(BaseModel):
         return base_dict
 
 
-class AC(NamedTuple):
-    name: str
-    data: Aircraft
-    parametric: Airplane
+class AC:
+
+    def __init__(self,
+                 name: str,
+                 data: Aircraft,
+                 parametric: Airplane = None,
+                 parametric_fn: Callable[[float], Airplane] = None):
+        self.name = name
+        self.data = data
+        self.parametric = parametric or parametric_fn(0)
+        self.parametric_fn = parametric_fn

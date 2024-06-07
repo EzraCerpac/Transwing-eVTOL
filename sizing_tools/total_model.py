@@ -1,6 +1,6 @@
 import departments.flight_performance.power_calculations
 from data.concept_parameters.aircraft import Aircraft
-from data.concept_parameters.concepts import all_concepts, rotating_wings
+from data.concept_parameters.concepts import rot_wing_starting_params
 from sizing_tools.hinge_loading import HingeLoadingModel
 from sizing_tools.mass_model.classI import ClassIModel
 from sizing_tools.mass_model.iteration import Iteration
@@ -72,17 +72,23 @@ class TotalModel(Model):
             print(f"{parameter}: {self.aircraft.dict()[parameter]}")
 
 
-def main():
-    for concept in rotating_wings:
-        model = TotalModel(concept)
-        model.run()
-        model.print_results(
-            mass_breakdown=True,
-            energy_breakdown=True,
-            # hinge_loading=True,
-            class1_diagram=True)
-        # model.print_all_parameters()
-
-
 if __name__ == '__main__':
-    main()
+    aircraft = rot_wing_starting_params
+    model = TotalModel(aircraft)
+    model.run()
+    model.print_results(
+        mass_breakdown=True,
+        energy_breakdown=True,
+        hinge_loading=True,
+        class1_diagram=True,
+    )
+    # for concept in rotating_wings:
+    #     model = TotalModel(concept)
+    #     model.run()
+    #     model.print_results(
+    #         mass_breakdown=True,
+    #         energy_breakdown=True,
+    #         # hinge_loading=True,
+    #         class1_diagram=False,
+    #     )
+    # model.print_all_parameters()

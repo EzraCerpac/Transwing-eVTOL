@@ -1,36 +1,24 @@
-from enum import Enum
-
 import aerosandbox as asb
 import aerosandbox.numpy as np
-import pandas as pd
 
 from data.concept_parameters.aircraft import AC
-from departments.aerodynamics.cl_cd_polars import Aero
-from model.airplane_models.rotating_wing import rot_wing
+from departments.aerodynamics.cl_cd_polars import CLCDPolar
+from departments.flight_performance.mission_optimalisation.optimalisation import Optimalisation, OptParam
 from sizing_tools.formula.aero import C_D_from_CL
-from sizing_tools.model import Model
 
 ALPHA_i = 0
 
 
-class OptParam(Enum):
-    TIME = 'time'
-    ENERGY = 'energy'
-    MAX_POWER = 'maximum power'
-    TRADE_OFF = 'time * energy'
+class CruiseOpt(Optimalisation):
 
-
-# E423
-class MissionProfileOptimization(Model):
-
-    def __init__(self, aircraft: AC, opt_param: OptParam, n_timesteps=100):
-        super().__init__(aircraft.data)
-        self.parametric = aircraft.parametric
-        aero = Aero(self.parametric,
-                    altitude=self.aircraft.cruise_altitude,
-                    velocity=self.aircraft.cruise_velocity)
+    def __init__(self, aircraft: AC, opt_param: OptParam, *args, **kwargs):
+        aero = CLCDPolar(aircraft.parametric,
+                         altitude=aircraft.data.cruise_altitude,
+                         velocity=aircraft.data.cruise_velocity)
         self.c_l_over_alpha_func = lambda alpha: aero.c_l_over_alpha_func(alpha
                                                                           )
+        super().__init__(aircraft, opt_param, *args, **kwargs)
+        self.parametric = aircraft.parametric
         # self.aero = asb.AeroBuildup(
         #     airplane=self.parametric,
         #     op_point=asb.OperatingPoint(
@@ -40,43 +28,27 @@ class MissionProfileOptimization(Model):
         #     ),
         # ).run()
 
-        self.opti = asb.Opti()
-        self.opt_param = opt_param
-        self.n_timesteps = n_timesteps
-
-        self.init(self.horizontal_constraints, self.horizontal_dynamics)
-        # self.init(self.vertical_constraints, self.init_vertical_dynamics)
-
-    @property
-    def necessary_parameters(self):
-        return [
-            'cruise_altitude',
-            'range',
-            # 'tbd'
-        ]
-
-    def init(self, constraint_func: callable, dynamic_func: callable):
+    def init(self):
         self.end_time = self.opti.variable(init_guess=2000, log_transform=True)
 
-        constraint_func()
+        self.constraints()
 
         self.max_power = self.opti.variable(
             init_guess=self.aircraft.mission_profile.TAKEOFF.power / 3,
             log_transform=True,
             upper_bound=self.aircraft.mission_profile.TAKEOFF.power / 2)
-        self.power_available = self.thrust_level * self.max_power
-        self.thrust = self.power_available * self.aircraft.propulsion_efficiency / self.dyn.speed
+        self.power = self.thrust_level * self.max_power
+        self.thrust = self.power * self.aircraft.propulsion_efficiency / self.dyn.speed
 
-        dynamic_func()
+        self.dynamics()
         self.dyn.add_gravity_force()
         self.dyn.constrain_derivatives(self.opti, self.time, method='simpson')
 
-        self.total_energy = np.sum(
-            np.trapz(self.power_available) * np.diff(self.time))
+        self.total_energy = np.sum(np.trapz(self.power) * np.diff(self.time))
         # self.opti.subject_to(
         #     self.total_energy <= self.aircraft.mission_profile.energy)
 
-    def horizontal_constraints(self):
+    def constraints(self):
         self.dyn = asb.DynamicsPointMass2DSpeedGamma(
             mass_props=asb.MassProperties(mass=self.aircraft.total_mass,
                                           Ixx=1000,
@@ -134,6 +106,7 @@ class MissionProfileOptimization(Model):
         thrust_derivative = self.opti.derivative_of(self.thrust_level,
                                                     self.time, .1)
         acceleration = self.dyn.state_derivatives()['speed']
+        vertical_acceleration = np.diff(self.dyn.w_e) / np.diff(self.time)
         self.opti.subject_to([
             pitchrate < .05,
             pitchrate > -.05,
@@ -145,6 +118,8 @@ class MissionProfileOptimization(Model):
             # np.diff(self.thrust_level) > -0.01,
             acceleration < .1,
             acceleration > -.1,
+            vertical_acceleration < .1,
+            vertical_acceleration > -.1,
         ])
         self.opti.subject_to([
             # np.diff(self.dyn.speed) < 2,
@@ -177,12 +152,10 @@ class MissionProfileOptimization(Model):
         cruise_altitude = self.opti.variable(
             init_guess=self.aircraft.cruise_altitude, log_transform=True)
         cruise_speed = self.opti.variable(
-            init_guess=self.aircraft.cruise_velocity,
-            log_transform=True,
-            lower_bound=self.aircraft.cruise_velocity)
+            init_guess=self.aircraft.cruise_velocity, log_transform=True)
         self.opti.subject_to([
             cruise_altitude >= self.aircraft.cruise_altitude,
-            # cruise_speed >= self.aircraft.cruise_velocity,
+            cruise_speed >= self.aircraft.cruise_velocity,
         ])
         self.opti.subject_to([
             self.dyn.altitude[start_cruise_index:end_cruise_index] ==
@@ -197,12 +170,12 @@ class MissionProfileOptimization(Model):
             self.thrust_level[end_cruise_index],
         ])
         self.opti.subject_to([
-            # self.dyn.altitude <= cruise_altitude,
+            self.dyn.altitude <= cruise_altitude,
             self.dyn.speed <= cruise_speed,
             # self.dyn.op_point.energy_altitude() <= self.dyn.op_point[start_cruise_index].energy_altitude(),
         ])
 
-    def horizontal_dynamics(self, use_aero: bool = False):
+    def dynamics(self, use_aero: bool = False):
         if use_aero:
             aero = asb.AeroBuildup(
                 airplane=self.parametric,
@@ -237,146 +210,24 @@ class MissionProfileOptimization(Model):
             axes='body',
         )
 
-    def vertical_constraints(self):
-        self.dyn = asb.DynamicsPointMass2DSpeedGamma(
-            mass_props=asb.MassProperties(mass=self.aircraft.total_mass,
-                                          Ixx=1000,
-                                          Iyy=500,
-                                          Izz=500),
-            x_e=np.cosspace(0, 1000, self.n_timesteps),
-            z_e=self.opti.variable(init_guess=np.linspace(
-                0, -100, self.n_timesteps),
-                                   upper_bound=0),
-            speed=self.opti.variable(init_guess=0, n_vars=self.n_timesteps),
-            gamma=self.opti.variable(init_guess=0,
-                                     n_vars=self.n_timesteps,
-                                     lower_bound=-np.pi / 2,
-                                     upper_bound=np.pi / 2),
-            alpha=self.opti.variable(init_guess=0,
-                                     n_vars=self.n_timesteps,
-                                     lower_bound=-30,
-                                     upper_bound=30),
-        )
-        v_x = np.diff(self.dyn.x_e) / np.diff(self.time)
-        v_z = self.opti.derivative_of(self.dyn.z_e,
-                                      with_respect_to=self.time,
-                                      derivative_init_guess=0)
-        # a_x = self.opti.derivative_of(v_x, with_respect_to=self.time, derivative_init_guess=0)
-        a_z = self.opti.derivative_of(v_z,
-                                      with_respect_to=self.time,
-                                      derivative_init_guess=0)
-        alpha_derivative = np.diff(self.dyn.alpha) / np.diff(self.time)
-        self.thrust_level = self.opti.variable(init_guess=0,
-                                               n_vars=self.n_timesteps,
-                                               lower_bound=0,
-                                               upper_bound=1)
-        self.opti.subject_to([
-            self.dyn.altitude[0] == 0,
-            self.dyn.altitude[-1] == 100,
-            self.dyn.speed[0] == 0,
-            v_x[-1] == self.aircraft.v_stall,
-            self.dyn.gamma[0] == 0,
-            self.dyn.alpha[0] == 0,
-            self.thrust_level[0] == 0,
-        ])
-
-    def init_vertical_dynamics(self, use_aero: bool = False):
-        pitch_rate = np.diff(np.degrees(self.dyn.gamma)) / np.diff(self.time)
-        self.opti.subject_to([
-            pitch_rate < .1,
-            pitch_rate > -.1,
-        ])
-
-        if use_aero:
-            raise NotImplementedError
-        else:
-            CD = 0.02
-            drag = self.dyn.op_point.dynamic_pressure(
-            ) * self.aircraft.wing.area * CD
-            self.dyn.add_force(
-                Fx=0,
-                Fz=0,
-                axes='wind',
-            )
-
-        self.dyn.add_force(
-            Fz=-self.thrust,
-            axes='body',
-        )
-
-    def run(self, max_iter: int = 1000, verbose: bool = True):
-        opt_param = {
-            OptParam.TIME: self.time[-1],
-            OptParam.ENERGY: self.total_energy,
-            OptParam.MAX_POWER: self.max_power,
-            OptParam.TRADE_OFF: self.time[-1] * self.total_energy,
-        }[self.opt_param]
-        # Optimize
-        self.opti.minimize(opt_param)
-
-        # Post-process
-        sol = self.opti.solve(verbose=verbose,
-                              max_iter=max_iter,
-                              behavior_on_failure='return_last')
-        self.time = sol(self.time)
-        self.dyn = sol(self.dyn)
-        self.thrust_level = sol(self.thrust_level)
-        self.max_power = sol(self.max_power)
-        self.power_available = sol(self.power_available)
-        self.thrust = sol(self.thrust)
-        self.total_energy = sol(self.total_energy)
-        self.CL = sol(self.CL)
-        print(f"\nOptimized for {self.opt_param.value}:")
-        print(f"Total energy: {self.total_energy / 3600000:.1f} kWh")
-        print(f"Total time: {self.time[-1]:.1f} s")
-        print(f"Max power: {self.max_power / 1000:.1f} kW")
-
-    def to_dataframe(self) -> pd.DataFrame:
-        return pd.DataFrame({
-            'time':
-            self.time,
-            'x':
-            self.dyn.x_e,
-            'z':
-            self.dyn.z_e,
-            'speed':
-            self.dyn.speed,
-            'gamma':
-            self.dyn.gamma,
-            'alpha':
-            self.dyn.alpha,
-            'C_L':
-            self.CL,
-            'altitude':
-            -self.dyn.z_e,
-            'energy altitude':
-            self.dyn.op_point.energy_altitude(),
-            'power':
-            self.power_available,
-            'thrust':
-            self.thrust,
-            'thrust_level':
-            self.thrust_level,
-        })
-
 
 if __name__ == '__main__':
-    from departments.flight_performance.plots import *
-
+    from aircraft_models import rot_wing
     ac = rot_wing
     ac.data.v_stall = 20.
-    ac.data.wing.area = 16
-    mission_profile_optimization = MissionProfileOptimization(
-        ac, opt_param=OptParam.ENERGY, n_timesteps=90)
-    mission_profile_optimization.run(max_iter=1000)
+    mission_profile_optimization = CruiseOpt(ac,
+                                             opt_param=OptParam.ENERGY,
+                                             n_timesteps=60,
+                                             max_iter=3000)
+    mission_profile_optimization.run()
 
-    df = mission_profile_optimization.to_dataframe()
+    # df = mission_profile_optimization.to_dataframe()
     # print(df.to_string())
-    # plot_step_density(df)
-    plot_over_time(df)
-    plot_over_distance(df)
 
-    aero = Aero(ac.parametric,
-                velocity=ac.data.cruise_velocity,
-                altitude=ac.data.cruise_altitude)
-    aero.plot_cl_cd_polars()
+    mission_profile_optimization.plot_logs_over_time()
+    mission_profile_optimization.plot_over_distance()
+
+    # aero = CLCDPolar(ac.parametric,
+         #             velocity=ac.data.cruise_velocity,
+    #             altitude=ac.data.cruise_altitude)
+    # aero.plot_cl_cd_polars()

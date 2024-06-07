@@ -137,3 +137,91 @@ class MissionProfile(BaseModel):
             phase.phase: phase.dict(*args, **kwargs)
             for phase in self.phases.values()
         }
+
+
+def default_mission_profile(self) -> MissionProfile:
+    return MissionProfile(
+    name='default',
+    phases={
+        Phase.TAKEOFF:
+            MissionPhase(phase=Phase.TAKEOFF,
+                         duration=0.17 * 60,
+                         horizontal_speed=0,
+                         distance=0,
+                         vertical_speed=0 * 60,
+                         ending_altitude=1.5),
+        Phase.HOVER_CLIMB:
+            MissionPhase(
+                phase=Phase.HOVER_CLIMB,
+                duration=self.cruise_altitude / self.rate_of_climb,
+                horizontal_speed=self.cruise_velocity,  # gets adjusted in model
+                distance=self.cruise_velocity * self.cruise_altitude /
+                         self.rate_of_climb,  # gets adjusted in model
+                vertical_speed=self.rate_of_climb,
+                ending_altitude=self.cruise_altitude),
+        Phase.CLIMB:  # set to 0
+            MissionPhase(
+                phase=Phase.CLIMB,
+                duration=0,
+                horizontal_speed=self.
+                cruise_velocity,  # gets adjusted in model
+                distance=0,
+                vertical_speed=0,
+                ending_altitude=self.cruise_altitude),
+        Phase.CRUISE:
+            MissionPhase(phase=Phase.CRUISE,
+                         duration=self.range / self.cruise_velocity,
+                         horizontal_speed=self.cruise_velocity,
+                         distance=self.range,
+                         vertical_speed=0,
+                         ending_altitude=self.cruise_altitude),
+        Phase.DESCENT:
+            MissionPhase(
+                phase=Phase.DESCENT,
+                duration=self.cruise_altitude / self.rate_of_climb,
+                horizontal_speed=self.
+                cruise_velocity,  # gets adjusted in model
+                distance=self.cruise_velocity * self.cruise_altitude /
+                         self.rate_of_climb,  # gets adjusted in model
+                vertical_speed=-self.rate_of_climb,  # weird assumption
+                ending_altitude=1.5),
+        Phase.LANDING:
+            MissionPhase(phase=Phase.LANDING,
+                         duration=1 * 60,
+                         horizontal_speed=0,
+                         distance=0,
+                         vertical_speed=0 * 60,
+                         ending_altitude=0),
+    })
+
+
+def updated_mission_profile_from_cruise_opt(self) -> MissionProfile:
+    mission_profile = MissionProfile(
+        name='default',
+        phases={
+            Phase.TAKEOFF:
+            MissionPhase(phase=Phase.TAKEOFF,
+                         duration=0.17 * 60,
+                         horizontal_speed=0,
+                         distance=0,
+                         vertical_speed=0 * 60,
+                         ending_altitude=1.5),
+            Phase.CRUISE:
+            MissionPhase(
+                phase=Phase.CRUISE,
+                duration=1940.9,
+                horizontal_speed=self.cruise_velocity,  # estimated max speed
+                distance=convert_float(100, 'km', 'm'),
+                vertical_speed=0,
+                ending_altitude=800),  # estimated max altitude
+            Phase.LANDING:
+            MissionPhase(phase=Phase.LANDING,
+                         duration=1 * 60,
+                         horizontal_speed=0,
+                         distance=0,
+                         vertical_speed=0 * 60,
+                         ending_altitude=0),
+        })
+    mission_profile.CRUISE.energy = convert_float(30.5, 'kWh', 'J')
+    mission_profile.CRUISE.C_L = 0.5
+    return mission_profile

@@ -52,17 +52,22 @@ class EnergySystemMassModel(MassModel):
         )
 
     def _power(self, phase: MissionPhase) -> float:
+        power = 0
         match phase.phase:
             case Phase.TAKEOFF:
                 power = departments.flight_performance.power_calculations.power  # from Class I model
             case Phase.HOVER_CLIMB:
+                raise NotImplementedError
                 power = self._climb_power(phase)
             case Phase.CLIMB:
+                raise NotImplementedError
                 power = self._climb_power_cruise_config(phase)
             case Phase.CRUISE:
+                power = phase.energy / phase.duration
                 # power = self._cruise_power(phase)
-                power = self._cruise_power_fixed_velocity(phase)
+                # power = self._cruise_power_fixed_velocity(phase)
             case Phase.DESCENT:
+                raise NotImplementedError
                 power = 0
                 self._update_descent_phase(phase)
             case Phase.LANDING:
