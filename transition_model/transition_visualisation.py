@@ -81,22 +81,25 @@ class TransitionAnim:
                                            arrow_length_ratio=0.1,
                                            color='red')
 
-        self.line1 = self.animation_ax.plot([self.tip_le[0], self.root_le[0]],
-                                            [self.tip_le[1], self.root_le[1]],
-                                            zs=[self.tip_le[2], self.root_le[2]],
-                                            c='purple')
-        self.line2 = self.animation_ax.plot([self.root_le[0], self.root_te[0]],
-                                            [self.root_le[1], self.root_te[1]],
-                                            zs=[self.root_le[2], self.root_te[2]],
-                                            c='purple')
-        self.line3 = self.animation_ax.plot([self.root_te[0], self.tip_te[0]],
-                                            [self.root_te[1], self.tip_te[1]],
-                                            zs=[self.root_te[2], self.tip_te[2]],
-                                            c='purple')
-        self.line4 = self.animation_ax.plot([self.tip_le[0], self.tip_te[0]],
-                                            [self.tip_le[1], self.tip_te[1]],
-                                            zs=[self.tip_le[2], self.tip_te[2]],
-                                            c='purple')
+        self.line1 = self.animation_ax.plot(
+            [self.tip_le[0], self.root_le[0]],
+            [self.tip_le[1], self.root_le[1]],
+            zs=[self.tip_le[2], self.root_le[2]],
+            c='purple')
+        self.line2 = self.animation_ax.plot(
+            [self.root_le[0], self.root_te[0]],
+            [self.root_le[1], self.root_te[1]],
+            zs=[self.root_le[2], self.root_te[2]],
+            c='purple')
+        self.line3 = self.animation_ax.plot(
+            [self.root_te[0], self.tip_te[0]],
+            [self.root_te[1], self.tip_te[1]],
+            zs=[self.root_te[2], self.tip_te[2]],
+            c='purple')
+        self.line4 = self.animation_ax.plot(
+            [self.tip_le[0], self.tip_te[0]], [self.tip_le[1], self.tip_te[1]],
+            zs=[self.tip_le[2], self.tip_te[2]],
+            c='purple')
 
         self.vectors = []
 
@@ -153,22 +156,25 @@ class TransitionAnim:
         self.root_te = self.C_axis @ self.root_te
         self.tip_te = self.C_axis @ self.tip_te
 
-        self.line1 = self.animation_ax.plot([self.tip_le[0], self.root_le[0]],
-                                            [self.tip_le[1], self.root_le[1]],
-                                            zs=[self.tip_le[2], self.root_le[2]],
-                                            c='purple')
-        self.line2 = self.animation_ax.plot([self.root_le[0], self.root_te[0]],
-                                            [self.root_le[1], self.root_te[1]],
-                                            zs=[self.root_le[2], self.root_te[2]],
-                                            c='purple')
-        self.line3 = self.animation_ax.plot([self.root_te[0], self.tip_te[0]],
-                                            [self.root_te[1], self.tip_te[1]],
-                                            zs=[self.root_te[2], self.tip_te[2]],
-                                            c='purple')
-        self.line4 = self.animation_ax.plot([self.tip_le[0], self.tip_te[0]],
-                                            [self.tip_le[1], self.tip_te[1]],
-                                            zs=[self.tip_le[2], self.tip_te[2]],
-                                            c='purple')
+        self.line1 = self.animation_ax.plot(
+            [self.tip_le[0], self.root_le[0]],
+            [self.tip_le[1], self.root_le[1]],
+            zs=[self.tip_le[2], self.root_le[2]],
+            c='purple')
+        self.line2 = self.animation_ax.plot(
+            [self.root_le[0], self.root_te[0]],
+            [self.root_le[1], self.root_te[1]],
+            zs=[self.root_le[2], self.root_te[2]],
+            c='purple')
+        self.line3 = self.animation_ax.plot(
+            [self.root_te[0], self.tip_te[0]],
+            [self.root_te[1], self.tip_te[1]],
+            zs=[self.root_te[2], self.tip_te[2]],
+            c='purple')
+        self.line4 = self.animation_ax.plot(
+            [self.tip_le[0], self.tip_te[0]], [self.tip_le[1], self.tip_te[1]],
+            zs=[self.tip_le[2], self.tip_te[2]],
+            c='purple')
 
         eff = []
 
@@ -198,17 +204,24 @@ class TransitionAnim:
             100)  #TODO: Test this
         #print(f"Lifting efficiency: {eff}%")
 
-        v_sweep = self.tip_le-self.root_le
+        v_sweep = self.tip_le - self.root_le
         v_sweep[2, 0] = 0
         v_dehidral = 0
-        v_aoa = self.tip_le-self.tip_te
+        v_aoa = self.tip_le - self.tip_te
         v_aoa[1, 0] = 0
-        v_dehidral = np.cross((self.root_te-self.root_le).T, (self.tip_le-self.root_le).T)
+        v_dehidral = np.cross((self.root_te - self.root_le).T,
+                              (self.tip_le - self.root_le).T)
         v_dehidral[0, 0] = 0
 
-        tmp_lmbd = float(np.arccos(v_sweep.T@np.array([[0], [-1], [0]])/(np.linalg.norm(v_sweep))))
-        tmp_alpha = float(np.arccos(v_aoa.T @ np.array([[1], [0], [0]]) / (np.linalg.norm(v_aoa))))
-        tmp_gamma = float(np.arccos(v_dehidral @ np.array([[0], [0], [1]]) / (np.linalg.norm(v_dehidral))))
+        tmp_lmbd = float(
+            np.arccos(v_sweep.T @ np.array([[0], [-1], [0]]) /
+                      (np.linalg.norm(v_sweep))))
+        tmp_alpha = float(
+            np.arccos(v_aoa.T @ np.array([[1], [0], [0]]) /
+                      (np.linalg.norm(v_aoa))))
+        tmp_gamma = float(
+            np.arccos(v_dehidral @ np.array([[0], [0], [1]]) /
+                      (np.linalg.norm(v_dehidral))))
         print(f"Sweep: {np.rad2deg(tmp_lmbd)}%")
         print(f"AoA: {np.rad2deg(tmp_alpha)}%")
         print(f"Dehidral: {np.rad2deg(tmp_gamma)}%")
@@ -234,14 +247,16 @@ class TransitionAnim:
         for alpha in self.alpha:
             cl.append(aero.CL(np.rad2deg(alpha)))
         print(cl)
-        norm_lift = 1/2 * np.cos(np.array(self.lmbd))**2 * max(np.array(cl)) * S * np.cos(self.gamma) * rho * 32**2 *np.cos(self.alpha)
+        norm_lift = 1 / 2 * np.cos(np.array(self.lmbd))**2 * max(
+            np.array(cl)) * S * np.cos(self.gamma) * rho * 32**2 * np.cos(
+                self.alpha)
 
-        plt.plot(np.arange(len(self.alpha))/len(self.alpha), norm_lift)
+        plt.plot(np.arange(len(self.alpha)) / len(self.alpha), norm_lift)
         plt.show()
 
     def conversion_corridor(self):
         v = np.linspace(32, 200, len(self.alpha))
-        MTOW = 1500*9.81
+        MTOW = 1500 * 9.81
         S = 14
         rho = 1.225
         airplane = generate_airplane(0)
@@ -256,9 +271,10 @@ class TransitionAnim:
         for alpha in self.alpha:
             cl.append(aero.CL(alpha))
 
-        L = 1 / 2 * np.cos(np.array(self.lmbd)) ** 2 * np.array(cl) * S * np.cos(self.gamma) * rho
+        L = 1 / 2 * np.cos(np.array(self.lmbd))**2 * np.array(cl) * S * np.cos(
+            self.gamma) * rho
 
-        stall = MTOW/(L*v**2)
+        stall = MTOW / (L * v**2)
 
         plt.plot(np.flip(stall), (self.alpha))
         plt.xlabel('v [m/s]')
