@@ -76,10 +76,14 @@ def rotate_wing(trans_val: float, airplane: Airplane = base_airplane) -> Wing:
     n_prop = np.array([-1, 0, 0])
 
     # ROTATE THE POINTS
-    p_tip_le_new = np.array([(C @ (p_tip_le - r_joint)) + r_joint for C in C_axis])
-    p_cut_le_new = np.array([(C @ (p_cut_le - r_joint)) + r_joint for C in C_axis])
-    p_tip_te_new = np.array([(C @ (p_tip_te - r_joint)) + r_joint for C in C_axis])
-    p_cut_te_new = np.array([(C @ (p_cut_te - r_joint)) + r_joint for C in C_axis])
+    p_tip_le_new = np.array([(C @ (p_tip_le - r_joint)) + r_joint
+                             for C in C_axis])
+    p_cut_le_new = np.array([(C @ (p_cut_le - r_joint)) + r_joint
+                             for C in C_axis])
+    p_tip_te_new = np.array([(C @ (p_tip_te - r_joint)) + r_joint
+                             for C in C_axis])
+    p_cut_te_new = np.array([(C @ (p_cut_te - r_joint)) + r_joint
+                             for C in C_axis])
     # n_prop_new = C_axis @ n_prop
 
     # CALCULATE TWIST ANGLE OF THE AIRFOIL

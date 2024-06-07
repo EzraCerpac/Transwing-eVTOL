@@ -25,17 +25,14 @@ wing_airfoil = Airfoil("E560")
 tail_airfoil = Airfoil("naca0012")
 
 cut = ac.hinge_location
-chord_cut = wing_model.rootcrt - (wing_model.rootcrt -
-                                  wing_model.tipcrt) * cut
+chord_cut = wing_model.rootcrt - (wing_model.rootcrt - wing_model.tipcrt) * cut
 p_tip_le = np.array([
-    ac.wing.span / 2 * np.tan(wing_model.le_sweep),
-    ac.wing.span / 2,
+    ac.wing.span / 2 * np.tan(wing_model.le_sweep), ac.wing.span / 2,
     ac.wing.span / 2 * np.tand(wing_model.dihedral)
 ])
 p_tip_te = np.array([
     ac.wing.span / 2 * np.tan(wing_model.le_sweep) - wing_model.tipcrt,
-    ac.wing.span / 2,
-    ac.wing.span / 2 * np.tand(wing_model.dihedral)
+    ac.wing.span / 2, ac.wing.span / 2 * np.tand(wing_model.dihedral)
 ])
 p_cut_le0 = np.array([
     ac.wing.span * cut / 2 * np.tan(wing_model.le_sweep),
@@ -106,12 +103,10 @@ horizontal_tail = asb.Wing(
 fuselage = asb.Fuselage(
     name='Fuselage',
     xsecs=[
-        asb.FuselageXSec(xyz_c=[(0.8 * xi - 0.2) * ac.fuselage.length, 0,
-                                0.1 * xi - 0.03],
-                         radius=.75 *
-                                Airfoil("dae51").local_thickness(x_over_c=xi) /
-                                Airfoil("dae51").max_thickness())
-        for xi in np.cosspace(0, 1, 30)
+        asb.FuselageXSec(
+            xyz_c=[(0.8 * xi - 0.2) * ac.fuselage.length, 0, 0.1 * xi - 0.03],
+            radius=.75 * Airfoil("dae51").local_thickness(x_over_c=xi) /
+            Airfoil("dae51").max_thickness()) for xi in np.cosspace(0, 1, 30)
     ])
 
 parametric = Airplane(
