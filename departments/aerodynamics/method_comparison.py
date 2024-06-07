@@ -4,7 +4,7 @@ import aerosandbox as asb
 import aerosandbox.numpy as np
 from matplotlib import pyplot as plt
 
-from aircraft_models import rot_wing
+from aircraft_models import rot_wing, trans_wing
 from data.concept_parameters.aircraft import AC
 from departments.aerodynamics.aero import Aero
 from departments.aerodynamics.helper import OutputVal, label, AxisVal
@@ -15,15 +15,23 @@ from utility.plotting import show
 class AeroMethodComparison:
     def __init__(self,
                  ac: AC,
-                 methods: tuple[str] = ('AeroBuildup', 'Class II', 'VLM'),
+                 methods: list[str] = None,
                  alpha: np.ndarray = np.linspace(-20, 20, 101)):
         self.ac = ac
         self.alpha = alpha
         methods_map: dict[str, Callable[[], dict[str, any]]] = {
-            'AeroBuildup': Aero(ac=self.ac, alpha=self.alpha).get_aero_data,
-            'Class II': lambda: ClassIIDrag(ac=self.ac).aero_dict(alpha=self.alpha),
-            'VLM': lambda: vlm(ac=self.ac, alpha=self.alpha)
+            'AeroBuildup':
+                Aero(ac=self.ac, alpha=self.alpha).get_aero_data,
+            'AeroBuildup (no wave drag)':
+                lambda: Aero(ac=self.ac, alpha=self.alpha).get_aero_data(include_wave_drag=False),
+            'Aerobuildup with cut':
+                Aero(ac=trans_wing, alpha=self.alpha).get_aero_data,
+            'Class II':
+                lambda: ClassIIDrag(ac=self.ac).aero_dict(alpha=self.alpha),
+            'VLM':
+                lambda: vlm(ac=self.ac, alpha=self.alpha)
         }
+        methods = methods or [k for k in methods_map.keys() if k not in ['AeroBuildup (no wave drag)']]
         self.methods: dict[str, Callable[[], dict[str, any]]] = {k: methods_map[k] for k in methods}
         self.results: dict[str, dict[str, any]] = {k: {} for k in self.methods.keys()}
 

@@ -11,14 +11,16 @@ class Aero:
         self.alpha = alpha
         self.aero_data: dict = self.get_aero_data()
 
-    def get_aero_data(self) -> dict:
+    def get_aero_data(self, include_wave_drag: bool = True, model_size: str = 'small') -> dict:
         return asb.AeroBuildup(
             airplane=self.ac.parametric,
             op_point=asb.OperatingPoint(
                 atmosphere=asb.Atmosphere(altitude=self.ac.data.cruise_altitude),
                 velocity=self.ac.data.v_stall,
                 alpha=self.alpha,
-            )
+            ),
+            include_wave_drag=include_wave_drag,
+            model_size=model_size,
         ).run()
 
     def CL(self, alpha: float) -> float:
