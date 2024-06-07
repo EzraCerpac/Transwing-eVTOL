@@ -10,7 +10,7 @@ from aircraft_models import trans_wing, rot_wing
 from utility.plotting import show
 
 
-class Aero:
+class CLCDPolar:
 
     def __init__(self,
                  airplane: asb.Airplane,
@@ -79,6 +79,6 @@ if __name__ == '__main__':
     # ac.wings[1].set_control_surface_deflections({
     #     'Elevator': -2,
     # })
-    aero = Aero(ac)
+    aero = CLCDPolar(ac)
     print(aero.CL_0)
     aero.plot_cl_cd_polars()

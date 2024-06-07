@@ -2,7 +2,7 @@ import aerosandbox as asb
 import aerosandbox.numpy as np
 
 from data.concept_parameters.aircraft import AC
-from departments.aerodynamics.cl_cd_polars import Aero
+from departments.aerodynamics.cl_cd_polars import CLCDPolar
 from departments.flight_performance.mission_optimalisation.optimalisation import Optimalisation, OptParam
 from sizing_tools.formula.aero import C_D_from_CL
 
@@ -12,9 +12,9 @@ ALPHA_i = 0
 class CruiseOpt(Optimalisation):
 
     def __init__(self, aircraft: AC, opt_param: OptParam, *args, **kwargs):
-        aero = Aero(aircraft.parametric,
-                    altitude=aircraft.data.cruise_altitude,
-                    velocity=aircraft.data.cruise_velocity)
+        aero = CLCDPolar(aircraft.parametric,
+                         altitude=aircraft.data.cruise_altitude,
+                         velocity=aircraft.data.cruise_velocity)
         self.c_l_over_alpha_func = lambda alpha: aero.c_l_over_alpha_func(alpha
                                                                           )
         super().__init__(aircraft, opt_param, *args, **kwargs)
@@ -227,7 +227,7 @@ if __name__ == '__main__':
     mission_profile_optimization.plot_logs_over_time()
     mission_profile_optimization.plot_over_distance()
 
-    # aero = Aero(ac.parametric,
-    #             velocity=ac.data.cruise_velocity,
+    # aero = CLCDPolar(ac.parametric,
+         #             velocity=ac.data.cruise_velocity,
     #             altitude=ac.data.cruise_altitude)
     # aero.plot_cl_cd_polars()
