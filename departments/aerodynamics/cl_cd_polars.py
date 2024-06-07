@@ -10,7 +10,7 @@ from aircraft_models import trans_wing, rot_wing
 from utility.plotting import show
 
 
-class Aero:
+class CLCDPolar:
 
     def __init__(self,
                  airplane: asb.Airplane,
@@ -72,6 +72,6 @@ class Aero:
 
 if __name__ == '__main__':
     ac = trans_wing.parametric
-    aero = Aero(ac)
+    aero = CLCDPolar(ac)
     print(aero.glide_ratio)
     aero.plot_cl_cd_polars()

@@ -6,7 +6,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 from data.concept_parameters.aircraft import AC
-from departments.aerodynamics.cl_cd_polars import Aero
+from departments.aerodynamics.cl_cd_polars import CLCDPolar
 from departments.flight_performance.mission_optimalisation.optimalisation import Optimalisation, OptParam
 from model.airplane_models.rotating_wing import rot_wing
 from sizing_tools.formula.aero import hover_thrust_from_power, rotor_disk_area
@@ -19,9 +19,9 @@ ALPHA_i = 0
 class VerticalOpt(Optimalisation):
 
     def __init__(self, aircraft: AC, opt_param: OptParam, *args, **kwargs):
-        aero = Aero(aircraft.parametric,
-                    altitude=aircraft.data.cruise_altitude,
-                    velocity=aircraft.data.cruise_velocity)
+        aero = CLCDPolar(aircraft.parametric,
+                         altitude=aircraft.data.cruise_altitude,
+                         velocity=aircraft.data.cruise_velocity)
         self.c_l_over_alpha_func = lambda alpha: aero.c_l_over_alpha_func(alpha
                                                                           )
         super().__init__(aircraft, opt_param, *args, **kwargs)
