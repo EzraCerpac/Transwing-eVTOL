@@ -138,6 +138,7 @@ class MissionProfile(BaseModel):
             for phase in self.phases.values()
         }
 
+
 def default_mission_profile(self) -> MissionProfile:
     return MissionProfile(
     name='default',
@@ -193,32 +194,33 @@ def default_mission_profile(self) -> MissionProfile:
                          ending_altitude=0),
     })
 
+
 def updated_mission_profile_from_cruise_opt(self) -> MissionProfile:
     mission_profile = MissionProfile(
         name='default',
         phases={
             Phase.TAKEOFF:
-                MissionPhase(phase=Phase.TAKEOFF,
-                             duration=0.17 * 60,
-                             horizontal_speed=0,
-                             distance=0,
-                             vertical_speed=0 * 60,
-                             ending_altitude=1.5),
+            MissionPhase(phase=Phase.TAKEOFF,
+                         duration=0.17 * 60,
+                         horizontal_speed=0,
+                         distance=0,
+                         vertical_speed=0 * 60,
+                         ending_altitude=1.5),
             Phase.CRUISE:
-                MissionPhase(phase=Phase.CRUISE,
-                             duration=1940.9,
-                             horizontal_speed=self.cruise_velocity, # estimated max speed
-                             distance=convert_float(100, 'km', 'm'),
-                             vertical_speed=0,
-                             ending_altitude=800), # estimated max altitude
-
+            MissionPhase(
+                phase=Phase.CRUISE,
+                duration=1940.9,
+                horizontal_speed=self.cruise_velocity,  # estimated max speed
+                distance=convert_float(100, 'km', 'm'),
+                vertical_speed=0,
+                ending_altitude=800),  # estimated max altitude
             Phase.LANDING:
-                MissionPhase(phase=Phase.LANDING,
-                             duration=1 * 60,
-                             horizontal_speed=0,
-                             distance=0,
-                             vertical_speed=0 * 60,
-                             ending_altitude=0),
+            MissionPhase(phase=Phase.LANDING,
+                         duration=1 * 60,
+                         horizontal_speed=0,
+                         distance=0,
+                         vertical_speed=0 * 60,
+                         ending_altitude=0),
         })
     mission_profile.CRUISE.energy = convert_float(30.5, 'kWh', 'J')
     mission_profile.CRUISE.C_L = 0.5
