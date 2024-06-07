@@ -6,8 +6,10 @@ import matplotlib
 from casadi import *
 import random as random
 from matplotlib import cm
+from
 
-
+aero = Aero()
+aero.c_l_over_alpha_func(alpha=)
 class TransitionAnim:
 
     def __init__(self, alpha: float = 45, beta: float = 35) -> None:
@@ -39,6 +41,9 @@ class TransitionAnim:
             np.array([[0.2], [0], [0]]),
             np.array([[0.2], [0], [0]])
         ]
+        self.alpha = []
+        self.lmbd = []
+        self.gamma = []
 
     def set_C_axis(self, q) -> None:
 
@@ -51,10 +56,10 @@ class TransitionAnim:
 
     def init_animation(self, ) -> None:
 
-        self.A = np.array([[0.1], [-0.75], [0]])
-        self.B = np.array([[0.2], [0.25], [0]])
-        self.C = np.array([[-0.1], [0.25], [0]])
-        self.D = np.array([[-0.1], [-0.75], [0]])
+        self.tip_le = np.array([[0.1], [-0.75], [0]])
+        self.root_le = np.array([[0.2], [0.25], [0]])
+        self.root_te = np.array([[-0.1], [0.25], [0]])
+        self.tip_te = np.array([[-0.1], [-0.75], [0]])
 
         Xc, Yc, Zc = self.cylinder_data(0, .35, 0.5, 1, 0.1)
 
@@ -75,21 +80,21 @@ class TransitionAnim:
                                            arrow_length_ratio=0.1,
                                            color='red')
 
-        self.line1 = self.animation_ax.plot([self.A[0], self.B[0]],
-                                            [self.A[1], self.B[1]],
-                                            zs=[self.A[2], self.B[2]],
+        self.line1 = self.animation_ax.plot([self.tip_le[0], self.root_le[0]],
+                                            [self.tip_le[1], self.root_le[1]],
+                                            zs=[self.tip_le[2], self.root_le[2]],
                                             c='purple')
-        self.line2 = self.animation_ax.plot([self.B[0], self.C[0]],
-                                            [self.B[1], self.C[1]],
-                                            zs=[self.B[2], self.C[2]],
+        self.line2 = self.animation_ax.plot([self.root_le[0], self.root_te[0]],
+                                            [self.root_le[1], self.root_te[1]],
+                                            zs=[self.root_le[2], self.root_te[2]],
                                             c='purple')
-        self.line3 = self.animation_ax.plot([self.C[0], self.D[0]],
-                                            [self.C[1], self.D[1]],
-                                            zs=[self.C[2], self.D[2]],
+        self.line3 = self.animation_ax.plot([self.root_te[0], self.tip_te[0]],
+                                            [self.root_te[1], self.tip_te[1]],
+                                            zs=[self.root_te[2], self.tip_te[2]],
                                             c='purple')
-        self.line4 = self.animation_ax.plot([self.A[0], self.D[0]],
-                                            [self.A[1], self.D[1]],
-                                            zs=[self.A[2], self.D[2]],
+        self.line4 = self.animation_ax.plot([self.tip_le[0], self.tip_te[0]],
+                                            [self.tip_le[1], self.tip_te[1]],
+                                            zs=[self.tip_le[2], self.tip_te[2]],
                                             c='purple')
 
         self.vectors = []
@@ -142,26 +147,26 @@ class TransitionAnim:
         self.line3.pop(0).remove()
         self.line4.pop(0).remove()
 
-        self.A = self.C_axis @ self.A
-        self.B = self.C_axis @ self.B
-        self.C = self.C_axis @ self.C
-        self.D = self.C_axis @ self.D
+        self.tip_le = self.C_axis @ self.tip_le
+        self.root_le = self.C_axis @ self.root_le
+        self.root_te = self.C_axis @ self.root_te
+        self.tip_te = self.C_axis @ self.tip_te
 
-        self.line1 = self.animation_ax.plot([self.A[0], self.B[0]],
-                                            [self.A[1], self.B[1]],
-                                            zs=[self.A[2], self.B[2]],
+        self.line1 = self.animation_ax.plot([self.tip_le[0], self.root_le[0]],
+                                            [self.tip_le[1], self.root_le[1]],
+                                            zs=[self.tip_le[2], self.root_le[2]],
                                             c='purple')
-        self.line2 = self.animation_ax.plot([self.B[0], self.C[0]],
-                                            [self.B[1], self.C[1]],
-                                            zs=[self.B[2], self.C[2]],
+        self.line2 = self.animation_ax.plot([self.root_le[0], self.root_te[0]],
+                                            [self.root_le[1], self.root_te[1]],
+                                            zs=[self.root_le[2], self.root_te[2]],
                                             c='purple')
-        self.line3 = self.animation_ax.plot([self.C[0], self.D[0]],
-                                            [self.C[1], self.D[1]],
-                                            zs=[self.C[2], self.D[2]],
+        self.line3 = self.animation_ax.plot([self.root_te[0], self.tip_te[0]],
+                                            [self.root_te[1], self.tip_te[1]],
+                                            zs=[self.root_te[2], self.tip_te[2]],
                                             c='purple')
-        self.line4 = self.animation_ax.plot([self.A[0], self.D[0]],
-                                            [self.A[1], self.D[1]],
-                                            zs=[self.A[2], self.D[2]],
+        self.line4 = self.animation_ax.plot([self.tip_le[0], self.tip_te[0]],
+                                            [self.tip_le[1], self.tip_te[1]],
+                                            zs=[self.tip_le[2], self.tip_te[2]],
                                             c='purple')
 
         eff = []
@@ -190,10 +195,31 @@ class TransitionAnim:
         eff = int(
             np.sum(eff) / np.sum(np.linalg.norm(self.v_prop, axis=1)) *
             100)  #TODO: Test this
-        print(f"Lifting efficiency: {eff}%")
+        #print(f"Lifting efficiency: {eff}%")
+
+        v_sweep = self.tip_le-self.root_le
+        v_sweep[2, 0] = 0
+        v_dehidral = 0
+        v_aoa = self.tip_le-self.tip_te
+        v_aoa[1, 0] = 0
+        v_dehidral = np.cross((self.root_te-self.root_le).T, (self.tip_le-self.root_le).T)
+        v_dehidral[0, 0] = 0
+
+        tmp_lmbd = float(np.arccos(v_sweep.T@np.array([[0], [-1], [0]])/(np.linalg.norm(v_sweep))))
+        tmp_alpha = float(np.arccos(v_aoa.T @ np.array([[1], [0], [0]]) / (np.linalg.norm(v_aoa))))
+        tmp_gamma = float(np.arccos(v_dehidral @ np.array([[0], [0], [1]]) / (np.linalg.norm(v_dehidral))))
+        print(f"Sweep: {np.rad2deg(tmp_lmbd)}%")
+        print(f"AoA: {np.rad2deg(tmp_alpha)}%")
+        print(f"Dehidral: {np.rad2deg(tmp_gamma)}%")
+        self.alpha.append(tmp_alpha)
+        self.lmbd.append(tmp_lmbd)
+        self.gamma.append(tmp_gamma)
 
         self.animation_ax.set_aspect('equal')
 
+    def plot_lift(self):
+        s = 0
+        norm_lift = 1/2 *  np.cos(self.sweep)**2
     def run_animation(self,
                       q: float = -110,
                       n: int = 150,
@@ -210,15 +236,23 @@ class TransitionAnim:
         ani = animation.FuncAnimation(self.animation_fig,
                                       self.draw_wing,
                                       frames=n,
-                                      interval=50,
+                                      interval=500,
                                       repeat=True,
                                       init_func=self.init_animation)
         #ani.save(filename="./rotation.gif", writer="pillow", dpi=300)
 
-        self.A = np.array([[0.1], [-0.75], [0]])
-        self.B = np.array([[0.1], [0.25], [0]])
-        self.C = np.array([[-0.1], [0.25], [0]])
-        self.D = np.array([[-0.1], [-0.75], [0]])
+        self.tip_le = np.array([[0.1], [-0.75], [0]])
+        self.root_le = np.array([[0.1], [0.25], [0]])
+        self.root_te = np.array([[-0.1], [0.25], [0]])
+        self.tip_te = np.array([[-0.1], [-0.75], [0]])
+
+        self.animation_ax.set_xlabel('X')
+        self.animation_ax.set_ylabel('Y')
+        self.animation_ax.set_zlabel('Z')
+
+        self.animation_ax.set_xlim(-1, 1)
+        self.animation_ax.set_ylim(-1, 1)
+        self.animation_ax.set_zlim(-1, 1)
 
         plt.show()
 
