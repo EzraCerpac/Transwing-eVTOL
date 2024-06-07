@@ -93,7 +93,7 @@ class AeroAnalyser:
             self.plot_gradient(val, x_val, y_val)
 
     def calc_aero_alpha_velocity(self):
-        velocity, alpha = np.meshgrid(self.velocity, self.alpha)
+        alpha, velocity = np.meshgrid(self.alpha, self.velocity)
         self.aero = asb.AeroBuildup(
             airplane=self.ac.parametric,
             op_point=asb.OperatingPoint(
@@ -104,7 +104,7 @@ class AeroAnalyser:
         ).run()
 
     def calc_aero_alpha_delta_e(self):
-        delta_e, alpha = np.meshgrid(self.delta_e, self.alpha)
+        alpha, delta_e = np.meshgrid(self.alpha, self.delta_e)
         self.aero = asb.AeroBuildup(
             airplane=airplane_with_control_surface_deflection(
                 self.ac, delta_e.flatten()),
@@ -131,8 +131,8 @@ class AeroAnalyser:
     def plot_gradient(
             self,
             ouput_val: OutputVal,
-            x_val: AxisVal = AxisVal.DELTA_E,
-            y_val: AxisVal = AxisVal.ALPHA,
+            x_val: AxisVal,
+            y_val: AxisVal,
     ) -> tuple[plt.Figure, plt.Axes]:
         yy, xx = np.meshgrid(
             self.param_map[y_val]['values'],
@@ -142,7 +142,7 @@ class AeroAnalyser:
         p.contour(
             xx,
             yy,
-            self.aero[ouput_val.value].reshape(xx.shape),
+            self.aero[ouput_val.value].reshape(xx.shape).T,
             **contour_params[ouput_val]
         )
         if not contour_params[ouput_val]['z_log_scale']:
@@ -160,7 +160,7 @@ if __name__ == '__main__':
     ac = trans_wing
     a = AeroAnalyser(ac)
     a.run(AxisVal.ALPHA, AxisVal.DELTA_E)
-
-    ac = rot_wing
-    a = AeroAnalyser(ac)
-    a.run(AxisVal.ALPHA, AxisVal.DELTA_E)
+    #
+    # ac = rot_wing
+    # a = AeroAnalyser(ac)
+    # a.run(AxisVal.ALPHA, AxisVal.DELTA_E)

@@ -6,7 +6,7 @@ from aerosandbox import Airplane, Wing, WingXSec, Airfoil, ControlSurface
 import aerosandbox.numpy as np
 from aerosandbox.numpy import tan, tand
 
-from aircraft_models.helper import xyz_le_func, xyz_direction_func
+from aircraft_models.helper import xyz_le_func, xyz_direction_func, generate_fuselage
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
@@ -72,6 +72,7 @@ root_wing = asb.Wing(
             airfoil=wing_airfoil),
     ],
 ).translate([0, 0, 0])
+fuselage = generate_fuselage(wing_pos=np.array([2, 0, 1.4]))
 horizontal_tail = asb.Wing(
     name='Horizontal Stabilizer',
     symmetric=True,
@@ -98,15 +99,7 @@ horizontal_tail = asb.Wing(
             twist=0,
             airfoil=tail_airfoil)
     ],
-).translate([4, 0, 0.06])
-fuselage = asb.Fuselage(
-    name='Fuselage',
-    xsecs=[
-        asb.FuselageXSec(
-            xyz_c=[(0.8 * xi - 0.2) * ac.fuselage.length, 0, 0.1 * xi - 0.03],
-            radius=.75 * Airfoil("dae51").local_thickness(x_over_c=xi) /
-            Airfoil("dae51").max_thickness()) for xi in np.cosspace(0, 1, 30)
-    ])
+).translate([4, 0, fuselage.xsecs[-1].xyz_c[2]])
 
 parametric = Airplane(
     name=ac.full_name,

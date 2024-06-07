@@ -129,11 +129,11 @@ trans_wing = AC(
 )
 
 if __name__ == '__main__':
-    # airplane = trans_wing.parametric_fn(1)
-    # airplane.draw_three_view()
-    # airplane.draw()
+    airplane = trans_wing.parametric_fn(1)
+    airplane.draw_three_view()
+    airplane.draw()
 
-    for val in np.linspace(0, 1, 11):
-        para = trans_wing.parametric_fn(val)
-        para.draw_three_view()
+    # for val in np.linspace(0, 1, 11):
+    #     para = trans_wing.parametric_fn(val)
+    #     para.draw_three_view()
     # para.draw()
