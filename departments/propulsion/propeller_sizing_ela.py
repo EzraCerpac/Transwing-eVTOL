@@ -11,21 +11,24 @@ dr = R / N  # Element length
 
 # Blade twist and chord distributions (linear for simplicity)
 theta_root = np.deg2rad(10)  # Root twist angle in radians
-theta_tip = np.deg2rad(5)    # Tip twist angle in radians
+theta_tip = np.deg2rad(5)  # Tip twist angle in radians
 chord_root = 0.147  # Root chord in meters
-chord_tip = 0.12   # Tip chord in meters
+chord_tip = 0.12  # Tip chord in meters
 
 # Distributions along the blade span
 r = np.linspace(0.1 * R, R, N)  # Radial positions (avoid r = 0)
 theta = np.linspace(theta_root, theta_tip, N)  # Twist angle distribution
 chord = np.linspace(chord_root, chord_tip, N)  # Chord distribution
 
+
 # Airfoil data (lookup tables)
 def airfoil_coeffs(alpha):
     # Simplified example, real data should come from airfoil tables
     C_L = 1.2 * alpha / np.deg2rad(10)  # Linear lift slope (assumption)
-    C_D = 0.01 + 0.02 * (alpha / np.deg2rad(10))**2  # Parabolic drag polar (assumption)
+    C_D = 0.01 + 0.02 * (
+        alpha / np.deg2rad(10))**2  # Parabolic drag polar (assumption)
     return C_L, C_D
+
 
 # Initialize arrays for induced velocity components
 a = np.zeros(N)  # Axial induction factor
@@ -54,7 +57,8 @@ for iteration in range(100):  # Max 100 iterations for convergence
 
         # Update induction factors
         a[i] = dT / (4 * np.pi * r[i] * rho * V_rel**2 * (1 - a[i]))
-        a_prime[i] = dQ / (4 * np.pi * r[i]**2 * rho * V_rel**2 * (1 + a_prime[i]))
+        a_prime[i] = dQ / (4 * np.pi * r[i]**2 * rho * V_rel**2 *
+                           (1 + a_prime[i]))
 
 # Compute total thrust and torque
 T = B * np.sum(dT * dr)
