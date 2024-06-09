@@ -15,12 +15,12 @@ class TransitionAnim:
 
     def __init__(self, alpha: float = 45, beta: float = 35) -> None:
 
-        self.alpha = np.deg2rad(alpha)
+        self.eta = np.deg2rad(alpha)
         self.beta = np.deg2rad(beta)
 
-        self.C_z = np.array([[np.cos(self.alpha), -np.sin(self.alpha), 0],
-                             [np.sin(self.alpha),
-                              np.cos(self.alpha), 0], [0, 0, 1]])
+        self.C_z = np.array([[np.cos(self.eta), -np.sin(self.eta), 0],
+                             [np.sin(self.eta),
+                              np.cos(self.eta), 0], [0, 0, 1]])
 
         self.C_y = np.array([
             [np.cos(np.pi / 2 - self.beta), 0,
@@ -42,7 +42,7 @@ class TransitionAnim:
             np.array([[0.2], [0], [0]]),
             np.array([[0.2], [0], [0]])
         ]
-        self.alpha = []
+        self.eta = []
         self.lmbd = []
         self.gamma = []
 
@@ -225,17 +225,16 @@ class TransitionAnim:
         print(f"Sweep: {np.rad2deg(tmp_lmbd)}%")
         print(f"AoA: {np.rad2deg(tmp_alpha)}%")
         print(f"Dehidral: {np.rad2deg(tmp_gamma)}%")
-        self.alpha.append(tmp_alpha)
+        self.eta.append(tmp_alpha)
         self.lmbd.append(tmp_lmbd)
         self.gamma.append(tmp_gamma)
 
-        self.animation_ax.set_aspect('equal')
+        self.ax.set_aspect('equal')
 
-    def plot_lift(self):
+    def plot_lift(self, show:bool=False) -> None:
         S = 14
         rho = 1.225
         airplane = generate_airplane(0)
-        airplane.draw()
         airplane = AC(
             name=ac.full_name,
             data=ac,
@@ -244,18 +243,22 @@ class TransitionAnim:
         aero = Aero(airplane)
 
         cl = []
-        for alpha in self.alpha:
+        for alpha in self.eta:
             cl.append(aero.CL(np.rad2deg(alpha)))
         print(cl)
-        norm_lift = 1 / 2 * np.cos(np.array(self.lmbd))**2 * max(
-            np.array(cl)) * S * np.cos(self.gamma) * rho * 32**2 * np.cos(
-                self.alpha)
-
-        plt.plot(np.arange(len(self.alpha)) / len(self.alpha), norm_lift)
-        plt.show()
+        max_lift = 1 / 2 * np.cos(np.array(self.lmbd))**2 * np.array(max(cl)) * S * np.cos(self.gamma) * rho * np.cos(
+                self.eta)
+        norm_lift = 1 / 2 * np.cos(np.array(self.lmbd))**2 * np.array(cl) * S * np.cos(self.gamma) * rho * np.cos(
+                self.eta)
+        self.norm_lift_real = np.where(np.arange(len(self.eta)) / len(self.eta) > 0.66, 0, norm_lift)
+        self.max_lift_real = np.where(np.arange(len(self.eta)) / len(self.eta) > 0.66, 0, max_lift)
+        if show:
+            plt.plot(np.arange(len(self.eta)) / len(self.eta), norm_lift)
+            plt.plot(np.arange(len(self.eta)) / len(self.eta), self.norm_lift_real)
+            plt.show()
 
     def conversion_corridor(self):
-        v = np.linspace(32, 200, len(self.alpha))
+        p_max = 50000
         MTOW = 1500 * 9.81
         S = 14
         rho = 1.225
@@ -267,23 +270,45 @@ class TransitionAnim:
         )
         aero = Aero(airplane)
 
+        self.eta = np.flip(self.eta)
+        self.gamma = np.flip(self.gamma)
+        self.lmbd = np.flip(self.lmbd)
+
         cl = []
-        for alpha in self.alpha:
+        cd = []
+
+        for alpha in self.eta:
             cl.append(aero.CL(alpha))
+            cd.append(aero.CD(alpha))
+        print(aero.aero_data.keys())
+        #L = 1 / 2 * np.cos(np.array(self.lmbd))**2 * np.array(cl) * S * np.cos(
+        #    self.gamma) * rho
+        L = np.flip(self.norm_lift_real)
+        v_stall = np.sqrt(MTOW / L)
 
-        L = 1 / 2 * np.cos(np.array(self.lmbd))**2 * np.array(cl) * S * np.cos(
-            self.gamma) * rho
+        v_steady = np.where(np.arange(len(self.eta)) / len(self.eta) < 0.33, 0, np.sqrt(MTOW / (L + 0.5 * np.array(cd) * rho * S * np.tan(self.eta))))
 
-        stall = MTOW / (L * v**2)
+        v_stall = np.sqrt(MTOW / (np.flip(self.max_lift_real) + 0.5 * np.array(cd) * rho * S * np.tan(self.eta)))
 
-        plt.plot(np.flip(stall), (self.alpha))
+        v_min_cl_max = np.sqrt((MTOW - 3.1 * MTOW * np.sin(self.eta)) / np.flip(self.max_lift_real))
+        v_min = np.sqrt((MTOW - 3.1 * MTOW * np.sin(self.eta)) / L)
+
+        v_max = (p_max*np.cos(self.eta)/(0.5*np.array(cd)*rho*S))**(1/3)
+
+        #plt.plot(v_stall, np.rad2deg(self.eta), label='CL_max')
+        plt.plot(v_steady, np.rad2deg(self.eta), label = 'steady')
+        plt.plot(v_min, np.rad2deg(self.eta), label='v_min with max power (unsteady)')
+        plt.plot(v_min_cl_max, np.rad2deg(self.eta), label='v_min with max power max cl (unsteady)')
+        plt.plot(v_max, np.rad2deg(self.eta), label='v_max with max power (unsteady)')
         plt.xlabel('v [m/s]')
         plt.ylabel('n [deg]')
+        plt.xlim(0, 250)
+        plt.legend()
         plt.show()
 
     def run_animation(self,
                       q: float = -110,
-                      n: int = 150,
+                      n: int = 500,
                       save_anim: bool = False) -> None:
 
         dq = q / n
@@ -297,7 +322,7 @@ class TransitionAnim:
         ani = animation.FuncAnimation(self.animation_fig,
                                       self.draw_wing,
                                       frames=n,
-                                      interval=20,
+                                      interval=1,
                                       repeat=False,
                                       init_func=self.init_animation)
         #ani.save(filename="./rotation.gif", writer="pillow", dpi=300)
@@ -317,200 +342,6 @@ class TransitionAnim:
 
         plt.show()
 
-
-#TODO: Move finctions into the class
-
-alpha = 0
-beta = 0
-
-
-def random_color():
-    np.random.seed()
-    rgbl = [np.random.random(), np.random.random(), np.random.random()]
-    return tuple(rgbl)
-
-
-C_z = np.array([[np.cos(alpha), -np.sin(alpha), 0],
-                [np.sin(alpha), np.cos(alpha), 0], [0, 0, 1]])
-
-C_y = np.array([[np.cos(np.pi / 2 - beta), 0,
-                 np.sin(np.pi / 2 - beta)], [0, 1, 0],
-                [-np.sin(np.pi / 2 - beta), 0,
-                 np.cos(np.pi / 2 - beta)]])
-
-
-def optimize_axis():
-    """Function calculating the rotational axis parameters for a given start and end location
-    
-    """
-    alpha = MX.sym('alpha', 1, 1)
-    beta = MX.sym('beta', 1, 1)
-
-    C_z = np.array([[np.cos(alpha), -np.sin(alpha), 0],
-                    [np.sin(alpha), np.cos(alpha), 0], [0, 0, 1]])
-
-    C_y = np.array([[np.cos(np.pi / 2 - beta), 0,
-                     np.sin(np.pi / 2 - beta)], [0, 1, 0],
-                    [-np.sin(np.pi / 2 - beta), 0,
-                     np.cos(np.pi / 2 - beta)]])
-
-    # Calculate axis of rotation
-    z_axis = C_z @ C_y @ np.array([[0], [0], [1]])
-
-    q = 120 / 180 * np.pi
-
-    C_axis = cos(q) * np.eye(3, 3) + sin(q) * np.array(
-        [[0, -z_axis[2, 0], z_axis[1, 0]], [z_axis[2, 0], 0, -z_axis[0, 0]],
-         [-z_axis[1, 0], z_axis[0, 0], 0]]) + (1 - cos(q)) * z_axis * z_axis.T
-    print(C_axis.shape)
-    #C_axis = cos(q)*DM.eye(3) + sin(q)*skew #+ (1-cos(q))*z_axis@z_axis.T
-
-    C_axis1 = C_axis @ np.array([[-1], [0], [0.0]]) - np.array([[0], [-1],
-                                                                [0.0]])
-    C_axis2 = C_axis @ np.array([[-1], [0], [0.1]]) - np.array([[-0.1], [-1],
-                                                                [0.0]])
-
-    g = Function('g', [alpha, beta],
-                 [C_axis1[0, 0], C_axis1[1, 0], C_axis1[2, 0]])
-
-    a = np.linspace(0, np.pi, 100)
-    b = np.linspace(0, np.pi, 100)
-    xv, yv = np.meshgrid(a, b)
-    x = g(xv[0], xv[1])
-    x2 = g(yv[0], yv[1])
-    print(np.max(x[0]))
-
-    fig = plt.figure()
-    ax = fig.add_subplot(projection='3d')
-    ax.set_aspect('equal')
-
-    ax.scatter(xv[0], xv[1], x[0])
-    ax.scatter(yv[0], yv[1], x2[0])
-    plt.show()
-
-    G = rootfinder('G', 'newton', g, {
-        'print_iteration': False,
-        'line_search': False,
-        'abstol': 0.0001
-    })
-    print(G(0.5, 0.5))
-
-
-def run_animation():
-    fig = plt.figure()
-    ax = fig.add_subplot(projection='3d')
-
-
-def visualize(alpha: float, beta: float) -> None:
-
-    C_z = np.array([[np.cos(alpha), -np.sin(alpha), 0],
-                    [np.sin(alpha), np.cos(alpha), 0], [0, 0, 1]])
-
-    C_y = np.array([[np.cos(np.pi / 2 - beta), 0,
-                     np.sin(np.pi / 2 - beta)], [0, 1, 0],
-                    [-np.sin(np.pi / 2 - beta), 0,
-                     np.cos(np.pi / 2 - beta)]])
-
-    fig = plt.figure()
-    ax = fig.add_subplot(projection='3d')
-    ax.set_aspect('equal')
-
-    x_axis = C_z @ C_y @ np.array([1, 0, 0])
-    y_axis = C_z @ C_y @ np.array([0, 1, 0])
-    z_axis = C_z @ C_y @ np.array([0, 0, 1])
-
-    #original axes
-    ax.plot([0, 1], [0, 0], zs=[0, 0], c='blue')
-    ax.plot([0, 0], [0, 1], zs=[0, 0], c='blue')
-    ax.plot([0, 0], [0, 0], zs=[0, 1], c='blue')
-
-    #ax.plot([0, x_axis[0]], [0, x_axis[1]], zs=[0, x_axis[2]], c='blue')
-    #ax.plot([0, y_axis[0]], [0, y_axis[1]], zs=[0, y_axis[2]], c='blue')
-    ax.plot([0, z_axis[0]], [0, z_axis[1]], zs=[0, z_axis[2]], c='red')
-    ax.scatter(0, 0, 0)
-
-    q = 105 / 180 * np.pi / 100  #100/180*np.pi/100
-
-    C_axis = np.cos(q) * np.eye(3, 3) + np.sin(q) * np.array(
-        [[0, -z_axis[2], z_axis[1]], [z_axis[2], 0, -z_axis[0]],
-         [-z_axis[1], z_axis[0], 0]]) + (1 - np.cos(q)) * z_axis * z_axis.T
-
-    C_axis = np.cos(q) * np.eye(3, 3) + np.sin(q) * np.array(
-        [[0, -z_axis[2], z_axis[1]], [z_axis[2], 0, -z_axis[0]],
-         [-z_axis[1], z_axis[0], 0]]) + (1 - np.cos(q)) * z_axis * z_axis.T
-
-    wing1 = np.array([-1, 0, 0.0])
-    wing2 = np.array([-1, 0, 0.1])
-
-    for i in range(100):
-        wing1 = C_axis @ wing1
-        wing2 = C_axis @ wing2
-        ax.plot([0, wing1[0]], [0, wing1[1]], zs=[0, wing1[2]], c='blue')
-        ax.plot([0, wing2[0]], [0, wing2[1]], zs=[0, wing2[2]], c='green')
-
-    plt.show()
-
-
-def visualize2(alpha: float, beta: float) -> None:
-
-    C_z = np.array([[np.cos(alpha), -np.sin(alpha), 0],
-                    [np.sin(alpha), np.cos(alpha), 0], [0, 0, 1]])
-
-    C_y = np.array([[np.cos(np.pi / 2 - beta), 0,
-                     np.sin(np.pi / 2 - beta)], [0, 1, 0],
-                    [-np.sin(np.pi / 2 - beta), 0,
-                     np.cos(np.pi / 2 - beta)]])
-
-    fig = plt.figure()
-    ax = fig.add_subplot(projection='3d')
-    ax.set_aspect('equal')
-
-    x_axis = C_z @ C_y @ np.array([1, 0, 0])
-    y_axis = C_z @ C_y @ np.array([0, 1, 0])
-    z_axis = C_z @ C_y @ np.array([0, 0, 1])
-
-    #original axes
-    ax.plot([0, 1], [0, 0], zs=[0, 0], c='blue')
-    ax.plot([0, 0], [0, 1], zs=[0, 0], c='blue')
-    ax.plot([0, 0], [0, 0], zs=[0, 1], c='blue')
-
-    #ax.plot([0, x_axis[0]], [0, x_axis[1]], zs=[0, x_axis[2]], c='blue')
-    #ax.plot([0, y_axis[0]], [0, y_axis[1]], zs=[0, y_axis[2]], c='blue')
-    ax.plot([0, z_axis[0]], [0, z_axis[1]], zs=[0, z_axis[2]], c='red')
-    ax.scatter(0, 0, 0)
-
-    q = -120 / 180 * np.pi / 3  #100/180*np.pi/100
-
-    C_axis = np.cos(q) * np.eye(3, 3) + np.sin(q) * np.array(
-        [[0, -z_axis[2], z_axis[1]], [z_axis[2], 0, -z_axis[0]],
-         [-z_axis[1], z_axis[0], 0]]) + (1 - np.cos(q)) * z_axis * z_axis.T
-
-    A = np.array([[0.1], [-0.75], [0]])
-    B = np.array([[0.1], [0.25], [0]])
-    C = np.array([[-0.1], [0.25], [0]])
-    D = np.array([[-0.1], [-0.75], [0]])
-
-    for i in range(3 + 1):
-
-        color = random_color()
-
-        ax.plot([A[0], B[0]], [A[1], B[1]], zs=[A[2], B[2]], c=color)
-        ax.plot([B[0], C[0]], [B[1], C[1]], zs=[B[2], C[2]], c=color)
-        ax.plot([C[0], D[0]], [C[1], D[1]], zs=[C[2], D[2]], c=color)
-        ax.plot([A[0], D[0]], [A[1], D[1]], zs=[A[2], D[2]], c=color)
-
-        ax.scatter(A[0], A[1], A[2], c=color)
-        ax.scatter(B[0], B[1], B[2], c=color)
-        ax.scatter(C[0], C[1], C[2], c=color)
-        ax.scatter(D[0], D[1], D[2], c=color)
-
-        A = C_axis @ A
-        B = C_axis @ B
-        C = C_axis @ C
-        D = C_axis @ D
-
-    ax.set_aspect('equal')
-    plt.show()
 
 
 if __name__ == '__main__':

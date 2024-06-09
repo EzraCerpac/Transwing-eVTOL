@@ -24,6 +24,9 @@ class Aero:
     def CL(self, alpha: float) -> float:
         return np.interp(alpha, self.alpha, self.aero_data["CL"])
 
+    def CD(self, alpha: float) -> float:
+        return np.interp(alpha, self.alpha, self.aero_data["CD"])
+
     @property
     def CL_max(self) -> float:
         return np.max(self.aero_data["CL"])
