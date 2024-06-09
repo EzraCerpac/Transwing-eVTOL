@@ -231,7 +231,7 @@ class TransitionAnim:
 
         self.ax.set_aspect('equal')
 
-    def plot_lift(self, show:bool=False) -> None:
+    def plot_lift(self, show: bool = False) -> None:
         S = 14
         rho = 1.225
         airplane = generate_airplane(0)
@@ -246,15 +246,19 @@ class TransitionAnim:
         for alpha in self.eta:
             cl.append(aero.CL(np.rad2deg(alpha)))
         print(cl)
-        max_lift = 1 / 2 * np.cos(np.array(self.lmbd))**2 * np.array(max(cl)) * S * np.cos(self.gamma) * rho * np.cos(
-                self.eta)
-        norm_lift = 1 / 2 * np.cos(np.array(self.lmbd))**2 * np.array(cl) * S * np.cos(self.gamma) * rho * np.cos(
-                self.eta)
-        self.norm_lift_real = np.where(np.arange(len(self.eta)) / len(self.eta) > 0.66, 0, norm_lift)
-        self.max_lift_real = np.where(np.arange(len(self.eta)) / len(self.eta) > 0.66, 0, max_lift)
+        max_lift = 1 / 2 * np.cos(np.array(self.lmbd))**2 * np.array(
+            max(cl)) * S * np.cos(self.gamma) * rho * np.cos(self.eta)
+        norm_lift = 1 / 2 * np.cos(np.array(
+            self.lmbd))**2 * np.array(cl) * S * np.cos(
+                self.gamma) * rho * np.cos(self.eta)
+        self.norm_lift_real = np.where(
+            np.arange(len(self.eta)) / len(self.eta) > 0.66, 0, norm_lift)
+        self.max_lift_real = np.where(
+            np.arange(len(self.eta)) / len(self.eta) > 0.66, 0, max_lift)
         if show:
             plt.plot(np.arange(len(self.eta)) / len(self.eta), norm_lift)
-            plt.plot(np.arange(len(self.eta)) / len(self.eta), self.norm_lift_real)
+            plt.plot(
+                np.arange(len(self.eta)) / len(self.eta), self.norm_lift_real)
             plt.show()
 
     def conversion_corridor(self):
@@ -286,20 +290,33 @@ class TransitionAnim:
         L = np.flip(self.norm_lift_real)
         v_stall = np.sqrt(MTOW / L)
 
-        v_steady = np.where(np.arange(len(self.eta)) / len(self.eta) < 0.33, 0, np.sqrt(MTOW / (L + 0.5 * np.array(cd) * rho * S * np.tan(self.eta))))
+        v_steady = np.where(
+            np.arange(len(self.eta)) / len(self.eta) < 0.33, 0,
+            np.sqrt(MTOW /
+                    (L + 0.5 * np.array(cd) * rho * S * np.tan(self.eta))))
 
-        v_stall = np.sqrt(MTOW / (np.flip(self.max_lift_real) + 0.5 * np.array(cd) * rho * S * np.tan(self.eta)))
+        v_stall = np.sqrt(MTOW /
+                          (np.flip(self.max_lift_real) +
+                           0.5 * np.array(cd) * rho * S * np.tan(self.eta)))
 
-        v_min_cl_max = np.sqrt((MTOW - 3.1 * MTOW * np.sin(self.eta)) / np.flip(self.max_lift_real))
+        v_min_cl_max = np.sqrt((MTOW - 3.1 * MTOW * np.sin(self.eta)) /
+                               np.flip(self.max_lift_real))
         v_min = np.sqrt((MTOW - 3.1 * MTOW * np.sin(self.eta)) / L)
 
-        v_max = (p_max*np.cos(self.eta)/(0.5*np.array(cd)*rho*S))**(1/3)
+        v_max = (p_max * np.cos(self.eta) /
+                 (0.5 * np.array(cd) * rho * S))**(1 / 3)
 
         #plt.plot(v_stall, np.rad2deg(self.eta), label='CL_max')
-        plt.plot(v_steady, np.rad2deg(self.eta), label = 'steady')
-        plt.plot(v_min, np.rad2deg(self.eta), label='v_min with max power (unsteady)')
-        plt.plot(v_min_cl_max, np.rad2deg(self.eta), label='v_min with max power max cl (unsteady)')
-        plt.plot(v_max, np.rad2deg(self.eta), label='v_max with max power (unsteady)')
+        plt.plot(v_steady, np.rad2deg(self.eta), label='steady')
+        plt.plot(v_min,
+                 np.rad2deg(self.eta),
+                 label='v_min with max power (unsteady)')
+        plt.plot(v_min_cl_max,
+                 np.rad2deg(self.eta),
+                 label='v_min with max power max cl (unsteady)')
+        plt.plot(v_max,
+                 np.rad2deg(self.eta),
+                 label='v_max with max power (unsteady)')
         plt.xlabel('v [m/s]')
         plt.ylabel('n [deg]')
         plt.xlim(0, 250)
@@ -341,7 +358,6 @@ class TransitionAnim:
         self.animation_ax.set_zlim(-1, 1)
 
         plt.show()
-
 
 
 if __name__ == '__main__':
