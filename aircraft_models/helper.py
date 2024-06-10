@@ -19,7 +19,7 @@ def xyz_direction_func(
     dir = xyz_2 - xyz_1
     dir_normal_xy = np.array([dir[1], -dir[0], 0])
     normal_direction = xyz_n0 @ np.rotation_matrix_3D(twist, dir_normal_xy)
-    return normal_direction #/ np.linalg.norm(normal_direction)
+    return normal_direction  #/ np.linalg.norm(normal_direction)
 
 
 def xyz_le_func(
