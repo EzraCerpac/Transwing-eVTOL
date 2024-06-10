@@ -5,7 +5,7 @@ from aircraft_models.rotating_wing import chord_cut, p_tip_le, p_tip_te, p_cut_l
     fuselage, wing_airfoil, wing_model, ac, propulsor_fn
 from data.concept_parameters.aircraft import AC
 
-FLUENT_MODEL = True
+FLUENT_MODEL = False
 
 r_joint = p_cut_le - 0.8 * (p_cut_te - p_cut_le)  # JOINT LOCATION
 twist_cut = 0
@@ -60,7 +60,7 @@ total_wing = Wing(
     ],
 )
 
-wings = [total_wing, horizontal_tail] if FLUENT_MODEL else [rotating_wing, root_and_connection, horizontal_tail]
+wings = [total_wing, horizontal_tail] if FLUENT_MODEL else [rotating_wing, root_wing, horizontal_tail]
 
 base_airplane = Airplane(
     name=ac.full_name,
@@ -85,8 +85,8 @@ def rotate_wing(trans_val: float, airplane: Airplane = base_airplane) -> Wing:
     if isinstance(trans_val, np.ndarray):
         trans_val = trans_val[:, np.newaxis, np.newaxis]
     q_range: tuple[float, float] = (0, 110)
-    alpha: float = 45
-    beta: float = 40
+    alpha: float = 50
+    beta: float = 55
     q = trans_val * (q_range[1] - q_range[0]) + q_range[0]
 
     # DEFINE AXIS OF ROTATION AND CREATE ROTATIONAL MATRIX
@@ -167,11 +167,11 @@ trans_wing = AC(
 )
 
 if __name__ == '__main__':
-    airplane = trans_wing.parametric_fn(0.3)
-    airplane.draw_three_view()
-    airplane.draw()
+    # airplane = trans_wing.parametric_fn(1)
+    # airplane.draw_three_view()
+    # airplane.draw()
 
-    # for val in np.linspace(0, 1, 11):
-    #     para = trans_wing.parametric_fn(val)
-    #     para.draw_three_view()
-    # para.draw()
+    for val in np.linspace(0, 1, 11):
+        para = trans_wing.parametric_fn(val)
+        para.draw_three_view()
+    para.draw()

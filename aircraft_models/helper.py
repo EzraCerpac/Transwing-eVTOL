@@ -18,7 +18,8 @@ def xyz_direction_func(
                         airplane.wings[0].xsecs[-2].twist))
     dir = xyz_2 - xyz_1
     dir_normal_xy = np.array([dir[1], -dir[0], 0])
-    return xyz_n0 @ np.rotation_matrix_3D(twist, dir_normal_xy)
+    normal_direction = xyz_n0 @ np.rotation_matrix_3D(twist, dir_normal_xy)
+    return normal_direction #/ np.linalg.norm(normal_direction)
 
 
 def xyz_le_func(

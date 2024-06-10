@@ -9,6 +9,7 @@ class Aero:
         self.ac = ac
 
         self.alpha = alpha
+        self.velocity = ac.data.cruise_velocity
         self.aero_data: dict = self.get_aero_data()
 
     def get_aero_data(self, include_wave_drag: bool = True, model_size: str = 'small') -> dict:
@@ -16,7 +17,7 @@ class Aero:
             airplane=self.ac.parametric,
             op_point=asb.OperatingPoint(
                 atmosphere=asb.Atmosphere(altitude=self.ac.data.cruise_altitude),
-                velocity=self.ac.data.cruise_velocity,
+                velocity=self.velocity,
                 alpha=self.alpha,
             ),
             include_wave_drag=include_wave_drag,
@@ -25,6 +26,16 @@ class Aero:
 
     def CL(self, alpha: float) -> float:
         return np.interp(alpha, self.alpha, self.aero_data["CL"])
+
+    def CD(self, alpha: float = None, CL: float = None) -> float:
+        if alpha is None and CL is None:
+            raise ValueError("Either alpha or CL must be provided.")
+        if alpha is not None and CL is not None:
+            raise ValueError("Only one of alpha or CL can be provided.")
+        if alpha is not None:
+            return np.interp(alpha, self.alpha, self.aero_data["CD"])
+        if CL is not None:
+            return np.interp(CL, self.aero_data["CL"], self.aero_data["CD"])
 
     @property
     def CL_max(self) -> float:
@@ -35,7 +46,7 @@ class Aero:
         return self.alpha[np.argmax(self.aero_data["CL"])]
 
     @property
-    def CD_min(self) -> float:
+    def CD_0(self) -> float:
         return np.min(self.aero_data["CD"])
 
 
