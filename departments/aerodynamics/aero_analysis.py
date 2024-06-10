@@ -37,14 +37,16 @@ class AeroAnalyser:
     def __init__(self,
                  ac: AC,
                  alpha: np.ndarray = DEFAULT_DEGREE_RANGE,
+                 beta: np.ndarray = DEFAULT_DEGREE_RANGE,
                  velocity: np.ndarray = np.linspace(1, 60, RESOLUTION),
                  delta_e: np.ndarray = DEFAULT_DEGREE_RANGE,
-                 trans_val: np.ndarray = np.linspace(0, 1, RESOLUTION)
+                 trans_val: np.ndarray | float = np.linspace(0, 1, RESOLUTION)
                  ):
         self.ac = ac
         self.atmosphere = asb.Atmosphere(altitude=self.ac.data.cruise_altitude)
 
         self.alpha = alpha
+        self.beta = beta
         self.velocity = velocity
         self.delta_e = delta_e
         self.trans_val = trans_val
@@ -53,6 +55,10 @@ class AeroAnalyser:
             AxisVal.ALPHA: {
                 'values': self.alpha,
                 'label': r"Angle of Attack $\alpha$ [deg]",
+            },
+            AxisVal.BETA: {
+                'values': self.beta,
+                'label': r"Sideslip Angle $\beta$ [deg]",
             },
             AxisVal.VELOCITY: {
                 'values': self.velocity,
@@ -68,22 +74,11 @@ class AeroAnalyser:
             },
         }
         self.calc_func_map = {
+            (AxisVal.ALPHA, AxisVal.BETA): self.calc_aero_alpha_beta,
             (AxisVal.ALPHA, AxisVal.VELOCITY): self.calc_aero_alpha_velocity,
             (AxisVal.ALPHA, AxisVal.DELTA_E): self.calc_aero_alpha_delta_e,
             (AxisVal.ALPHA, AxisVal.TRANS_VAl): self.calc_aero_alpha_trans,
         }
-
-    def plot_cl_cd_cm_over_alpha_delta_e(self):
-        self.calc_aero_alpha_delta_e()
-        self.plot_gradient(OutputVal.CL, AxisVal.DELTA_E, AxisVal.ALPHA)
-        self.plot_gradient(OutputVal.CD, AxisVal.DELTA_E, AxisVal.ALPHA)
-        self.plot_gradient(OutputVal.CM, AxisVal.DELTA_E, AxisVal.ALPHA)
-
-    def plot_cl_cd_cm_over_alpha_trans(self):
-        self.calc_aero_alpha_trans()
-        self.plot_gradient(OutputVal.CL, AxisVal.TRANS_VAl, AxisVal.ALPHA)
-        self.plot_gradient(OutputVal.CD, AxisVal.TRANS_VAl, AxisVal.ALPHA)
-        self.plot_gradient(OutputVal.CM, AxisVal.TRANS_VAl, AxisVal.ALPHA)
 
     def run(self, x_val: AxisVal, y_val: AxisVal, output_val: list[OutputVal] = None):
         self.calc_func_map[(x_val, y_val)]()
@@ -95,7 +90,7 @@ class AeroAnalyser:
     def calc_aero_alpha_velocity(self):
         alpha, velocity = np.meshgrid(self.alpha, self.velocity)
         self.aero = asb.AeroBuildup(
-            airplane=self.ac.parametric,
+            airplane=self.ac.parametric_fn(self.trans_val if isinstance(self.trans_val, int | float) else 0),
             op_point=asb.OperatingPoint(
                 atmosphere=self.atmosphere,
                 velocity=velocity.flatten(),
@@ -103,11 +98,25 @@ class AeroAnalyser:
             ),
         ).run()
 
+    def calc_aero_alpha_beta(self):
+        alpha, beta = np.meshgrid(self.alpha, self.beta)
+        self.aero = asb.AeroBuildup(
+            airplane=self.ac.parametric_fn(self.trans_val if isinstance(self.trans_val, int | float) else 0),
+            op_point=asb.OperatingPoint(
+                atmosphere=self.atmosphere,
+                velocity=self.ac.data.cruise_velocity,
+                alpha=alpha.flatten(),
+                beta=beta.flatten(),
+            ),
+        ).run()
+
     def calc_aero_alpha_delta_e(self):
         alpha, delta_e = np.meshgrid(self.alpha, self.delta_e)
         self.aero = asb.AeroBuildup(
             airplane=airplane_with_control_surface_deflection(
-                self.ac, delta_e.flatten()),
+                self.ac.parametric_fn(self.trans_val if isinstance(self.trans_val, int | float) else 0),
+                delta_e.flatten()
+            ),
             op_point=asb.OperatingPoint(
                 atmosphere=self.atmosphere,
                 velocity=self.ac.data.cruise_velocity,
@@ -150,16 +159,14 @@ class AeroAnalyser:
                       np.max(np.abs(self.aero[ouput_val.value])))
         plt.xlabel(self.param_map[x_val]['label'])
         plt.ylabel(self.param_map[y_val]['label'])
-        # p.set_ticks(15, 5, 15, 5)
-        # p.equal()
         return fig, ax
 
 
 if __name__ == '__main__':
     from aircraft_models import trans_wing, rot_wing
     ac = trans_wing
-    a = AeroAnalyser(ac)
-    a.run(AxisVal.ALPHA, AxisVal.TRANS_VAl)
+    a = AeroAnalyser(ac, trans_val=0.4)
+    a.run(AxisVal.ALPHA, AxisVal.BETA)
     #
     # ac = rot_wing
     # a = AeroAnalyser(ac)

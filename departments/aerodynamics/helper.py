@@ -6,9 +6,8 @@ import aerosandbox as asb
 from data.concept_parameters.aircraft import AC
 
 
-def airplane_with_control_surface_deflection(ac: AC,
+def airplane_with_control_surface_deflection(airplane: asb.Airplane,
                                              deflection) -> asb.Airplane:
-    airplane = ac.parametric
     airplane.wings[-1].set_control_surface_deflections(
         {'Elevator': deflection})
     return airplane
@@ -22,6 +21,7 @@ class OutputVal(Enum):
 
 class AxisVal(Enum):
     ALPHA = 'alpha'
+    BETA = 'beta'
     VELOCITY = 'velocity'
     DELTA_E = 'delta_e'
     TRANS_VAl = 'trans_val'
