@@ -9,7 +9,7 @@ from data.concept_parameters.aircraft import AC
 
 
 class Aero:
-    def __init__(self, ac: AC, alpha: np.ndarray = np.linspace(-20, 20, 500)):
+    def __init__(self, ac: AC, alpha: np.ndarray = np.linspace(-30, 30, 501)):
         self.ac = ac
 
         self.alpha = alpha
@@ -19,8 +19,8 @@ class Aero:
             self.trans_aero_data: dict = self.get_aero_over_trans_val(TRANS_VALS)
 
     def get_aero_data(self, include_wave_drag: bool = True, model_size: str = 'small') -> dict:
-        return asb.AeroBuildup(
-            airplane=self.ac.parametric,
+        self.aero_data = asb.AeroBuildup(
+            airplane=rot_wing.parametric,
             op_point=asb.OperatingPoint(
                 atmosphere=asb.Atmosphere(altitude=self.ac.data.cruise_altitude),
                 velocity=self.velocity,
@@ -29,19 +29,20 @@ class Aero:
             include_wave_drag=include_wave_drag,
             model_size=model_size,
         ).run()
+        return self.aero_data
 
     def get_aero_over_trans_val(self, include_wave_drag: bool = True, model_size: str = 'small', trans_vals: np.ndarray = np.linspace(0, 1, 31)) -> dict:
         aero = [asb.AeroBuildup(
-            airplane=self.ac.parametric_fn(trans_val),
+            airplane=trans_wing.parametric_fn(trans_val),
             op_point=asb.OperatingPoint(
                 atmosphere=asb.Atmosphere(altitude=self.ac.data.cruise_altitude),
                 velocity=self.velocity,
                 alpha=self.alpha,
             ),
         ).run() for trans_val in trans_vals]
-        self.aero_data = {output_val: np.array([a[output_val] for a in aero])
+        self.trans_aero_data = {output_val: np.array([a[output_val] for a in aero])
                      for output_val in aero[0].keys()}
-        return self.aero_data
+        return self.trans_aero_data
 
     def CL(self, alpha: float = None, trans_val: float = None) -> float:
         if alpha is None and trans_val is None:
@@ -90,11 +91,11 @@ class Aero:
 
 
 if __name__ == '__main__':
-    from aircraft_models import trans_wing
+    from aircraft_models import trans_wing, rot_wing
 
     a = Aero(trans_wing)
-    vals = np.linspace(0, 1, 50)
+    vals = np.linspace(0, 1, 51)
     fig, ax = plt.subplots(figsize=(8, 6))
-    ax.plot(vals, a.CL_at_trans_val(alpha=2, trans_val=vals), label="CL")
+    ax.plot(vals, a.CD(CL=vals), label="CD")
     plt.show()
     # print(a.CD(CL=1))
