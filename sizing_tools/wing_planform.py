@@ -83,9 +83,11 @@ class WingModel(Model):
 
 
 if __name__ == '__main__':
-    aircraft = Aircraft.load()
+    from aircraft_models import rot_wing
+    ac = rot_wing
    
-    model = WingModel(aircraft)
+    model = WingModel(ac.data)
     print(model.rootcrt, model.tipcrt)
     print(model.aircraft.wing.area)
+    print(model.Reynolds())
     print(model.MAC)
