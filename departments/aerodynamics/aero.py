@@ -3,6 +3,8 @@ import aerosandbox.numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
 
+from aircraft_models import rot_wing, trans_wing
+
 TRANS_VALS = np.linspace(0, 1, 31)
 
 from data.concept_parameters.aircraft import AC
@@ -91,7 +93,7 @@ class Aero:
 
 
 if __name__ == '__main__':
-    from aircraft_models import trans_wing, rot_wing
+    # from aircraft_models import trans_wing, rot_wing
 
     a = Aero(trans_wing)
     vals = np.linspace(0, 1, 51)
