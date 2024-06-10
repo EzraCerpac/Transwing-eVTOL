@@ -68,8 +68,7 @@ class sixengs:
         self.CT = Mto * 9.81 / (rho * pi * self.R**2 *
                                 (self.omega * self.R)**2)
         self.c = 0.0108 * (Mto * 9.81)**0.539 / (self.Neng * self.B)**0.714
-        self.sigma = self.Neng * self.B * self.c / (pi * self.R
-                                                    )  # rotor solidity
+        self.sigma = self.Neng * self.B * self.c / (pi * self.R)  # rotor solidity
         self.CLbar = 6.6 * self.CT / self.sigma
         self.vih = np.sqrt(Mto * 9.81 / (2 * rho * pi * self.R**2))
         self.Vbar = V / self.vih

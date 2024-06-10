@@ -1,8 +1,20 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from math import pi
+from aircraft_models import trans_wing
 from departments.Propulsion.noiseEst import sixengs, class_to_dict, rho, V, k, Mto
 from scipy.optimize import brentq
+
+from departments.aerodynamics.aero import Aero
+
+ac = trans_wing
+aero = Aero(ac)
+ar = ac.data.wing.aspect_ratio
+S = ac.data.wing.area
+
+def getCD(Velocity):
+    cl = 2*Mto*9.81/(rho*Velocity**2*S)
+    return aero.CD(CL=cl)
 
 
 def profilePower(c, Vcurrent):
@@ -19,13 +31,21 @@ def getvi(Vcurrent):
     xmin = 0
     xmax = 5
     vibar = brentq(viFunction, xmin, xmax, args=Vcurrent)
-    print('vibar è:', vibar)
     return vibar * sixengs().vih
 
 
 # also thrust changes as transition begins... need to implement that!
-def inducedPower(Vcurrent):
-    return k * Mto * 9.81 * getvi(Vcurrent)
+def getThrust(Vcurrent, transValue):
+    if 0.5 > 0.35:
+        return (Mto*9.81 - aero.CL_max_at_trans_val(1-transValue)*0.5*rho*Vcurrent**2*S)/np.sin((1-transValue)*pi/2)
+    else:
+        return (Mto*9.81 - aero.CL_at_trans_val((1-transValue), 0)*0.5*rho*Vcurrent**2*S)/np.sin((1-transValue)*pi/2)
+
+
+
+def inducedPower(Vcurrent, transValue):
+    #print(f"Thrust at v{Vcurrent} and t{transValue} is {getThrust(Vcurrent, transValue)}")
+    return k * getThrust(Vcurrent, transValue) * getvi(Vcurrent)
 
 
 def parasitePower(c, Vcurrent):
@@ -42,24 +62,42 @@ def totalPower(c, Vcurrent):
 if __name__ == '__main__':
     c = sixengs()
     class_to_dict(sixengs())
-    v_values = np.linspace(0, 50, 500)
+    v_values = np.linspace(1, 100, 500)
     theta_values = np.linspace(pi / 2, 0, 500)
     Ptot_values = []
     Ppar_values = []
     Pprof_values = []
     Pind_values = []
+    Preqcr = []
+    pprova = []
+    pprova2 = []
+    cruise = False
+
     # induced power at v=0 is not 0... why?
-    print('hover power is', totalPower(c, 0), inducedPower(0))
     for v in v_values:
-        Ptot_values.append(
-            profilePower(c, v) + inducedPower(v) + parasitePower(c, v))
-        Ppar_values.append(parasitePower(c, v))
-        Pprof_values.append(profilePower(c, v))
-        Pind_values.append(inducedPower(v))
-    plt.figure()
-    plt.plot(v_values, Ptot_values, color='yellow')
-    plt.plot(v_values, Ppar_values, color='blue')
-    plt.plot(v_values, Pprof_values, color='red')
-    plt.plot(v_values, Pind_values, color='green')
-    plt.plot()
+        transValue = v/45  # at what stage of the transition are we?
+        pprova.append(getCD(v) * 0.5 * rho * v ** 3 * S)
+        pprova2.append(inducedPower(v, transValue))
+        if v > 34:
+            cruise = True
+            print(f'cruise starts at {v}, {getThrust(v, transValue)}')
+        if cruise:
+            Ptot_values.append(profilePower(c, v) + parasitePower(c, v) + getCD(v) * 0.5 * rho * v ** 3 * S)
+            Ppar_values.append(parasitePower(c, v))
+            Pprof_values.append(profilePower(c, v))
+            Pind_values.append(getCD(v) * 0.5 * rho * v ** 3 * S)
+        else:
+            Ptot_values.append(profilePower(c, v) + inducedPower(v, transValue) + parasitePower(c, v))
+            Ppar_values.append(parasitePower(c, v))
+            Pprof_values.append(profilePower(c, v))
+            Pind_values.append(inducedPower(v, transValue))
+
+    fig, ax = plt.subplots()
+    print(max(Ptot_values), v_values[188])
+    ax.plot(v_values, Ptot_values, color='yellow')
+    # ax.plot(v_values, pprova, color = 'pink')
+    # ax.plot(v_values, pprova2, color = 'black')
+    ax.plot(v_values, Ppar_values, color='blue')
+    ax.plot(v_values, Pprof_values, color='red')
+    ax.plot(v_values, Pind_values, color='green')
     plt.show()
