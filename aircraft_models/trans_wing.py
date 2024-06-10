@@ -60,9 +60,8 @@ total_wing = Wing(
     ],
 )
 
-wings = [total_wing, horizontal_tail] if FLUENT_MODEL else [
-    rotating_wing, root_wing, horizontal_tail
-]
+wings = [total_wing, horizontal_tail
+         ] if FLUENT_MODEL else [rotating_wing, root_wing, horizontal_tail]
 
 base_airplane = Airplane(
     name=ac.full_name,
