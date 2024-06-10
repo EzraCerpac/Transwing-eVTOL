@@ -83,7 +83,7 @@ root_wing = asb.Wing(
             airfoil=wing_airfoil),
     ],
 ).translate([0, 0, 0])
-fuselage = generate_fuselage(wing_pos=np.array([2, 0, 1.4]))
+fuselage = generate_fuselage(wing_pos=np.array([1.5, 0, 1.2]))
 horizontal_tail = asb.Wing(
     name='Horizontal Stabilizer',
     symmetric=True,
@@ -110,7 +110,7 @@ horizontal_tail = asb.Wing(
             twist=0,
             airfoil=tail_airfoil)
     ],
-).translate([4, 0, fuselage.xsecs[-1].xyz_c[2]])
+).translate([4.5, 0, fuselage.xsecs[-1].xyz_c[2]])
 
 parametric = Airplane(
     name=ac.full_name,
@@ -151,7 +151,7 @@ parametric = Airplane(
 
 
 def propulsor_fn(airplane: Airplane = parametric) -> list[asb.Propulsor]:
-    root_offset = 0.2
+    root_offset = 0.1
     tip_offset = 0.1
     le_offset = np.array([-.2, 0, 0])
     xyz_normal = np.array([-1, 0, 0])
