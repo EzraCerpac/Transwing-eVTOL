@@ -96,19 +96,78 @@ class Scissor_plot(Model):
     def dedalpha(self):
         return 0.0
 
+    def Cl_tail(self):
+        aspect_ratio_tail = 2.59
+        return -0.35 * aspect_ratio_tail**(1 / 3)
+
+    def calculate_C_m_ac_w(
+        self
+    ):  # C_m_ac contribution of wing (I dont have the C_m_0_airfoil value)
+        C_m_ac = -0.1678 * (
+            self.aircraft.wing.aspect_ratio * np.cos(
+                (self.parametric.wings[0].mean_sweep_angle())**2) /
+            (self.aircraft.wing.aspect_ratio + 2 * np.cos(
+                (self.parametric.wings[0].mean_sweep_angle()))))
+        return C_m_ac
+        #-0.1678 is Cm0
+    def calculate_delta_fus_C_m_ac(self):  # C_m_ac contribution of fuselage
+        C_L_0 = 0.73
+        delta_fus_C_m_ac = -1.8 * (
+            1 - (2.5 * self.aircraft.fuselage.maximum_section_perimeter) /
+            self.aircraft.fuselage.length) * (
+                np.pi * self.aircraft.fuselage.maximum_section_perimeter *
+                self.aircraft.fuselage.maximum_section_perimeter *
+                self.aircraft.fuselage.length) / (
+                    4 * self.aircraft.wing.area *
+                    self.aircraft.wing.mean_aerodynamic_chord
+                ) * C_L_0 / self.Cl_alpha_tail_less()
+        return delta_fus_C_m_ac
+
+    def C_m_ac(self):
+        C_m_ac = self.calculate_C_m_ac_w() + self.calculate_delta_fus_C_m_ac(
+        ) + 6 * self.calculate_C_m_nac()
+        return C_m_ac
+
+    def Cl_tail_less(
+        self
+    ):  # IDK how to find this value so i assume that C_L_(A-h) is the lift of entire aircraft minus lift of the horizontal tail and then divided by 1/2*rho*v^2*S
+        L_h = self.Cl_tail(
+        ) * 0.5 * Atmosphere(self.aircraft.cruise_altitude).density(
+        ) * self.aircraft.cruise_velocity**2 * self.aircraft.tail.S_th  # lift produced by horizontal stabilizer
+        L_A_h = self.aircraft.total_mass * 9.81 - L_h  # Lift produced by rest of aircraft
+        C_L_A_h = L_A_h / (
+            0.5 * Atmosphere(self.aircraft.cruise_altitude).density() *
+            self.aircraft.cruise_velocity**2 * self.aircraft.wing.area)
+        return C_L_A_h
+
+    def calculate_C_m_nac(self):
+        C_m_0_nac = 0.004  #due to high wing, assume no fillets
+        C_l = 0.73  #assume cruise lift is at 0 angle of attack
+        C_m_nac = C_m_0_nac + C_l * 6 * (
+            (0.3 * 0.4) / (self.aircraft.wing.area * self.aircraft.wing.
+                           mean_aerodynamic_chord * self.Cl_alpha_tail_less()))
+        return C_m_nac
+
     def plot(self):
         x_cg = np.arange(-1, 1, 0.01)
 
-        sh_s = (1 / (
-            (self.Cl_alpha_tail() / self.Cl_alpha_tail_less()) *
-            (1 - self.dedalpha()) *
+        sh_s = (1 / ((self.Cl_alpha_tail() / self.Cl_alpha_tail_less()) *
+                     (1 - self.dedalpha()) *
+                     (5.5 / self.aircraft.wing.mean_aerodynamic_chord) *
+                     self.vh_v()**2)) * x_cg - (self.X_ac() - 0.05) / (
+                         (self.Cl_alpha_tail() / self.Cl_alpha_tail_less()) *
+                         (1 - self.dedalpha()) *
+                         (5.5 / self.aircraft.wing.mean_aerodynamic_chord) *
+                         self.vh_v()**2)  #S.M=0.05
+        sh_s1 = (1 / (
+            (self.Cl_tail() / self.Cl_tail_less()) *
             (5.5 / self.aircraft.wing.mean_aerodynamic_chord) * self.vh_v()**2
-        )) * x_cg - (self.X_ac() - 0.05) / (
-            (self.Cl_alpha_tail() / self.Cl_alpha_tail_less()) *
-            (1 - self.dedalpha()) *
+        )) * x_cg - (self.C_m_ac() / self.Cl_tail_less() - self.X_ac()) / (
+            (self.Cl_tail() / self.Cl_tail_less()) *
             (5.5 / self.aircraft.wing.mean_aerodynamic_chord) * self.vh_v()**2)
         print(self.aircraft.wing.mean_aerodynamic_chord)
         plt.plot(x_cg, sh_s)
+        plt.plot(x_cg, sh_s1)
         plt.hlines(0.2856, xmin=0.256, xmax=0.586, color='red')
         print(self.parametric.wings[0].mean_sweep_angle(0))
         print(self.parametric.wings[0].mean_sweep_angle(0.25))
