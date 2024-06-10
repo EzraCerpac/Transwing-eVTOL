@@ -5,6 +5,8 @@ from aircraft_models.rotating_wing import chord_cut, p_tip_le, p_tip_te, p_cut_l
     fuselage, wing_airfoil, wing_model, ac, propulsor_fn
 from data.concept_parameters.aircraft import AC
 
+FLUENT_MODEL = False
+
 r_joint = p_cut_le - 0.8 * (p_cut_te - p_cut_le)  # JOINT LOCATION
 twist_cut = 0
 
@@ -25,14 +27,45 @@ rotating_wing = Wing(
     ],
 ).translate([0, 0, 0])
 
+
+def gen_wing_connection(root_wing: Wing, rotating_wing: Wing) -> Wing:
+    return Wing(
+        name='Wing Connection',
+        symmetric=True,
+        xsecs=[
+            root_wing.xsecs[-1],
+            rotating_wing.xsecs[0],
+        ],
+    )
+
+root_and_connection = Wing(
+    name='Root and Connection',
+    symmetric=True,
+    xsecs=[
+        root_wing.xsecs[0],
+        root_wing.xsecs[1],
+        rotating_wing.xsecs[0],
+    ],
+
+)
+
+total_wing = Wing(
+    name='Main Wing',
+    symmetric=True,
+    xsecs=[
+        root_wing.xsecs[0],
+        root_wing.xsecs[1],
+        rotating_wing.xsecs[0],
+        rotating_wing.xsecs[1],
+    ],
+)
+
+wings = [total_wing, horizontal_tail] if FLUENT_MODEL else [rotating_wing, root_wing, horizontal_tail]
+
 base_airplane = Airplane(
     name=ac.full_name,
     xyz_ref=[1, 0, 0],
-    wings=[
-        rotating_wing,
-        root_wing,
-        horizontal_tail,
-    ],
+    wings=wings,
     fuselages=[fuselage],
     s_ref=ac.wing.area,
     c_ref=ac.wing.mean_aerodynamic_chord,
@@ -52,8 +85,8 @@ def rotate_wing(trans_val: float, airplane: Airplane = base_airplane) -> Wing:
     if isinstance(trans_val, np.ndarray):
         trans_val = trans_val[:, np.newaxis, np.newaxis]
     q_range: tuple[float, float] = (0, 110)
-    alpha: float = 45
-    beta: float = 40
+    alpha: float = 50
+    beta: float = 55
     q = trans_val * (q_range[1] - q_range[0]) + q_range[0]
 
     # DEFINE AXIS OF ROTATION AND CREATE ROTATIONAL MATRIX
@@ -101,12 +134,16 @@ def rotate_wing(trans_val: float, airplane: Airplane = base_airplane) -> Wing:
     else:
         twist_cut_new = twist_cut_new[:, 0].T
 
-    airplane.wings[0].xsecs[0].xyz_le = p_cut_le_new
-    airplane.wings[0].xsecs[0].chord = chord_cut
-    airplane.wings[0].xsecs[0].twist = np.degrees(twist_cut_new)
-    airplane.wings[0].xsecs[1].xyz_le = p_tip_le_new
-    airplane.wings[0].xsecs[1].chord = wing_model.tipcrt
-    airplane.wings[0].xsecs[1].twist = np.degrees(twist_cut_new)
+    # UPDATE THE WING
+    airplane.wings[0].xsecs[-2].xyz_le = p_cut_le_new
+    airplane.wings[0].xsecs[-2].chord = chord_cut
+    airplane.wings[0].xsecs[-2].twist = np.degrees(twist_cut_new)
+    airplane.wings[0].xsecs[-1].xyz_le = p_tip_le_new
+    airplane.wings[0].xsecs[-1].chord = wing_model.tipcrt
+    airplane.wings[0].xsecs[-1].twist = np.degrees(twist_cut_new)
+    # UPDATE THE WING CONNECTION
+    # airplane.wings[1].xsecs[-1] = airplane.wings[0].xsecs[0]
+    # UPDATE THE PROPULSION SYSTEM
     airplane.propulsors = propulsor_fn(airplane)
     return airplane.wings[0]
 
@@ -117,6 +154,7 @@ def generate_airplane(trans_val: float) -> Airplane:
     :param trans_val: Transition percentage value (between 0 and 1)
     :return: Airplane object
     """
+    trans_val = trans_val or 1e-8
     airplane = base_airplane.copy()
     rotate_wing(trans_val, airplane)
     return airplane
@@ -136,4 +174,4 @@ if __name__ == '__main__':
     for val in np.linspace(0, 1, 11):
         para = trans_wing.parametric_fn(val)
         para.draw_three_view()
-    # para.draw()
+    para.draw()

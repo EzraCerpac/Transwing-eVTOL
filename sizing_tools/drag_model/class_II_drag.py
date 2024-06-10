@@ -6,7 +6,7 @@ from data.concept_parameters.aircraft import AC
 from sizing_tools.model import Model
 from sizing_tools.wing_planform import WingModel
 
-EXTRA_DRAG_MARGIN = 1.20
+EXTRA_DRAG_MARGIN = 1  # was 1.2
 
 
 class ClassIIDrag(Model):
@@ -18,6 +18,7 @@ class ClassIIDrag(Model):
                  altitude: float = None) -> None:
         super().__init__(ac.data)
         self.ac = ac
+        self.parametric = ac.parametric
         self.velocity = velocity if velocity is not None else self.aircraft.cruise_velocity
         self.altitude = altitude if altitude is not None else self.aircraft.cruise_altitude
         wing_model = WingModel(self.aircraft, altitude)
@@ -32,20 +33,20 @@ class ClassIIDrag(Model):
         self.mu = self.atmosphere.dynamic_viscosity()
         self.Reynolds = lambda l: self.operating_point.reynolds(l)
 
-        #### INPUTS #####
         # Fuselage
-        self.l_fus = self.aircraft.fuselage.length  # m
-        self.d_fus = self.aircraft.fuselage.maximum_section_perimeter  # m
+        self.l_fus = self.parametric.fuselages[0].length()
+        self.d_fus = np.max(
+            [sec.width for sec in self.parametric.fuselages[0].xsecs])
 
         # Airfoil # double check all of these
         airfoil = ac.parametric.wings[0].xsecs[0].airfoil
-        self.root_cord = wing_model.rootcrt  # m
+        self.root_cord = ac.parametric.wings[0].xsecs[0].chord
         self.MAC = wing_model.MAC
         x_over_c_sample = np.linspace(0, 1, 101)
         self.t_over_c = airfoil.max_thickness(x_over_c_sample)
         self.x_over_c_at_t_over_c = np.argmax(
             airfoil.local_thickness(x_over_c_sample) == self.t_over_c) / len(
-            x_over_c_sample)
+                x_over_c_sample)
 
         # Wing # also check these
         self.S_wet = 30  # m2
@@ -87,8 +88,8 @@ class ClassIIDrag(Model):
 
     def C_f_RAYMER(self, l, lam_percent):
         C_f_lam = 1.328 / np.sqrt(self.Reynolds(l))
-        C_f_tur = 0.455 / ((np.log10(self.Reynolds(l))) ** 2.58 *
-                           (1 + 0.144 * self.mach ** 2) ** 0.65)
+        C_f_tur = 0.455 / ((np.log10(self.Reynolds(l)))**2.58 *
+                           (1 + 0.144 * self.mach**2)**0.65)
         return C_f_lam * (lam_percent / 100) + C_f_tur * (1 -
                                                           (lam_percent / 100))
 
@@ -102,9 +103,9 @@ class ClassIIDrag(Model):
         L_2 = 2
         L_3 = 5  # 35%
         S_wet_fus = (np.pi * self.d_fus / 4) * (
-                (1 / (3 * L_1 ** 2)) *
-                ((4 * L_1 ** 2 + self.d_fus ** 2 / 4) ** 1.5 - self.d_fus ** 3 / 8) -
-                self.d_fus + 4 * L_2 + 2 * np.sqrt(L_3 ** 2 + self.d_fus ** 2 / 4))
+            (1 / (3 * L_1**2)) *
+            ((4 * L_1**2 + self.d_fus**2 / 4)**1.5 - self.d_fus**3 / 8) -
+            self.d_fus + 4 * L_2 + 2 * np.sqrt(L_3**2 + self.d_fus**2 / 4))
 
         # Flat Plate Skin Friction Coefficient
         lam_percent_fus = 25  # Assumption, probably between 25 and 35
@@ -116,10 +117,10 @@ class ClassIIDrag(Model):
         # Component Form Factor
         FF_wing = (1 +
                    (0.6 / self.x_over_c_at_t_over_c * self.MAC) * self.t_over_c
-                   + 100 * (self.t_over_c ** 4)) * (1.34 * self.mach ** 0.18 *
-                                                    np.cos(self.sweep) ** 0.28)
+                   + 100 * (self.t_over_c**4)) * (1.34 * self.mach**0.18 *
+                                                  np.cos(self.sweep)**0.28)
         f = self.l_fus / self.d_fus
-        FF_fus = 1 + 60 / (f ** 3) + f / 400
+        FF_fus = 1 + 60 / (f**3) + f / 400
         FF_nacelle = 1 + 0.35 / f
 
         # Component interference factor
@@ -150,7 +151,7 @@ class ClassIIDrag(Model):
         L_tc = 1.2 if self.x_tc >= 0.3 else 2.0
 
         return R_wf * R_ls * C_f_w * (1 + L_tc + 100 *
-                                      (self.t_over_c) ** 4) * S_wet_w / self.S
+                                      (self.t_over_c)**4) * S_wet_w / self.S
 
     def fus_CD0(self):  # dont use
         self.param_check()
@@ -159,47 +160,42 @@ class ClassIIDrag(Model):
         L_2 = self.l_fus * 0.5
         L_3 = self.l_fus * 0.35
         S_wet_fus = (np.pi * self.d_fus / 4) * (
-                (1 / (3 * L_1 ** 2)) *
-                ((4 * L_1 ** 2 + self.d_fus ** 2 / 4) ** 1.5 - self.d_fus ** 3 / 8) -
-                self.d_fus + 4 * L_2 + 2 * np.sqrt(L_3 ** 2 + self.d_fus ** 2 / 4))
+            (1 / (3 * L_1**2)) *
+            ((4 * L_1**2 + self.d_fus**2 / 4)**1.5 - self.d_fus**3 / 8) -
+            self.d_fus + 4 * L_2 + 2 * np.sqrt(L_3**2 + self.d_fus**2 / 4))
 
         R_wf = 1.045  # See Roskam VI figure 4.1, depends on Fuselage Reynolds number and Mach number
         C_f_fus = 0.00225  # See Roskam VI figure 4.3, depends on Fuselage Reynolds number and Mach number
 
         return R_wf * C_f_fus * (
-                1 + 60 / (self.l_fus / self.d_fus) ** 3 + 0.0025 *
-                (self.l_fus / self.d_fus)) * S_wet_fus / self.S
+            1 + 60 / (self.l_fus / self.d_fus)**3 + 0.0025 *
+            (self.l_fus / self.d_fus)) * S_wet_fus / self.S
 
     @property
     def CD0(self):
         return self.total_CD0_RAYMER()
 
     def CD_from_CL(self, CL: float):
-        return self.CD0 + CL ** 2 / (np.pi * self.aircraft.wing.aspect_ratio * self.aircraft.wing.oswald_efficiency_factor)
+        return self.CD0 + CL**2 / (np.pi * self.aircraft.wing.aspect_ratio *
+                                   self.aircraft.wing.oswald_efficiency_factor)
 
     def CL_from_alpha(self, alpha: float):
-        return self.ac.parametric.wings[0].xsecs[0].airfoil.get_aero_from_neuralfoil(
-            alpha,
-            self.Reynolds(self.MAC),
-            self.mach
-        )['CL']
+        return self.ac.parametric.wings[0].xsecs[
+            0].airfoil.get_aero_from_neuralfoil(alpha, self.Reynolds(self.MAC),
+                                                self.mach)['CL']
 
     def CD_from_alpha(self, alpha: float):
         return self.CD_from_CL(self.CL_from_alpha(alpha))
 
     def CM_from_alpha(self, alpha: float):
-        return self.ac.parametric.wings[0].xsecs[0].airfoil.get_aero_from_neuralfoil(
-            alpha,
-            self.Reynolds(self.MAC),
-            self.mach
-        )['CM']
+        return self.ac.parametric.wings[0].xsecs[
+            0].airfoil.get_aero_from_neuralfoil(alpha, self.Reynolds(self.MAC),
+                                                self.mach)['CM']
 
     def aero_dict(self, alpha: float) -> dict[str, any]:
-        aero_data = self.ac.parametric.wings[0].xsecs[0].airfoil.get_aero_from_neuralfoil(
-            alpha,
-            self.Reynolds(self.MAC),
-            self.mach
-        )
+        aero_data = self.ac.parametric.wings[0].xsecs[
+            0].airfoil.get_aero_from_neuralfoil(alpha, self.Reynolds(self.MAC),
+                                                self.mach)
         aero_data['CD'] = self.CD_from_CL(aero_data['CL'])
         aero_data['Cm'] = aero_data['CM']
         return aero_data

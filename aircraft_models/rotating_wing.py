@@ -6,7 +6,8 @@ from aerosandbox import Airplane, Wing, WingXSec, Airfoil, ControlSurface
 import aerosandbox.numpy as np
 from aerosandbox.numpy import tan, tand
 
-from aircraft_models.helper import xyz_le_func, xyz_direction_func
+from aircraft_models.helper import xyz_le_func, xyz_direction_func, generate_fuselage
+from data.concept_parameters.aircraft_components import Fuselage
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
@@ -22,6 +23,16 @@ wing_model = WingModel(ac, altitude=ac.cruise_altitude)
 wing_airfoil = Airfoil("E560")
 # wing_airfoil = Airfoil("E423")
 tail_airfoil = Airfoil("naca0012")
+
+# analysis_specific_options = {
+#     Airplane: {asb.AeroBuildup: dict(
+#         profile_drag_coefficient=0.8,
+#     )},
+#     Fuselage: {asb.AeroBuildup: dict(
+#         E_wave_drag=5,  # Wave drag efficiency factor
+#         nose_fineness_ratio=1,  # Fineness ratio (length / diameter) of the nose section of the fuselage.
+#     )},
+# }
 
 cut = ac.hinge_location
 chord_cut = wing_model.rootcrt - (wing_model.rootcrt - wing_model.tipcrt) * cut
@@ -72,6 +83,7 @@ root_wing = asb.Wing(
             airfoil=wing_airfoil),
     ],
 ).translate([0, 0, 0])
+fuselage = generate_fuselage(wing_pos=np.array([1.5, 0, 1.2]))
 horizontal_tail = asb.Wing(
     name='Horizontal Stabilizer',
     symmetric=True,
@@ -98,15 +110,7 @@ horizontal_tail = asb.Wing(
             twist=0,
             airfoil=tail_airfoil)
     ],
-).translate([4, 0, 0.06])
-fuselage = asb.Fuselage(
-    name='Fuselage',
-    xsecs=[
-        asb.FuselageXSec(
-            xyz_c=[(0.8 * xi - 0.2) * ac.fuselage.length, 0, 0.1 * xi - 0.03],
-            radius=.75 * Airfoil("dae51").local_thickness(x_over_c=xi) /
-            Airfoil("dae51").max_thickness()) for xi in np.cosspace(0, 1, 30)
-    ])
+).translate([4.5, 0, fuselage.xsecs[-1].xyz_c[2]])
 
 parametric = Airplane(
     name=ac.full_name,
@@ -142,10 +146,12 @@ parametric = Airplane(
         horizontal_tail,
     ],
     fuselages=[fuselage],
+    # analysis_specific_options=analysis_specific_options[Airplane],
 )
 
+
 def propulsor_fn(airplane: Airplane = parametric) -> list[asb.Propulsor]:
-    root_offset = 0.2
+    root_offset = 0.1
     tip_offset = 0.1
     le_offset = np.array([-.2, 0, 0])
     xyz_normal = np.array([-1, 0, 0])
@@ -155,7 +161,8 @@ def propulsor_fn(airplane: Airplane = parametric) -> list[asb.Propulsor]:
             xyz_c=xyz_le_func(x, airplane, offset=le_offset),
             xyz_normal=xyz_direction_func(x, airplane, xyz_n0=xyz_normal),
             radius=ac.propeller_radius,
-        ) for i, x in enumerate(np.linspace(root_offset, 1 - tip_offset, ac.motor_prop_count // 2))
+        ) for i, x in enumerate(
+            np.linspace(root_offset, 1 - tip_offset, ac.motor_prop_count // 2))
     ]
     props = left_props.copy()
     for prop in left_props:
