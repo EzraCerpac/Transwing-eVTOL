@@ -87,7 +87,4 @@ if __name__ == '__main__':
     ac = rot_wing
    
     model = WingModel(ac.data)
-    print(model.rootcrt, model.tipcrt)
-    print(model.aircraft.wing.area)
-    print(model.Reynolds())
-    print(model.MAC)
+    print(model.le_sweep, model.sweep)
