@@ -25,15 +25,16 @@ class HexacopterControlAnalysis(Model):
         
         self.A = np.block([[np.zeros((4, 4)), np.eye(4)], [np.zeros((4, 8))]])
         self.g0 = 9.8  # m/s^2
-        self.Jx, self.Jy, self.Jz = 2., 0.0478, 0.0599
+        self.Jx, self.Jy, self.Jz = 1188.061, 213.033, 1205.822
         self.Jf = np.diag([-self.aircraft.total_mass, self.Jx, self.Jy, self.Jz])
         self.B = np.block([[np.zeros((4, 4))], [np.linalg.inv(self.Jf)]])
         self.rotor_angle = np.array([0, np.pi/3, 2*np.pi/3, np.pi, 4*np.pi/3, 5*np.pi/3])
         self.s2i = {'anticlockwise': 1, 'clockwise': -1}
+        
         self.rotor_dir = np.array([self.s2i['clockwise'], self.s2i['anticlockwise'], self.s2i['clockwise'],
                                    self.s2i['anticlockwise'], self.s2i['clockwise'], self.s2i['anticlockwise']])
-        self.rotor_ku = np.array([0.1] * 6)
-        self.rotor_d = np.array([0.275] * 6)
+        self.rotor_ku = np.array([0.1,0.1,0.1,0.1,0.1,0.1])
+        self.rotor_d = np.array([0.275,0.275,0.275,0.275,0.275,0.275,])
         self.rotor_Yita = np.array([1, 1, 1, 1, 1, 1])
         self.Bf = self.compute_Bf()
         self.Tg = np.array([self.aircraft.total_mass * self.g0, 0, 0, 0])
