@@ -25,7 +25,7 @@ class HexacopterControlAnalysis(Model):
         
         self.A = np.block([[np.zeros((4, 4)), np.eye(4)], [np.zeros((4, 8))]])
         self.g0 = 9.8  # m/s^2
-        self.Jx, self.Jy, self.Jz = , 0.0478, 0.0599
+        self.Jx, self.Jy, self.Jz = 2., 0.0478, 0.0599
         self.Jf = np.diag([-self.aircraft.total_mass, self.Jx, self.Jy, self.Jz])
         self.B = np.block([[np.zeros((4, 4))], [np.linalg.inv(self.Jf)]])
         self.rotor_angle = np.array([0, np.pi/3, 2*np.pi/3, np.pi, 4*np.pi/3, 5*np.pi/3])
