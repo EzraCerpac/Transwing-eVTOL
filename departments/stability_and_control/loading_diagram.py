@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import sys
 import os
 
+from utility.plotting import show
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
@@ -26,8 +27,9 @@ class Loading_diagram:
         self.parametric = ac.parametric
         self.aircraft = ac.data
 
-    @property
-    def diagram(self) -> float:
+    @show
+    def diagram(self) -> tuple[plt.Figure, plt.Axes]:
+        fig, ax = plt.subplots()
         oew_coordinate = 2.51 #TODO update 2.51
         Luggage_coordinate = 3.2 #TODO update 3.2
         back_seat_coordinate = 2.7 
@@ -66,8 +68,7 @@ class Loading_diagram:
         plt.plot([luggage_x, f2b_passenger_x], [luggage, f2b_passenger], color = 'red', label='f2b passengers')
         plt.plot([f2b_passenger_x, passenger_x], [f2b_passenger, passenger], color = 'red')
         plt.legend()
-        plt.show()
-        return 
+        return fig, ax
     
     def mass_CG(self, mass_kg={}, arms_m={}) -> tuple[float, float]:
         '''Function to calculate total mass and center of gravity.
