@@ -94,7 +94,7 @@ def rotate_wing(trans_val: float, airplane: Airplane = base_airplane) -> Wing:
     alpha = np.deg2rad(alpha)
     beta = np.deg2rad(beta)
     rot_axis = np.array([[-np.sin(alpha)], [-np.cos(alpha)], [np.sin(beta)]])
-    rot_axis = rot_axis/np.linalg.norm(rot_axis)
+    rot_axis = rot_axis / np.linalg.norm(rot_axis)
 
     dq = -np.deg2rad(q)
     C_axis = (np.cos(dq) * np.eye(3, 3) +
