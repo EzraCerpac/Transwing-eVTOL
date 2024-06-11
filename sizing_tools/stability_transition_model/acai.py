@@ -2,7 +2,9 @@ import numpy as np
 from scipy.linalg import null_space
 import itertools
 
+
 class ACAICalculator():
+
     def __init__(self, Bf, fcmin, fcmax, Tg):
         self.Bf = Bf
         self.fcmin = fcmin
@@ -15,8 +17,8 @@ class ACAICalculator():
         m = sz[1]
 
         # Index matrix S1
-        M = np.arange(1, m+1)
-        S1 = np.array([np.array(i) for i in itertools.combinations(M, n-1)])
+        M = np.arange(1, m + 1)
+        S1 = np.array([np.array(i) for i in itertools.combinations(M, n - 1)])
         sm = S1.shape[0]
 
         # fc

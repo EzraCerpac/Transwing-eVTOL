@@ -2,6 +2,7 @@ import sys
 import os
 
 import aerosandbox as asb
+import matplotlib.pyplot as plt
 from aerosandbox import Airplane, Wing, WingXSec, Airfoil, ControlSurface
 import aerosandbox.numpy as np
 from aerosandbox.numpy import tan, tand
@@ -183,5 +184,6 @@ rot_wing = AC(
 )
 
 if __name__ == '__main__':
-    parametric.draw_three_view()
+    # parametric.draw_three_view()
     # parametric.draw()
+    wing_airfoil.draw(draw_mcl=True, draw_markers=False, show=True)

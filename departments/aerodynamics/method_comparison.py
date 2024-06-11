@@ -31,7 +31,10 @@ class AeroMethodComparison:
             'VLM':
                 lambda: vlm(ac=self.ac, alpha=self.alpha)
         }
-        methods = methods or [k for k in methods_map.keys() if k not in ['AeroBuildup (no wave drag)']]
+        methods = methods or [k for k in methods_map.keys() if k not in [
+            'AeroBuildup (no wave drag)',
+            'AeroBuildup with cut'
+        ]]
         self.methods: dict[str, Callable[[], dict[str, any]]] = {k: methods_map[k] for k in methods}
         self.results: dict[str, dict[str, any]] = {k: {} for k in self.methods.keys()}
 
@@ -40,22 +43,39 @@ class AeroMethodComparison:
             self.results[method_name] = method()
 
     @show
-    def plot_results(self, output_val: list[OutputVal] = None) -> tuple[plt.Figure, plt.Axes]:
+    def plot_results(self,
+            output_val: list[OutputVal] = [OutputVal.CL, OutputVal.CD],
+            show_CL_CD: bool = True
+        ) -> tuple[plt.Figure, plt.Axes]:
         if self.results is None:
             self.run()
         if output_val is None:
-            output_val = list(OutputVal)
-        fig, axs = plt.subplots(1, len(output_val), figsize=(len(output_val) * 5, 8))
+            output_val = [OutputVal.CL, OutputVal.CD]
+        n_axs = len(output_val) + show_CL_CD
+        fig, axs = plt.subplots(1, n_axs, figsize=(n_axs * 5, 8))
         for i, ov in enumerate(output_val):
             for method_name, result in self.results.items():
                 axs[i].plot(self.alpha, result[ov.value], label=method_name)
             axs[i].set_xlabel(label[AxisVal.ALPHA])
             axs[i].set_ylabel(label[ov])
+        for method_name, result in self.results.items():
+            axs[i+1].plot(result[OutputVal.CD.value], result[OutputVal.CL.value], label=method_name)
+        axs[i+1].set_xlabel(label[OutputVal.CD])
+        axs[i+1].set_ylabel(label[OutputVal.CL])
+        axs[i+1].set_xlim(left=0)
+        for ax in axs:
+            ax.grid()
         axs[0].legend(loc='upper left')
         return fig, axs
 
 
 if __name__ == '__main__':
-    aero_method_comparison = AeroMethodComparison(ac=rot_wing)
+    aero_method_comparison = AeroMethodComparison(ac=rot_wing, methods=[
+        'AeroBuildup',
+        'Class II',
+        # 'AeroBuildup (no wave drag)',
+        # 'AeroBuildup with cut',
+        # 'VLM'
+    ])
     aero_method_comparison.run()
-    aero_method_comparison.plot_results()
+    aero_method_comparison.plot_results([OutputVal.CL, OutputVal.CD])
