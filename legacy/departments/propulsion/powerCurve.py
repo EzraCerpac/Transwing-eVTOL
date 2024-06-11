@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from math import pi
 from aircraft_models import trans_wing
-from departments.Propulsion.noiseEst import sixengs, class_to_dict, rho, V, k, Mto
+from departments.Propulsion.noiseEst import Sixengs, class_to_dict, rho, V, k, Mto
 from scipy.optimize import brentq
 
 from departments.aerodynamics.aero import Aero
@@ -24,14 +24,14 @@ def profilePower(c, Vcurrent):
 
 
 def viFunction(x, Vcurrent=0):
-    return x**4 + (Vcurrent / sixengs().vih)**2 * x**2 - 1
+    return x**4 + (Vcurrent / Sixengs().vih)**2 * x**2 - 1
 
 
 def getvi(Vcurrent):
     xmin = 0
     xmax = 5
     vibar = brentq(viFunction, xmin, xmax, args=Vcurrent)
-    return vibar * sixengs().vih
+    return vibar * Sixengs().vih
 
 
 # also thrust changes as transition begins... need to implement that!
@@ -60,8 +60,8 @@ def totalPower(c, Vcurrent):
 # Power loss: 3-6% of main rotors (total) power
 
 if __name__ == '__main__':
-    c = sixengs()
-    class_to_dict(sixengs())
+    c = Sixengs()
+    class_to_dict(Sixengs())
     v_values = np.linspace(1, 100, 500)
     theta_values = np.linspace(pi / 2, 0, 500)
     Ptot_values = []

@@ -46,7 +46,7 @@ def toimp_power(Power_in_kW):
     return Power_in_kW * 1.34102
 
 
-class sixengs:
+class Sixengs:
 
     def __init__(self):
         self.Neng = 6
@@ -68,9 +68,9 @@ class sixengs:
         self.CT = Mto * 9.81 / (rho * pi * self.R**2 *
                                 (self.omega * self.R)**2)
         self.c = 0.0108 * (Mto * 9.81)**0.539 / (self.Neng * self.B)**0.714
-        self.sigma = self.Neng * self.B * self.c / (pi * self.R)  # rotor solidity
+        self.sigma = self.B * self.c / (pi * self.R)  # rotor solidity
         self.CLbar = 6.6 * self.CT / self.sigma
-        self.vih = np.sqrt(Mto * 9.81 / (2 * rho * pi * self.R**2))
+        self.vih = np.sqrt(Mto * 9.81 / (6*2 * rho * pi * self.R**2))
         self.Vbar = V / self.vih
         self.vi = self.vih * self.vibar
 
@@ -135,7 +135,7 @@ correction = np.array([-2, -9, -13, -16, -18, -19, -20, -20, -20,
 def harmonicNoise(choice, B):
     harmonicNoise = []
     if choice == "sei":
-        config = sixengs()
+        config = Sixengs()
         configuration = six
     else:
         config = eightengs()
@@ -152,7 +152,7 @@ def harmonicNoise(choice, B):
 def total_noise(choice, B):
     totNoiseVec = []
     if choice == "sei":
-        config = sixengs()
+        config = Sixengs()
     else:
         config = eightengs()
     harmonicNoiseVec = harmonicNoise(choice, B)
@@ -166,7 +166,7 @@ def total_noiseA(choice, B):
     totNoiseVec = total_noise(choice, B)
     i = 0
     if choice == "sei":
-        config = sixengs()
+        config = Sixengs()
     else:
         config = eightengs()
     for value in totNoiseVec:
@@ -177,7 +177,7 @@ def total_noiseA(choice, B):
 
 def plot_harm(choice):
     if choice == "sei":
-        config = sixengs()
+        config = Sixengs()
     else:
         config = eightengs()
     freqArray = []
@@ -195,5 +195,5 @@ def plot_harm(choice):
 if __name__ == '__main__':
     # choice is "sei" if you want to compute noise levels for 6 engines
     # type "otto" if you are interested in 8 engines
-    class_to_dict(sixengs())
+    class_to_dict(Sixengs())
     plot_harm("sei")

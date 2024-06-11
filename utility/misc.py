@@ -21,3 +21,12 @@ def get_caller_file_name(n_back: int = 2, n_dirs: int = 1) -> str:
     file_name = file_name[last_slash + 1:].replace('.py', '')
 
     return file_name
+
+
+import numpy as np
+
+def interpolate_nans(data):
+    nans = np.isnan(data)
+    x = lambda z: z.nonzero()[0]
+    data[nans] = np.interp(x(nans), x(~nans), data[~nans])
+    return data
