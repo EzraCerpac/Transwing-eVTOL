@@ -83,14 +83,15 @@ class CruiseOpt(Optimalisation):
         # self.a_z = a * np.sin(self.dyn.gamma[:-1])
         self.opti.subject_to([
             self.dyn.x_e[1] == 0,
-            self.dyn.x_e[-1] == self.aircraft.range,
+            self.dyn.x_e[-1] == self.aircraft.range - 8000,
             np.diff(self.dyn.x_e) > 0,
-            self.dyn.altitude[0] == 0,
-            self.dyn.altitude >= 0,
-            self.dyn.altitude[-1] == 0,
-            self.dyn.speed[0] == self.aircraft.v_stall,
-            self.dyn.speed >= self.dyn.speed[-1],
-            # self.dyn.speed[-1] <= self.aircraft.v_stall,
+            self.dyn.altitude[0] == 100,
+            self.dyn.altitude >= 100,
+            self.dyn.altitude[-1] == 100,
+            self.dyn.speed[0] == 45,
+            self.dyn.speed[:self.n_timesteps//2] >= self.dyn.speed[0],
+            self.dyn.speed[self.n_timesteps//2:] >= self.dyn.speed[-1],
+            self.dyn.speed[-1] >= 40,
             self.dyn.gamma[0] == 0,
             self.dyn.gamma[-1] == 0,
             self.dyn.gamma < np.radians(15),
@@ -114,8 +115,8 @@ class CruiseOpt(Optimalisation):
             alpha_derivative > -.5,
             # thrust_derivative < .001,
             # thrust_derivative > -.01,
-            # np.diff(self.thrust_level) < 0.01,
-            # np.diff(self.thrust_level) > -0.01,
+            np.diff(self.thrust_level) < 0.01,
+            np.diff(self.thrust_level) > -0.01,
             acceleration < .1,
             acceleration > -.1,
             vertical_acceleration < .1,
@@ -214,7 +215,7 @@ class CruiseOpt(Optimalisation):
 if __name__ == '__main__':
     from aircraft_models import rot_wing
     ac = rot_wing
-    ac.data.v_stall = 20.
+    # ac.data.v_stall = 20.
     mission_profile_optimization = CruiseOpt(ac,
                                              opt_param=OptParam.ENERGY,
                                              n_timesteps=80,
@@ -224,7 +225,8 @@ if __name__ == '__main__':
     # df = mission_profile_optimization.to_dataframe()
     # print(df.to_string())
 
-    mission_profile_optimization.plot_logs_over_time()
+    # mission_profile_optimization.plot_logs_over_time()
+    mission_profile_optimization.plot_over_time()
     mission_profile_optimization.plot_over_distance()
 
     # aero = CLCDPolar(ac.parametric,
