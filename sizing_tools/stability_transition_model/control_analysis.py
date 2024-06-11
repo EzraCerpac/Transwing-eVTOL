@@ -19,8 +19,7 @@ from acai import ACAICalculator
 
 
 class HexacopterControlAnalysis(Model):
-   
-        
+
     def __init__(self, aircraft: AC, cg):
         super().__init__(aircraft.data)
         self.aircraft = aircraft.data
@@ -35,25 +34,23 @@ class HexacopterControlAnalysis(Model):
 
         r_cg = np.array([cg, 0, 0])
 
-        r_cg_engine = r_tip_engine-r_cg
-        d = np.sqrt(r_cg_engine[:, 0]*2+r_cg_engine[:,1]*2)
+        r_cg_engine = r_tip_engine - r_cg
+        d = np.sqrt(r_cg_engine[:, 0] * 2 + r_cg_engine[:, 1] * 2)
 
         angles = np.arctan2(r_cg_engine[:, 0], r_cg_engine[:, 1])
 
         print(np.rad2deg(angles))
         print(tmp)
 
-
-
-        
-        
         self.A = np.block([[np.zeros((4, 4)), np.eye(4)], [np.zeros((4, 8))]])
         self.g0 = 9.8  # m/s^2
         self.Jx, self.Jy, self.Jz = 213.033, 1188.061, 1205.822
         self.Jf = np.diag(
             [-self.aircraft.total_mass, self.Jx, self.Jy, self.Jz])
         self.B = np.block([[np.zeros((4, 4))], [np.linalg.inv(self.Jf)]])
-        angles = np.array([angles[1], angles[2], angles[-1], angles[-2], angles[-3], angles[0]])
+        angles = np.array([
+            angles[1], angles[2], angles[-1], angles[-2], angles[-3], angles[0]
+        ])
         # print(np.rad2deg(angles))
         self.rotor_angle = np.array(angles)
         self.s2i = {'anticlockwise': 1, 'clockwise': -1}
@@ -127,9 +124,6 @@ class HexacopterControlAnalysis(Model):
             print('controllable')
 
         return ACAI
-
-
-
 
 
 if __name__ == "__main__":
