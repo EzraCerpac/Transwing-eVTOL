@@ -1,6 +1,7 @@
 import aerosandbox as asb
 import aerosandbox.numpy as np
 import matplotlib.pyplot as plt
+from casadi import MX
 from scipy.interpolate import griddata
 
 from aircraft_models import rot_wing, trans_wing
@@ -98,7 +99,8 @@ class Aero:
         if alpha is not None:
             return cd(trans_val, alpha)
         if CL is not None:
-            alpha = np.array([np.interp(cl, self.trans_aero_data['CL'][np.argmin(TRANS_VALS-trans)], self.alpha) for trans, cl in zip(trans_val, CL)])
+            iteration_zip = zip(trans_val.nz, CL.nz) if isinstance(CL, MX) else zip(trans_val, CL)
+            alpha = np.array([np.interp(cl, self.trans_aero_data['CL'][np.argmin(TRANS_VALS-trans)], self.alpha) for trans, cl in iteration_zip])
             alpha = np.where(np.abs(alpha) < 20, alpha, np.NAN)
             # interpolate nans
             alpha = interpolate_nans(alpha)
