@@ -1,9 +1,9 @@
 import json
-from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
 from typing import Optional
 
+import aerosandbox.tools.pretty_plots as p
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
@@ -14,10 +14,14 @@ from utility.plotting import show
 
 
 class State(BaseModel):
-    horizontal_speed: float
-    vertical_speed: float
-    power: float
-    C_L: float
+    horizontal_speed: Optional[float] = None
+    vertical_speed: Optional[float] = None
+    start_horizontal_speed: Optional[float] = None
+    end_horizontal_speed: Optional[float] = None
+    start_vertical_speed: Optional[float] = None
+    end_vertical_speed: Optional[float] = None
+    power: Optional[float] = None
+    C_L: Optional[float] = None
 
 
 class MissionPhase(BaseModel):
@@ -33,8 +37,10 @@ class MissionPhase(BaseModel):
 
     def __init__(self, **data):
         super().__init__(**data)
-        self.set_end_values()
-        self.energy = self.state.power * self.duration
+        # self.set_end_values()
+        # if self.state.power is not None:
+        #     self.energy = self.state.power * self.duration
+
 
     def set_end_values(self):
         self.end_position = self.start_position + self.state.horizontal_speed * self.duration
@@ -102,20 +108,21 @@ class MissionProfile(BaseModel):
     def from_json(cls, file_path: str | Path) -> 'MissionProfile':
         with open(file_path, 'r') as json_file:
             data = json.load(json_file)
-        try:
-            obj = cls(**data)
-            obj.adjust_and_verify_phases()
-            return obj
-        except Exception as e:
-            logger.error(
-                f'Error parsing mission profile from {file_path}: {e}')
+        # try:
+        obj = cls(**data)
+        obj.adjust_and_verify_phases()
+        return obj
+        # except Exception as e:
+        #     logger.error(
+        #         f'Error parsing mission profile from {file_path}: {e}')
 
     @property
     def list(self):
-        return [
-            phase for phase in self.dict().values()
-            if isinstance(phase, MissionPhase)
-        ]
+        return [phase for phase in [
+            self.startup, self.takeoff, self.vertical_climb, self.transition1,
+            self.climb, self.cruise, self.descent, self.transition2, self.hover,
+            self.vertical_descent, self.landing
+        ] if phase is not None]
 
     @property
     def duration(self):
@@ -157,21 +164,13 @@ class MissionProfile(BaseModel):
                 logger.warning(
                     f'Phase {second_phase.name} start altitude adjusted to {second_phase.start_altitude}'
                 )
-            second_phase.set_end_values()
+            # second_phase.set_end_values()
         return True
 
     def save_to_json(self, file_path: str | Path):
         with open(file_path, 'w') as json_file:
             json.dump(self.dict(), json_file, indent=4)
         logger.info(f'Mission profile saved to {file_path}')
-
-
-if __name__ == '__main__':
-    default_mission = MissionProfile.from_json('default_mission.json')
-    print(default_mission.dict())
-    default_mission.adjust_and_verify_phases()
-    print(default_mission.dict())
-    default_mission.save_to_json('default_mission_exp.json')
 
 
 class Phase(Enum):
@@ -190,33 +189,47 @@ class Phase(Enum):
         return self.value - 1
 
 
+def plot_alt_over_distance(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
+    states = list(map(State.parse_obj, df['state']))
+    vels = []
+    for state in states:
+        for key, value in state.__dict__.items():
+            if value is None:
+                state.__dict__[key] = 0
+        vels.append(np.sqrt(state.horizontal_speed**2 + state.vertical_speed**2))
+
+    p.plot_color_by_value(
+        df['start_position'],
+        df['start_altitude'],
+        c=vels,
+        colorbar=True,
+        cmap='viridis',
+        clim=(0, 56),
+        colorbar_label='Airspeed, $V$ [m/s]')
+    p.show_plot(
+        'Altitude over distance',
+        'Distance, $x$ [m]',
+        'Altitude, $h$ [m]',
+        rotate_axis_labels=False,
+        pretty_grids=True,
+    )
+
 @show
-def plot_per_phase(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
-    fig, axs = plt.subplots(7, 1, figsize=(30, 20), sharex=True)
-    axs[0].bar(df["Phase"], df["Duration [s]"])
-    axs[0].set_ylabel("Duration [s]")
+def plot_alt_over_time(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.plot(df['start_time'], df['start_altitude'])
+    ax.set_xlabel('Time, $t$ [s]')
+    ax.set_ylabel('Altitude, $h$ [m]')
+    ax.grid()
+    return fig, ax
 
-    axs[1].bar(df["Phase"], df["Horizontal Speed [m/s]"])
-    axs[1].set_ylabel("Horizontal Speed [m/s]")
-
-    axs[2].bar(df["Phase"], df["Vertical Speed [m/s]"])
-    axs[2].set_ylabel("Vertical Speed [m/s]")
-
-    axs[3].bar(df["Phase"], df["Altitude [m]"])
-    axs[3].set_ylabel("Altitude [m]")
-
-    axs[4].bar(df["Phase"], df["Distance [m]"])
-    axs[4].set_ylabel("Distance [m]")
-
-    axs[5].bar(df["Phase"], df["Power [W]"])
-    axs[5].set_ylabel("Power [W]")
-
-    axs[6].bar(df["Phase"], df["Energy [J]"])
-    axs[6].set_ylabel("Energy [J]")
-
-    for ax in axs:
-        for label in ax.get_xticklabels():
-            label.set_rotation(45)
-
-    plt.tight_layout()
-    return fig, axs
+if __name__ == '__main__':
+    default_mission = MissionProfile.from_json('mission_profile_V1.json')
+    print(default_mission.dict())
+    default_mission.adjust_and_verify_phases()
+    print(default_mission.dict())
+    default_mission.save_to_json('default_mission_exp.json')
+    df = pd.DataFrame([phase.dict() for phase in default_mission.list])
+    df["name"] = [phase.name for phase in default_mission.list]
+    plot_alt_over_distance(df)
+    plot_alt_over_time(df)
