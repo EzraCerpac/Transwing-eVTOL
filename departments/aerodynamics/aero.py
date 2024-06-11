@@ -20,9 +20,9 @@ class Aero:
         if self.ac.parametric_fn is not None:
             self.trans_aero_data: dict = self.get_aero_over_trans_val(TRANS_VALS)
 
-    def get_aero_data(self, include_wave_drag: bool = True, model_size: str = 'small') -> dict:
+    def get_aero_data(self, include_wave_drag: bool = True, model_size: str = 'small', trans_val: float = 0) -> dict:
         self.aero_data = asb.AeroBuildup(
-            airplane=rot_wing.parametric,
+            airplane=self.ac.parametric_fn(trans_val),
             op_point=asb.OperatingPoint(
                 atmosphere=asb.Atmosphere(altitude=self.ac.data.cruise_altitude),
                 velocity=self.velocity,
