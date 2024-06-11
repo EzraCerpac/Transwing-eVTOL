@@ -25,6 +25,7 @@ def get_caller_file_name(n_back: int = 2, n_dirs: int = 1) -> str:
 
 import numpy as np
 
+
 def interpolate_nans(data):
     nans = np.isnan(data)
     x = lambda z: z.nonzero()[0]

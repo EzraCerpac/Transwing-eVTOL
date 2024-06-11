@@ -12,8 +12,9 @@ aero = Aero(ac)
 ar = ac.data.wing.aspect_ratio
 S = ac.data.wing.area
 
+
 def getCD(Velocity):
-    cl = 2*Mto*9.81/(rho*Velocity**2*S)
+    cl = 2 * Mto * 9.81 / (rho * Velocity**2 * S)
     return aero.CD(CL=cl)
 
 
@@ -37,10 +38,12 @@ def getvi(Vcurrent):
 # also thrust changes as transition begins... need to implement that!
 def getThrust(Vcurrent, transValue):
     if 0.5 > 0.35:
-        return (Mto*9.81 - aero.CL_max_at_trans_val(1-transValue)*0.5*rho*Vcurrent**2*S)/np.sin((1-transValue)*pi/2)
+        return (Mto * 9.81 - aero.CL_max_at_trans_val(1 - transValue) * 0.5 *
+                rho * Vcurrent**2 * S) / np.sin((1 - transValue) * pi / 2)
     else:
-        return (Mto*9.81 - aero.CL_at_trans_val((1-transValue), 0)*0.5*rho*Vcurrent**2*S)/np.sin((1-transValue)*pi/2)
-
+        return (Mto * 9.81 - aero.CL_at_trans_val(
+            (1 - transValue), 0) * 0.5 * rho * Vcurrent**2 * S) / np.sin(
+                (1 - transValue) * pi / 2)
 
 
 def inducedPower(Vcurrent, transValue):
@@ -75,19 +78,23 @@ if __name__ == '__main__':
 
     # induced power at v=0 is not 0... why?
     for v in v_values:
-        transValue = v/45  # at what stage of the transition are we?
-        pprova.append(getCD(v) * 0.5 * rho * v ** 3 * S)
+        transValue = v / 45  # at what stage of the transition are we?
+        pprova.append(getCD(v) * 0.5 * rho * v**3 * S)
         pprova2.append(inducedPower(v, transValue))
         if v > 34:
             cruise = True
             print(f'cruise starts at {v}, {getThrust(v, transValue)}')
         if cruise:
-            Ptot_values.append(profilePower(c, v) + parasitePower(c, v) + getCD(v) * 0.5 * rho * v ** 3 * S)
+            Ptot_values.append(
+                profilePower(c, v) + parasitePower(c, v) +
+                getCD(v) * 0.5 * rho * v**3 * S)
             Ppar_values.append(parasitePower(c, v))
             Pprof_values.append(profilePower(c, v))
-            Pind_values.append(getCD(v) * 0.5 * rho * v ** 3 * S)
+            Pind_values.append(getCD(v) * 0.5 * rho * v**3 * S)
         else:
-            Ptot_values.append(profilePower(c, v) + inducedPower(v, transValue) + parasitePower(c, v))
+            Ptot_values.append(
+                profilePower(c, v) + inducedPower(v, transValue) +
+                parasitePower(c, v))
             Ppar_values.append(parasitePower(c, v))
             Pprof_values.append(profilePower(c, v))
             Pind_values.append(inducedPower(v, transValue))
