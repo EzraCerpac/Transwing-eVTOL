@@ -85,6 +85,6 @@ class WingModel(Model):
 if __name__ == '__main__':
     from aircraft_models import rot_wing
     ac = rot_wing
-   
+
     model = WingModel(ac.data)
     print(model.le_sweep, model.sweep)
