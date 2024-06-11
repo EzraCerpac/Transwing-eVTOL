@@ -217,8 +217,8 @@ if __name__ == '__main__':
     ac.data.v_stall = 20.
     mission_profile_optimization = CruiseOpt(ac,
                                              opt_param=OptParam.ENERGY,
-                                             n_timesteps=60,
-                                             max_iter=3000)
+                                             n_timesteps=80,
+                                             max_iter=1000)
     mission_profile_optimization.run()
 
     # df = mission_profile_optimization.to_dataframe()

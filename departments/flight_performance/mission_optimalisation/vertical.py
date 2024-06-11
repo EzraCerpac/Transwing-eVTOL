@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 from data.concept_parameters.aircraft import AC
 from departments.aerodynamics.cl_cd_polars import CLCDPolar
 from departments.flight_performance.mission_optimalisation.optimalisation import Optimalisation, OptParam
-from model.airplane_models.rotating_wing import rot_wing
+from aircraft_models import trans_wing
 from sizing_tools.formula.aero import hover_thrust_from_power, rotor_disk_area
 from sizing_tools.model import Model
 
@@ -19,30 +19,30 @@ ALPHA_i = 0
 class VerticalOpt(Optimalisation):
 
     def __init__(self, aircraft: AC, opt_param: OptParam, *args, **kwargs):
-        aero = CLCDPolar(aircraft.parametric,
+        aero = CLCDPolar(aircraft.parametric_fn(1),
                          altitude=aircraft.data.cruise_altitude,
                          velocity=aircraft.data.cruise_velocity)
         self.c_l_over_alpha_func = lambda alpha: aero.c_l_over_alpha_func(alpha
                                                                           )
         super().__init__(aircraft, opt_param, *args, **kwargs)
-        self.parametric = aircraft.parametric
+        self.parametric = aircraft.parametric_fn(1)
 
     def init(self):
         self.constraints()
 
         self.max_power = self.opti.variable(
-            init_guess=self.aircraft.mission_profile.TAKEOFF.power / 2,
+            init_guess=self.aircraft.mission_profile.TAKEOFF.power,
             log_transform=True,
             upper_bound=self.aircraft.mission_profile.TAKEOFF.power)
         self.opti.subject_to([
             self.max_power < self.aircraft.mission_profile.TAKEOFF.power,
             self.max_power > 100000,
         ])
-        self.power_available = self.thrust_level * self.max_power
+        self.power = self.thrust_level * self.max_power
         disk_area = rotor_disk_area(
             self.aircraft.propeller_radius) * self.aircraft.motor_prop_count
         self.thrust = hover_thrust_from_power(
-            self.power_available, disk_area, self.aircraft.figure_of_merit,
+            self.power, disk_area, self.aircraft.figure_of_merit,
             self.dyn.op_point.atmosphere.density())
 
         self.dynamics()
@@ -50,7 +50,7 @@ class VerticalOpt(Optimalisation):
         self.dyn.constrain_derivatives(self.opti, self.time)
 
         self.total_energy = np.sum(
-            np.trapz(self.power_available) * np.diff(self.time))
+            np.trapz(self.power) * np.diff(self.time))
         # self.opti.subject_to(
         #     self.total_energy <= self.aircraft.mission_profile.energy)
 
@@ -86,7 +86,7 @@ class VerticalOpt(Optimalisation):
             self.dyn.w_e[0] == 0,
             self.dyn.w_e <= 0,
             # self.dyn.w_e[-1] >= -2,
-            self.end_time < 30,
+            self.end_time < 60,
             # self.thrust_level[0] == 1e-8,
             self.thrust_level < 1,
             # self.thrust_level[-1] == 0.9,
@@ -134,12 +134,10 @@ class VerticalOpt(Optimalisation):
 
 
 if __name__ == '__main__':
-    ac = rot_wing
-    ac.data.v_stall = 20.
-    ac.data.wing.area = 16
+    ac = trans_wing
     mission_profile_optimization = VerticalOpt(ac,
                                                opt_param=OptParam.MAX_POWER,
-                                               n_timesteps=80,
+                                               n_timesteps=501,
                                                max_iter=1000,
                                                n_logs=100)
     mission_profile_optimization.run()
@@ -147,4 +145,4 @@ if __name__ == '__main__':
     df = mission_profile_optimization.to_dataframe()
     # print(df.to_string())
     mission_profile_optimization.plot_over_time()
-    mission_profile_optimization.plot_logs_over_time()
+    # mission_profile_optimization.plot_logs_over_time()
