@@ -86,14 +86,15 @@ def rotate_wing(trans_val: float, airplane: Airplane = base_airplane) -> Wing:
     if isinstance(trans_val, np.ndarray):
         trans_val = trans_val[:, np.newaxis, np.newaxis]
     q_range: tuple[float, float] = (0, 110)
-    alpha: float = 50
-    beta: float = 55
+    alpha: float = 40
+    beta: float = 45
     q = trans_val * (q_range[1] - q_range[0]) + q_range[0]
 
     # DEFINE AXIS OF ROTATION AND CREATE ROTATIONAL MATRIX
     alpha = np.deg2rad(alpha)
     beta = np.deg2rad(beta)
     rot_axis = np.array([[-np.sin(alpha)], [-np.cos(alpha)], [np.sin(beta)]])
+    rot_axis = rot_axis / np.linalg.norm(rot_axis)
 
     dq = -np.deg2rad(q)
     C_axis = (np.cos(dq) * np.eye(3, 3) +
