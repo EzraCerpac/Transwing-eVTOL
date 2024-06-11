@@ -48,6 +48,7 @@ class UndercarriageModel(Model):
         return ylmg_limit
     
     def state_space_model(self):
+        pass
         
   
     
@@ -56,5 +57,5 @@ class UndercarriageModel(Model):
 if __name__ == '__main__':
     from aircraft_models import rot_wing
     ac = rot_wing
-    model = UndercarriageModel(ac.data)
-    print(model.y_lmg())
+    model = UndercarriageModel(ac)
+    print(model.y_lmg)
