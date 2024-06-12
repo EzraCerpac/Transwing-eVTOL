@@ -26,7 +26,10 @@ time = np.cosspace(0, opti.variable(180, log_transform=True), RES)
 opti.subject_to([
     time[-1] == 180,
 ])
-velocities = opti.variable(np.cosspace(1, trans_velocity, RES), log_transform=False, lower_bound=1, upper_bound=trans_velocity)
+velocities = opti.variable(np.cosspace(1, trans_velocity, RES),
+                           log_transform=False,
+                           lower_bound=1,
+                           upper_bound=trans_velocity)
 opti.subject_to([
     velocities[0] == 1,
     np.diff(velocities) > 0,
@@ -34,13 +37,17 @@ opti.subject_to([
     # velocities > 0,
     velocities[-1] == trans_velocity,
 ])
-distance = opti.variable(np.sinspace(0, trans_velocity * 180 / 2, RES), lower_bound=0)
+distance = opti.variable(np.sinspace(0, trans_velocity * 180 / 2, RES),
+                         lower_bound=0)
 # opti.subject_to([
 #     np.diff(distance) > 0,
 # ])
 
 initial_trans_vals = np.linspace(1 - 1e-6, 1e-6, RES)
-trans_vals = opti.variable(initial_trans_vals, n_vars=RES, log_transform=True, upper_bound=1)
+trans_vals = opti.variable(initial_trans_vals,
+                           n_vars=RES,
+                           log_transform=True,
+                           upper_bound=1)
 opti.subject_to([
     trans_vals[0] == 1 - 1e-6,
     trans_vals[-1] <= 1e-6,
@@ -52,7 +59,8 @@ opti.subject_to([
 ])
 trans_vals = initial_trans_vals
 
-airplanes = [ac.parametric_fn(trans_val) for trans_val in initial_trans_vals] # make this trans_vals.nz
+airplanes = [ac.parametric_fn(trans_val)
+             for trans_val in initial_trans_vals]  # make this trans_vals.nz
 surfaces = np.array([airplane.wings[0].area() for airplane in airplanes])
 operating_points_0_alpha = asb.OperatingPoint(
     atmosphere=atmosphere,
@@ -60,14 +68,16 @@ operating_points_0_alpha = asb.OperatingPoint(
     alpha=0,
 )
 cl_horizontal = weight / operating_points_0_alpha.dynamic_pressure() / surfaces
-cl_max = np.array([aero.CL_max_at_trans_val(trans_val) for trans_val in trans_vals.nz])
+cl_max = np.array(
+    [aero.CL_max_at_trans_val(trans_val) for trans_val in trans_vals.nz])
 cl_horizontal = np.minimum(cl_horizontal, cl_max)
 
 # cl_0_alpha = aero.CL_at_trans_val(trans_vals)
-cl = cl_horizontal # initial_trans_vals * cl_max + (1 - initial_trans_vals) * cl_horizontal
+cl = cl_horizontal  # initial_trans_vals * cl_max + (1 - initial_trans_vals) * cl_horizontal
 cd = ClassIIDrag(ac, velocities, altitude=trans_altitude).CD_from_CL(cl)
 drag = cd * operating_points_0_alpha.dynamic_pressure() * surfaces
-weight_minus_lift = np.maximum(0, weight - cl * surfaces * operating_points_0_alpha.dynamic_pressure())
+weight_minus_lift = np.maximum(
+    0, weight - cl * surfaces * operating_points_0_alpha.dynamic_pressure())
 vertical_component = np.maximum(np.sin(trans_vals * np.pi / 2), 1e-5)
 horizontal_component = np.maximum(np.cos(trans_vals * np.pi / 2), 1e-2)
 thrust = weight_minus_lift / vertical_component
@@ -77,9 +87,9 @@ opti.constrain_derivative(velocities, distance, time, method='simpson')
 # opti.subject_to(acceleration < 5)
 
 
-
 def vi_func(x, velocity=0):
-    return x ** 4 + (velocity / six_engine_data.vih) ** 2 * x ** 2 - 1
+    return x**4 + (velocity / six_engine_data.vih)**2 * x**2 - 1
+
 
 # find positive root of vi_func
 vi = opti.variable(1, log_transform=True)
@@ -88,14 +98,16 @@ opti.subject_to([
     vi > 0,
 ])
 
-profile_power = (six_engine_data.sigma * six_engine_data.CDpbar / 8
-                 * atmosphere.density() * (six_engine_data.omega * six_engine_data.R) ** 3
-                 * np.pi * six_engine_data.R ** 2
-                 * (1 + 4.65 * velocities ** 2 / (six_engine_data.omega * six_engine_data.R) ** 2))
+profile_power = (six_engine_data.sigma * six_engine_data.CDpbar / 8 *
+                 atmosphere.density() *
+                 (six_engine_data.omega * six_engine_data.R)**3 * np.pi *
+                 six_engine_data.R**2 *
+                 (1 + 4.65 * velocities**2 /
+                  (six_engine_data.omega * six_engine_data.R)**2))
 induced_power = k * thrust * vi
 parasite_power = drag * velocities / horizontal_component
 # acceleration_power = delta_T * velocities / horizontal_component
-total_power = profile_power + induced_power + parasite_power #+ acceleration_power
+total_power = profile_power + induced_power + parasite_power  #+ acceleration_power
 max_power = np.max(total_power)
 # opti.subject_to([
 #     total_power < 400_000,
@@ -130,7 +142,6 @@ print(f"Energy: {energy / 3600000:.1f} kWh")
 print(f"Max power: {max_power / 1000:.1f} kW")
 print(f"Time: {time[-1]:.1f} s")
 print(f"Distance: {distance[-1] / 1000:.1f} km")
-
 
 p.fig, p.ax = p.plt.subplots(figsize=(8, 6))
 p.ax.plot(velocities, profile_power / 1000, label="Profile power")
@@ -179,8 +190,6 @@ p.plt.plot(velocities, cl_max, label="Max lift")
 p.plt.plot(velocities, cl, label="CL")
 p.plt.legend()
 p.plt.show()
-
-
 
 # p.plt.plot(velocities, cd);p.plt.show()
 # p.plt.plot(velocities, drag);p.plt.show()
