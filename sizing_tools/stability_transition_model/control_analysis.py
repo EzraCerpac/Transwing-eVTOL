@@ -129,7 +129,7 @@ if __name__ == "__main__":
     from aircraft_models import rot_wing
     ac = rot_wing
     acai = []
-    cgs = np.linspace(3, 6, 301)
+    cgs = np.linspace(3, 4, 101)
     
     
     
