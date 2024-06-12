@@ -3,18 +3,18 @@ import numpy as np
 from math import pi
 
 # all variables shall be in imperial upon usage!
-Ttot = 1500 * 9.81 * 1.3  # [N]
-Ptot = 600  # [kW]
+Ttot = 1350 * 9.81 * 1.3  # [N]
+Ptot = 350  # [kW]
 Mtmax = 0.3
 V = 200  # [m/s]
 c = 343  # [m/s]
-Mto = 1500  # [kg]
+Mto = 1350  # [kg]
 rho = 1.225  # [kg/m3]
 k = 1.1  # from induced power Pi equation
 nearField = True
 
 # global variables for C2 method (NASA), imperial units
-r = 25
+r = 330
 X = -r
 Z = 1  # standard
 
@@ -47,7 +47,7 @@ def toimp_power(Power_in_kW):
     return Power_in_kW * 1.34102
 
 
-class sixengs:
+class Sixengs:
 
     def __init__(self):
         self.Neng = 6
@@ -130,7 +130,7 @@ def correction(x):
 def harmonicNoise(choice, B):
     harmonicNoise = []
     if choice == "sei":
-        config = sixengs()
+        config = Sixengs()
         configuration = six
     else:
         config = eightengs()
@@ -154,7 +154,7 @@ def harmonicNoise(choice, B):
 def total_noise(choice, B):
     totNoiseVec = []
     if choice == "sei":
-        config = sixengs()
+        config = Sixengs()
     else:
         config = eightengs()
     harmonicNoiseVec = harmonicNoise(choice, B)
@@ -168,7 +168,7 @@ def total_noiseA(choice, B):
     totNoiseVec = total_noise(choice, B)
     i = 0
     if choice == "sei":
-        config = sixengs()
+        config = Sixengs()
     else:
         config = eightengs()
     for value in totNoiseVec:
@@ -179,7 +179,7 @@ def total_noiseA(choice, B):
 
 def plot_harm(choice):
     if choice == "sei":
-        config = sixengs()
+        config = Sixengs()
     else:
         config = eightengs()
     freqArray = []
@@ -195,14 +195,14 @@ def plot_harm(choice):
 
 
 def overalldBA(AnoiseArray):
-    BPF = sixengs().BPF
+    BPF = Sixengs().BPF
     overallNoise = 0
     for i in AnoiseArray:
         L = 10**(i/10)
-        overallNoise += L*sixengs().fn/BPF
+        overallNoise += L*Sixengs().fn/BPF
     return 10*np.log10(overallNoise)
 
 if __name__ == '__main__':
-    class_to_dict(sixengs())
+    class_to_dict(Sixengs())
     plot_harm("sei")
     print(overalldBA(total_noiseA("sei", 6)))
