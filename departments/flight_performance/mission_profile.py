@@ -173,6 +173,16 @@ class MissionProfile(BaseModel):
             json.dump(self.dict(), json_file, indent=4)
         logger.info(f'Mission profile saved to {file_path}')
 
+    def energy_breakdown(self) -> str:
+        text = f"""
+Energy breakdown:
+    Total energy: {self.energy:.1f} kWh
+"""
+        for phase in self.list:
+            if phase.energy is not None and phase.energy > 0:
+                text += f'\t{phase.name.replace('_', ' ').capitalize()}: {phase.energy:.1f} kWh\n'
+        return text + '\n'
+
 
 class Phase(Enum):
     TAKEOFF = auto()

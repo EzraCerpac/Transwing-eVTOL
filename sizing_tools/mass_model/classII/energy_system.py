@@ -29,13 +29,13 @@ class EnergySystemMassModel(MassModel):
         ]
 
     def estimate_energy(self) -> float:
-        self.mission_profile.energy = sum([convert_float(phase.energy, 'kWh', 'J')
+        self.mission_profile.energy = sum([phase.energy
                     for phase in self.mission_profile.list if phase.energy is not None])
         return self.mission_profile.energy
 
     def total_mass(self, **kwargs) -> float:
         return mass_from_energy(
-            self.estimate_energy(),
+            convert_float(self.estimate_energy(), 'kWh', 'J'),
             self.aircraft.battery_energy_density,
             self.aircraft.battery_system_efficiency,
             self.aircraft.SoC_min,

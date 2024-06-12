@@ -34,7 +34,7 @@ def plot_energy_breakdown_per_phase(
     ax.text(
         0.5,
         0.5,
-        f'Total Energy\n{convert_float(aircraft.mission_profile.energy, "J", "kWh"):.0f} kWh',
+        f'Total Energy\n{aircraft.mission_profile.energy:.0f} kWh',
         horizontalalignment='center',
         verticalalignment='center',
         transform=ax.transAxes,

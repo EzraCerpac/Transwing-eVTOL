@@ -82,13 +82,4 @@ if __name__ == '__main__':
         hinge_loading=True,
         class1_diagram=True,
     )
-    # for concept in rotating_wings:
-    #     model = TotalModel(concept)
-    #     model.run()
-    #     model.print_results(
-    #         mass_breakdown=True,
-    #         energy_breakdown=True,
-    #         # hinge_loading=True,
-    #         class1_diagram=False,
-    #     )
-    # model.print_all_parameters()
+
