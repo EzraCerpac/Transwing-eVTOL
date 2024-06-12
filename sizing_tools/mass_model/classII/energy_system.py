@@ -30,8 +30,8 @@ class EnergySystemMassModel(MassModel):
 
     def estimate_energy(self) -> float:
         self.mission_profile.energy = sum([
-            phase.energy
-            for phase in self.mission_profile.list if phase.energy is not None
+            phase.energy for phase in self.mission_profile.list
+            if phase.energy is not None
         ])
         return self.mission_profile.energy
 

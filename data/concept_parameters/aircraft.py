@@ -86,9 +86,9 @@ class Aircraft(BaseModel):
             if isinstance(value, dict):
                 text += f'\t{key}:\n'
                 for sub_key, sub_value in value.items():
-                    text += f'\t\t{sub_key}: {sub_value:.2f} kg\n'
+                    text += f'\t\t{sub_key}: {sub_value:.0f} kg\n'
             else:
-                text += f'\t{key}: {value:.2f} kg\n'
+                text += f'\t{key}: {value:.0f} kg\n'
         return f'Mass breakdown:\n{text}\n'
 
     def initialize_propellers(self):
@@ -171,15 +171,15 @@ class Aircraft(BaseModel):
                                  **kwargs)
         base_dict.update({
             'Mass Breakdown':
-                self.mass_breakdown.dict(),
+            self.mass_breakdown.dict(),
             'Mission Profile':
-                self.mission_profile.dict(),
+            self.mission_profile.dict(),
             'Wing':
-                self.wing.dict(),
+            self.wing.dict(),
             'Tail':
-                self.tail.dict(),
+            self.tail.dict(),
             'Fuselage':
-                self.fuselage.dict(),
+            self.fuselage.dict(),
             'Propellers': [propeller.dict() for propeller in self.propellers],
         })
         return base_dict
@@ -200,7 +200,9 @@ class AC:
     def __repr__(self) -> str:
         return f'AC(name={self.name})'
 
-    def display_data(self, show_energy_breakdown: bool = False, show_mass_breakdown: bool = False) -> str:
+    def display_data(self,
+                     show_energy_breakdown: bool = False,
+                     show_mass_breakdown: bool = False) -> str:
         text = f"""
 Data of Aircraft: {self.name}
 Total mass: {self.data.total_mass:.0f} kg
@@ -226,7 +228,5 @@ Maximum power: {max([phase.state.power for phase in self.data.mission_profile.li
 if __name__ == '__main__':
     from aircraft_models import trans_wing
 
-    trans_wing.display_data(
-        show_energy_breakdown=True,
-        show_mass_breakdown=True
-    )
+    trans_wing.display_data(show_energy_breakdown=True,
+                            show_mass_breakdown=True)

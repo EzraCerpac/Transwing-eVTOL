@@ -82,4 +82,3 @@ if __name__ == '__main__':
         hinge_loading=True,
         class1_diagram=True,
     )
-
