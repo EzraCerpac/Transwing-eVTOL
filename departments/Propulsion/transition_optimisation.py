@@ -5,7 +5,7 @@ from scipy.constants import g
 from scipy.optimize import brentq
 
 from aircraft_models import trans_wing
-from departments.Propulsion.helper import SAVE_DIR
+from departments.Propulsion.helper import TRANS_SAVE_DIR
 from departments.Propulsion.noiseEst import k, sixengs
 from departments.aerodynamics.aero import Aero
 from sizing_tools.drag_model.class_II_drag import ClassIIDrag
@@ -123,10 +123,10 @@ print(f"Max power: {max_power / 1000:.1f} kW")
 print(f"Time: {time[-1]:.1f} s")
 print(f"Distance: {distance[-1] / 1000:.1f} km")
 
-np.save(SAVE_DIR / "time", time)
-np.save(SAVE_DIR / "velocities", velocities)
-np.save(SAVE_DIR / "delta_T", delta_T)
-np.save(SAVE_DIR / "trans_vals", trans_vals)
+np.save(TRANS_SAVE_DIR / "time", time)
+np.save(TRANS_SAVE_DIR / "velocities", velocities)
+np.save(TRANS_SAVE_DIR / "delta_T", delta_T)
+np.save(TRANS_SAVE_DIR / "trans_vals", trans_vals)
 
 
 p.fig, p.ax = p.plt.subplots(figsize=(8, 6))
