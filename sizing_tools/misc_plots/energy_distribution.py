@@ -31,17 +31,16 @@ def plot_energy_breakdown_per_phase(
         energies,
         labels=labels,
         autopct=lambda pct: pct_func_energy(pct, energies))
-    ax.text(
-        0.5,
-        0.5,
-        f'Total Energy\n{aircraft.mission_profile.energy:.0f} kWh',
-        horizontalalignment='center',
-        verticalalignment='center',
-        transform=ax.transAxes,
-        bbox=dict(facecolor='white',
-                  edgecolor='black',
-                  boxstyle='round,pad=0.5',
-                  alpha=0.8))
+    ax.text(0.5,
+            0.5,
+            f'Total Energy\n{aircraft.mission_profile.energy:.0f} kWh',
+            horizontalalignment='center',
+            verticalalignment='center',
+            transform=ax.transAxes,
+            bbox=dict(facecolor='white',
+                      edgecolor='black',
+                      boxstyle='round,pad=0.5',
+                      alpha=0.8))
     plt.setp(texts, size=12, weight="bold")
     plt.setp(autotexts, size=10, weight="bold")
     # ax.set_title(f'Energy Breakdown of {aircraft.name}')
