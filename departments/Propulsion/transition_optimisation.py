@@ -5,7 +5,8 @@ from scipy.constants import g
 from scipy.optimize import brentq
 
 from aircraft_models import trans_wing
-from departments.Propulsion.noiseEst import Sixengs, k
+from departments.Propulsion.helper import TRANS_SAVE_DIR
+from departments.Propulsion.noiseEst import k, sixengs
 from departments.aerodynamics.aero import Aero
 from sizing_tools.drag_model.class_II_drag import ClassIIDrag
 
@@ -13,7 +14,7 @@ RES = 300
 
 ac = trans_wing
 aero = Aero(ac)
-six_engine_data = Sixengs()
+six_engine_data = sixengs()
 
 weight = ac.data.total_mass * g
 
@@ -74,7 +75,7 @@ cd = ClassIIDrag(ac, velocities, altitude=trans_altitude).CD_from_CL(cl)
 drag = cd * operating_points_0_alpha.dynamic_pressure() * surfaces
 weight_minus_lift = np.maximum(0, weight - cl * surfaces * operating_points_0_alpha.dynamic_pressure())
 thrust = np.sqrt((weight_minus_lift / np.maximum(np.sin(trans_vals * np.pi / 2), .1))**2
-          + (drag / np.maximum(np.cos(trans_vals * np.pi / 2), .1)**2))
+          + (drag / np.maximum(np.cos(trans_vals * np.pi / 2), .1))**2)
 
 
 def vi_func(x, velocity=0):
@@ -121,6 +122,11 @@ print(f"Energy: {energy / 3600000:.1f} kWh")
 print(f"Max power: {max_power / 1000:.1f} kW")
 print(f"Time: {time[-1]:.1f} s")
 print(f"Distance: {distance[-1] / 1000:.1f} km")
+
+np.save(TRANS_SAVE_DIR / "time", time)
+np.save(TRANS_SAVE_DIR / "velocities", velocities)
+np.save(TRANS_SAVE_DIR / "delta_T", delta_T)
+np.save(TRANS_SAVE_DIR / "trans_vals", trans_vals)
 
 
 p.fig, p.ax = p.plt.subplots(figsize=(8, 6))
