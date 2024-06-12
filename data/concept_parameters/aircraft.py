@@ -207,6 +207,9 @@ Total mass: {self.data.total_mass:.0f} kg
 Cruise velocity: {self.data.cruise_velocity:.1f} m/s
 Cruise altitude: {self.data.cruise_altitude:.0f} m
 Range: {self.data.range:.0f} m
+Payload mass: {self.data.payload_mass:.0f} kg
+Number of passengers: {self.data.n_pax}
+Maximum power: {max([phase.state.power for phase in self.data.mission_profile.list if phase.state.power]) / 1000:.0f} kW)
 """
         if show_energy_breakdown:
             from sizing_tools.misc_plots.energy_distribution import plot_energy_breakdown_per_phase
