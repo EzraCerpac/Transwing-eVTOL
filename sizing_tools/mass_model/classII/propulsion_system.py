@@ -1,6 +1,5 @@
 import departments.flight_performance.power_calculations
 from data.concept_parameters.aircraft import Aircraft
-from data.concept_parameters.mission_profile import Phase
 from sizing_tools.formula.emperical import engine_mass
 from sizing_tools.mass_model.mass_model import MassModel
 from utility.unit_conversion import convert_float

@@ -17,13 +17,13 @@ def plot_energy_breakdown_per_phase(
 
     # Prepare data for pie chart
     energies = [
-        phase.energy for phase in aircraft.mission_profile.phases.values()
-        if phase.energy > 0
+        phase.energy for phase in aircraft.mission_profile.list
+        if phase.energy is not None and phase.energy > 0
     ]
     labels = [
-        phase.phase.value.replace('_', ' ').capitalize()
-        for phase in aircraft.mission_profile.phases.values()
-        if phase.energy > 0
+        phase.name.replace('_', ' ').capitalize()
+        for phase in aircraft.mission_profile.list
+        if phase.energy is not None and phase.energy > 0
     ]
 
     # Create pie chart

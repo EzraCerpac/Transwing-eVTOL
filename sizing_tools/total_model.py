@@ -53,7 +53,7 @@ class TotalModel(Model):
         print(
             f"Takeoff Power: {convert_float(departments.flight_performance.power_calculations.power, 'W', 'kW'):.2f} kW"
         )
-        print(f"Cruise C_L: {self.aircraft.mission_profile.CRUISE.C_L:.2f}")
+        # print(f"Cruise C_L: {self.aircraft.mission_profile.CRUISE.C_L:.2f}")
         print(f"Hinge Load: {self.aircraft.hinge_load:.2f} N")
         print(f"Hinge Moment: {self.aircraft.hinge_moment:.2f} Nm")
         print("\n")

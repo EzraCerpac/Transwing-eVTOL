@@ -115,12 +115,12 @@ example_cg_dict = {
 }
 
 rot_wing_starting_params = Aircraft(
-    id='V1.3',
+    id='V1.4',
     name=
-    "Using updated Class II weight and drag estimates and energy estimate from cruise opt",
+    "Using updated Class II estimation, updated mission profile, and energy from optamisations",
     motor_prop_count=6,
     motor_wing_count=6,
-    propeller_radius=1.85 / 2,
+    propeller_radius=1.7 / 2,
     propeller_blade_number=6,
     hinge_location=0.2,
     wing=Wing(

@@ -18,7 +18,7 @@ sys.path.append(parent_dir)
 from data.concept_parameters.aircraft import Aircraft, AC
 from sizing_tools.wing_planform import WingModel
 
-ac = Aircraft.load(version='1.3')
+ac = Aircraft.load(version='1.4')
 wing_model = WingModel(ac, altitude=ac.cruise_altitude)
 
 wing_airfoil = Airfoil("E560")
@@ -184,6 +184,6 @@ rot_wing = AC(
 )
 
 if __name__ == '__main__':
-    # parametric.draw_three_view()
+    parametric.draw_three_view()
     # parametric.draw()
-    wing_airfoil.draw(draw_mcl=True, draw_markers=False, show=True)
+    # wing_airfoil.draw(draw_mcl=True, draw_markers=False, show=True)
