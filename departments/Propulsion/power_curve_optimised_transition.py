@@ -5,7 +5,7 @@ from scipy.constants import g
 from scipy.optimize import brentq
 
 from aircraft_models import trans_wing
-from departments.Propulsion.helper import SAVE_DIR
+from departments.Propulsion.helper import TRANS_SAVE_DIR, POWER_SAVE_DIR
 from departments.Propulsion.noiseEst import sixengs, k, Ttot
 from departments.aerodynamics.aero import Aero
 from sizing_tools.drag_model.class_II_drag import ClassIIDrag
@@ -21,11 +21,11 @@ end_vel = 100
 trans_altitude = 100
 atmosphere = asb.Atmosphere(altitude=trans_altitude)
 
-saved_velocities = np.load(SAVE_DIR / "velocities.npy")
+saved_velocities = np.load(TRANS_SAVE_DIR / "velocities.npy")
 trans_velocity = saved_velocities[-1]
 cruise_velocity = 55.6
-saved_trans_vals = np.load(SAVE_DIR / "trans_vals.npy")
-saved_delta_T = np.load(SAVE_DIR / "delta_T.npy")
+saved_trans_vals = np.load(TRANS_SAVE_DIR / "trans_vals.npy")
+saved_delta_T = np.load(TRANS_SAVE_DIR / "delta_T.npy")
 
 velocities = np.concatenate([saved_velocities, np.linspace(trans_velocity, end_vel, RES)])
 trans_vals = np.concatenate([saved_trans_vals, np.zeros(RES)])
@@ -70,6 +70,8 @@ parasite_power = drag * velocities / np.maximum(np.cos(trans_vals * np.pi / 2), 
 acceleration_power = delta_T * velocities / np.maximum(np.cos(trans_vals * np.pi / 2), 1e-3)
 total_power = profile_power + induced_power + parasite_power + acceleration_power
 
+# Post-processing
+
 p.fig, p.ax = p.plt.subplots(figsize=(8, 6))
 p.ax.plot(velocities, profile_power / 1000, label="Profile power")
 p.ax.plot(velocities, induced_power / 1000, label="Induced power")
@@ -86,15 +88,12 @@ p.show_plot(
     rotate_axis_labels=False,
 )
 
-# p.plt.plot(velocities, cl_horizontal, label="Horizontal flight")
-# p.plt.plot(velocities, cl_max, label="Max lift")
-# p.plt.plot(velocities, cl, label="CL")
-# p.plt.legend()
-# p.plt.show()
-#
-# p.plt.plot(velocities, cd, label="CD")
-# p.plt.show()
 
+power_required = total_power - acceleration_power
+print(f"Maximum power required: {np.max(power_required) / 1000:.1f} kW")
+print(f"Power required at {cruise_velocity} m/s: {power_required[np.argmin(np.abs(velocities - cruise_velocity))] / 1000:.1f} kW")
+print(f"Power required at {trans_velocity} m/s: {power_required[np.argmin(np.abs(velocities - trans_velocity))] / 1000:.1f} kW")
+np.save(POWER_SAVE_DIR / "velocities.npy", velocities)
+np.save(POWER_SAVE_DIR / "power.npy", power_required)
+print(f"Saved power curve to {POWER_SAVE_DIR}")
 
-# p.plt.plot(velocities, cd);p.plt.show()
-# p.plt.plot(velocities, drag);p.plt.show()
