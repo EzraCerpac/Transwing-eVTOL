@@ -6,7 +6,8 @@ import sys
 import csv
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-root_dir = os.path.abspath(os.path.join(current_dir, '..', '..'))  # Adjust as needed
+root_dir = os.path.abspath(os.path.join(current_dir, '..',
+                                        '..'))  # Adjust as needed
 sys.path.append(root_dir)
 
 from sizing_tools.model import Model
@@ -18,11 +19,12 @@ from acai import ACAICalculator
 
 
 class HexacopterControlAnalysis(Model):
+
     def __init__(self, aircraft: AC, cg, setting):
         super().__init__(aircraft.data)
         self.aircraft = aircraft.data
         self.geometry = trans_wing.parametric_fn(1)
-        
+
         #constants
         self.g0 = 9.8  # m/s^2
         # self.geometry.draw()
@@ -41,18 +43,16 @@ class HexacopterControlAnalysis(Model):
 
         # angle moment arm cw+
         angles = np.arctan2(r_cg_engine[:, 0], r_cg_engine[:, 1])
-        
 
         self.rotor_angle = np.array(angles)
-        
+
         self.A = np.block([[np.zeros((4, 4)), np.eye(4)], [np.zeros((4, 8))]])
         #mass moment of inertia
         self.Jx, self.Jy, self.Jz = 213.033, 1188.061, 1205.822
         self.Jf = np.diag(
             [-self.aircraft.total_mass, self.Jx, self.Jy, self.Jz])
         self.B = np.block([[np.zeros((4, 4))], [np.linalg.inv(self.Jf)]])
-        
-        
+
         #Rotation of the rotors according a predefined configuration
         self.s2i = {'anticlockwise': 1, 'clockwise': -1}
         self.rotor_dir = np.array([
@@ -78,10 +78,12 @@ class HexacopterControlAnalysis(Model):
         return []
 
     def compute_Bf(self):
-        bt = self.rotor_Yita #lift
-        bl = -self.rotor_d * np.sin(self.rotor_angle) * self.rotor_Yita #roll torque
-        bm = self.rotor_d * np.cos(self.rotor_angle) * self.rotor_Yita #pitch Torque
-        bn = self.rotor_dir * self.rotor_ku * self.rotor_Yita #yaw torque
+        bt = self.rotor_Yita  #lift
+        bl = -self.rotor_d * np.sin(
+            self.rotor_angle) * self.rotor_Yita  #roll torque
+        bm = self.rotor_d * np.cos(
+            self.rotor_angle) * self.rotor_Yita  #pitch Torque
+        bn = self.rotor_dir * self.rotor_ku * self.rotor_Yita  #yaw torque
         Bf = np.vstack((bt, bl, bm, bn))
         return Bf
 
@@ -104,8 +106,9 @@ class HexacopterControlAnalysis(Model):
         # Compute ACAI
         start_time = time.process_time()
         delta = 1e-10
-        acai_calculator = ACAICalculator(self.Bf, Uset_umin, Uset_umax, self.Tg)
-        ACAI = round(acai_calculator.compute_acai(),2)
+        acai_calculator = ACAICalculator(self.Bf, Uset_umin, Uset_umax,
+                                         self.Tg)
+        ACAI = round(acai_calculator.compute_acai(), 2)
         if -delta < ACAI < delta:
             ACAI = 0
 
@@ -130,16 +133,16 @@ if __name__ == "__main__":
     ac = rot_wing
     acai = []
     cgs = np.linspace(3, 4, 101)
-    
-    
-    
-    
 
     # Create a CSV file to write the results
     with open('acai_results.csv', mode='w', newline='') as file:
-        writer = csv.writer(file, delimiter=';')  # Specify delimiter as semicolon
+        writer = csv.writer(file,
+                            delimiter=';')  # Specify delimiter as semicolon
         # Write the header
-        writer.writerow(['cg', 'engine16_1', 'engine25', 'engine34_1', 'engine34_2', 'engine25_2', 'engine16_2', 'ACAI'])
+        writer.writerow([
+            'cg', 'engine16_1', 'engine25', 'engine34_1', 'engine34_2',
+            'engine25_2', 'engine16_2', 'ACAI'
+        ])
 
         # Make data.
         engine16 = np.linspace(0.1, 1, 10)
@@ -150,17 +153,30 @@ if __name__ == "__main__":
         for i in range(len(engine16)):
             for j in range(len(engine25)):
                 for k in range(len(engine34)):
-                    combination = [engine16[i], engine25[j], engine34[k], engine34[k], engine25[j], engine16[i]]
+                    combination = [
+                        engine16[i], engine25[j], engine34[k], engine34[k],
+                        engine25[j], engine16[i]
+                    ]
                     for cg in cgs:
-                        analysis = HexacopterControlAnalysis(ac, cg, combination)
+                        analysis = HexacopterControlAnalysis(
+                            ac, cg, combination)
                         ACAI_value = analysis.run_analysis()
                         # Append the results to the CSV file
                         # Format numerical values with dots as commas
                         cg_formatted = str(cg).replace('.', ',')
-                        engine16_i_formatted = str(engine16[i]).replace('.', ',')
-                        engine25_j_formatted = str(engine25[j]).replace('.', ',')
-                        engine34_k_formatted = str(engine34[k]).replace('.', ',')
-                        ACAI_value_formatted = str(ACAI_value).replace('.', ',')
+                        engine16_i_formatted = str(engine16[i]).replace(
+                            '.', ',')
+                        engine25_j_formatted = str(engine25[j]).replace(
+                            '.', ',')
+                        engine34_k_formatted = str(engine34[k]).replace(
+                            '.', ',')
+                        ACAI_value_formatted = str(ACAI_value).replace(
+                            '.', ',')
                         # Append the results to the CSV file
-                        writer.writerow([cg_formatted, engine16_i_formatted, engine25_j_formatted, engine34_k_formatted, engine34_k_formatted, engine25_j_formatted, engine16_i_formatted, ACAI_value_formatted])
+                        writer.writerow([
+                            cg_formatted, engine16_i_formatted,
+                            engine25_j_formatted, engine34_k_formatted,
+                            engine34_k_formatted, engine25_j_formatted,
+                            engine16_i_formatted, ACAI_value_formatted
+                        ])
     print("ACAI results have been written to acai_results.csv")
