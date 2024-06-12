@@ -75,9 +75,7 @@ class ClassIIModel(MassModel):
                 'total': self.airframe_mass_model.total_mass(),
                 'fuselage': self.airframe_mass_model.fuselage_mass(),
                 'wing': self.airframe_mass_model.wing_mass(),
-                'horizontal_tail':
-                self.airframe_mass_model.horizontal_tail_mass(),
-                'vertical_tail': self.airframe_mass_model.vertical_tail_mass(),
+                'tail': self.airframe_mass_model.tail_mass(),
                 'landing_gear': self.airframe_mass_model.landing_gear_mass(),
             },
             'fixed_equipment': {

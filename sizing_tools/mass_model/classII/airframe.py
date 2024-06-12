@@ -47,6 +47,10 @@ class AirframeMassModel(MassModel):
             (639.95 * convert_float(self.aircraft.tail.t_rv, 'm', 'ft')**0.747
              * cos(self.aircraft.tail.lambda_quart_tv)**0.882), 'lbs', 'kg')
 
+    def tail_mass(self) -> float:
+        # temporary function to calculate the total tail mass, tail is much larger
+        return self.horizontal_tail_mass() + self.vertical_tail_mass()
+
     def landing_gear_mass(self) -> float:
         return convert_float(
             0.054 * convert_float(self.aircraft.tail.l_lg, 'm', 'ft')**0.501 *
@@ -57,8 +61,7 @@ class AirframeMassModel(MassModel):
         self.initial_total_mass = initial_total_mass if initial_total_mass else self.initial_total_mass
         mass_sum = 0
         for mass_fn in [
-                self.fuselage_mass, self.wing_mass, self.horizontal_tail_mass,
-                self.vertical_tail_mass, self.landing_gear_mass
+                self.fuselage_mass, self.wing_mass, self.tail_mass, self.landing_gear_mass
         ]:
             mass = mass_fn()
             # logger.info(f'{mass_fn.__name__} = {mass} kg')
