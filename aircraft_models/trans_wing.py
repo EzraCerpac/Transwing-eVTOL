@@ -5,7 +5,7 @@ from aircraft_models.rotating_wing import chord_cut, p_tip_le, p_tip_te, p_cut_l
     fuselage, wing_airfoil, wing_model, ac, propulsor_fn
 from data.concept_parameters.aircraft import AC
 
-FLUENT_MODEL = False
+FLUENT_MODEL = True
 
 r_joint = p_cut_le - 0.8 * (p_cut_te - p_cut_le)  # JOINT LOCATION
 twist_cut = 0
