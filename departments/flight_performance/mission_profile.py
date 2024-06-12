@@ -103,6 +103,7 @@ class MissionProfile(BaseModel):
                                             title='Landing phase',
                                             description='Landing phase',
                                             repr=False)
+    energy: Optional[float] = None
 
     @classmethod
     def from_json(cls, file_path: str | Path) -> 'MissionProfile':

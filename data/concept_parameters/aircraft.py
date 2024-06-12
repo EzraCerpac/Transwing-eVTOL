@@ -4,8 +4,7 @@ from aerosandbox import Airplane
 from pydantic import BaseModel, field_validator, Field
 
 from data.concept_parameters.aircraft_components import Propeller, Tail, Fuselage, Wing, MassObject
-from data.concept_parameters.mission_profile import MissionProfile, MissionPhase, Phase, default_mission_profile, \
-    updated_mission_profile_from_cruise_opt
+from data.concept_parameters.mission_profile import MissionProfile, mission_profile
 from utility.log import logger
 from utility.unit_conversion import convert_float
 
@@ -101,7 +100,7 @@ class Aircraft(BaseModel):
         ]
 
     def initialize_default_mission_profile(self):
-        self.mission_profile = updated_mission_profile_from_cruise_opt(self)
+        self.mission_profile = mission_profile()
 
     @classmethod
     @field_validator('id')
