@@ -73,8 +73,8 @@ cl = trans_vals * cl_max + (1 - trans_vals) * cl_horizontal
 cd = ClassIIDrag(ac, velocities, altitude=trans_altitude).CD_from_CL(cl)
 drag = cd * operating_points_0_alpha.dynamic_pressure() * surfaces
 weight_minus_lift = np.maximum(0, weight - cl * surfaces * operating_points_0_alpha.dynamic_pressure())
-thrust = (weight_minus_lift / np.maximum(np.sin(trans_vals * np.pi / 2), .1)
-          + drag / np.maximum(np.cos(trans_vals * np.pi / 2), .1))
+thrust = np.sqrt((weight_minus_lift / np.maximum(np.sin(trans_vals * np.pi / 2), .1))**2
+          + (drag / np.maximum(np.cos(trans_vals * np.pi / 2), .1)**2))
 
 
 def vi_func(x, velocity=0):
