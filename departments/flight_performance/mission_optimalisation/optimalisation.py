@@ -92,7 +92,7 @@ class Optimalisation(Model, ABC):
                 'thrust':
                     self.thrust,
                 'max power':
-                    self.max_power,
+                    np.max(self.power),
                 'power':
                     self.power,
                 'total energy':

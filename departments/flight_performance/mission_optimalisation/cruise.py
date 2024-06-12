@@ -4,6 +4,7 @@ import aerosandbox.numpy as np
 from data.concept_parameters.aircraft import AC
 from departments.aerodynamics.cl_cd_polars import CLCDPolar
 from departments.flight_performance.mission_optimalisation.optimalisation import Optimalisation, OptParam
+from departments.flight_performance.mission_optimalisation.power_required import power_from_thrust
 from sizing_tools.formula.aero import C_D_from_CL
 
 ALPHA_i = 0
@@ -31,24 +32,6 @@ class CruiseOpt(Optimalisation):
     def init(self):
         self.end_time = self.opti.variable(init_guess=2000, log_transform=True)
 
-        self.constraints()
-
-        self.max_power = self.opti.variable(
-            init_guess=self.aircraft.mission_profile.TAKEOFF.power / 3,
-            log_transform=True,
-            upper_bound=self.aircraft.mission_profile.TAKEOFF.power / 2)
-        self.power = self.thrust_level * self.max_power
-        self.thrust = self.power * self.aircraft.propulsion_efficiency / self.dyn.speed
-
-        self.dynamics()
-        self.dyn.add_gravity_force()
-        self.dyn.constrain_derivatives(self.opti, self.time, method='simpson')
-
-        self.total_energy = np.sum(np.trapz(self.power) * np.diff(self.time))
-        # self.opti.subject_to(
-        #     self.total_energy <= self.aircraft.mission_profile.energy)
-
-    def constraints(self):
         self.dyn = asb.DynamicsPointMass2DSpeedGamma(
             mass_props=asb.MassProperties(mass=self.aircraft.total_mass,
                                           Ixx=1000,
@@ -56,11 +39,11 @@ class CruiseOpt(Optimalisation):
                                           Izz=500),
             x_e=self.opti.variable(init_guess=np.cosspace(
                 0, self.aircraft.range, self.n_timesteps),
-                                   lower_bound=0,
-                                   upper_bound=self.aircraft.range),
+                lower_bound=0,
+                upper_bound=self.aircraft.range),
             z_e=self.opti.variable(init_guess=np.linspace(
                 0, -self.aircraft.cruise_altitude, self.n_timesteps),
-                                   upper_bound=0),
+                upper_bound=0),
             speed=self.opti.variable(init_guess=self.aircraft.cruise_velocity,
                                      n_vars=self.n_timesteps,
                                      log_transform=True),
@@ -73,11 +56,23 @@ class CruiseOpt(Optimalisation):
                                      lower_bound=-10,
                                      upper_bound=20),
         )
-        self.thrust_level = self.opti.variable(init_guess=0.5,
-                                               n_vars=self.n_timesteps,
-                                               log_transform=True,
-                                               upper_bound=1)
 
+        self.max_power = self.opti.parameter(350_000)
+        self.thrust = self.opti.variable(init_guess=1000, n_vars=self.n_timesteps, log_transform=True)
+        self.power = power_from_thrust(self.thrust, self.dyn.speed)
+        self.thrust_level = self.max_power / self.power
+
+        self.constraints()
+
+        self.dynamics()
+        self.dyn.add_gravity_force()
+        self.dyn.constrain_derivatives(self.opti, self.time, method='simpson')
+
+        self.total_energy = np.sum(np.trapz(self.power) * np.diff(self.time))
+        # self.opti.subject_to(
+        #     self.total_energy <= self.aircraft.mission_profile.energy)
+
+    def constraints(self):
         # a = np.diff(self.dyn.speed) / np.diff(self.time)
         # self.a_x = a * np.cos(self.dyn.gamma[:-1])
         # self.a_z = a * np.sin(self.dyn.gamma[:-1])
@@ -91,6 +86,7 @@ class CruiseOpt(Optimalisation):
             self.dyn.speed[0] == 45,
             self.dyn.speed[:self.n_timesteps//2] >= self.dyn.speed[0],
             self.dyn.speed[self.n_timesteps//2:] >= self.dyn.speed[-1],
+            self.dyn.speed[-1] <= 45,
             self.dyn.speed[-1] >= 40,
             self.dyn.gamma[0] == 0,
             self.dyn.gamma[-1] == 0,
@@ -152,11 +148,11 @@ class CruiseOpt(Optimalisation):
         self.time = np.concatenate([climb_time, cruise_time, descent_time])
         cruise_altitude = self.opti.variable(
             init_guess=self.aircraft.cruise_altitude, log_transform=True)
-        cruise_speed = self.opti.variable(
-            init_guess=self.aircraft.cruise_velocity, log_transform=True)
+        cruise_speed = self.opti.parameter(self.aircraft.cruise_velocity)  # enforced because power-curve is probably not correct
         self.opti.subject_to([
             cruise_altitude >= self.aircraft.cruise_altitude,
-            cruise_speed >= self.aircraft.cruise_velocity,
+            # cruise_speed >= self.aircraft.cruise_velocity,
+            # cruise_speed <= self.aircraft.cruise_velocity,
         ])
         self.opti.subject_to([
             self.dyn.altitude[start_cruise_index:end_cruise_index] ==
@@ -174,6 +170,12 @@ class CruiseOpt(Optimalisation):
             self.dyn.altitude <= cruise_altitude,
             self.dyn.speed <= cruise_speed,
             # self.dyn.op_point.energy_altitude() <= self.dyn.op_point[start_cruise_index].energy_altitude(),
+            np.diff(self.dyn.altitude[:start_cruise_index]) > 0,
+            np.diff(self.dyn.altitude[end_cruise_index:]) < 0,
+            np.diff(self.dyn.speed[:start_cruise_index]) > 0,
+            np.diff(self.dyn.speed[end_cruise_index:]) < 0,
+            np.diff(self.power[end_cruise_index:]) < 0,
+            # self.power[end_cruise_index:] == 0,
         ])
 
     def dynamics(self, use_aero: bool = False):
