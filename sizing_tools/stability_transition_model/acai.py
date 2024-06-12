@@ -1,3 +1,4 @@
+
 import numpy as np
 from scipy.linalg import null_space
 import itertools
@@ -65,3 +66,6 @@ class ACAICalculator():
             degree = -np.min(np.abs(dmin))
 
         return degree
+    
+    
+
