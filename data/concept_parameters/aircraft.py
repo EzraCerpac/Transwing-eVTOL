@@ -86,9 +86,9 @@ class Aircraft(BaseModel):
             if isinstance(value, dict):
                 text += f'\t{key}:\n'
                 for sub_key, sub_value in value.items():
-                    text += f'\t\t{sub_key}: {sub_value:.2f} kg\n'
+                    text += f'\t\t{sub_key}: {sub_value:.0f} kg\n'
             else:
-                text += f'\t{key}: {value:.2f} kg\n'
+                text += f'\t{key}: {value:.0f} kg\n'
         return f'Mass breakdown:\n{text}\n'
 
     def initialize_propellers(self):

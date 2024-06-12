@@ -81,10 +81,12 @@ class ClassIIModel(MassModel):
             'fixed_equipment': {
                 'total':
                 self.fixed_equipment_model.total_mass(),
-                'oxygen_system_mass':
+                'oxygen_system':
                 self.fixed_equipment_model.oxygen_system_mass(),
-                'furnishings_mass':
+                'furnishings':
                 self.fixed_equipment_model.furnishings_mass(),
+                'hinge':
+                self.fixed_equipment_model.hinge_mass(),
             },
             'propulsion': {
                 'total':
