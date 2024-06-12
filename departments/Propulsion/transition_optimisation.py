@@ -9,7 +9,7 @@ from departments.Propulsion.noiseEst import Sixengs, k
 from departments.aerodynamics.aero import Aero
 from sizing_tools.drag_model.class_II_drag import ClassIIDrag
 
-RES = 150
+RES = 300
 
 ac = trans_wing
 aero = Aero(ac)
@@ -24,32 +24,38 @@ trans_altitude = 100
 atmosphere = asb.Atmosphere(altitude=trans_altitude)
 
 velocities = np.linspace(1, trans_velocity, RES)
-time = opti.variable(np.cosspace(0, 180, RES))
+time = opti.variable(np.linspace(0, 100, RES))
 opti.subject_to([
     time[0] == 0,
-    # time[:-1] < time[1:],
     np.diff(time) > 0,
     # time >= 0,
-    # time[-1] < 180,
-    # time <= time[-1],
+    time[-1] < 180,
+    time <= time[-1],
 ])
-distance = np.sum(np.trapz(velocities) * np.diff(time))
-# opti.subject_to([
-#     np.diff(distance) > 0,
-# ])
-
-initial_trans_vals = np.linspace(1 - 1e-6, 1e-6, RES)
-trans_vals = opti.variable(initial_trans_vals, n_vars=RES, log_transform=True, upper_bound=1)
+acceleration = opti.derivative_of(velocities, with_respect_to=time, derivative_init_guess=1)
+distance = np.trapz(velocities * time)
 opti.subject_to([
-    trans_vals[0] == 1 - 1e-6,
-    trans_vals[-1] <= 1e-6,
-    # np.abs(np.diff(trans_vals)) < -.2,  # Max rate of transition is 20% per second
-    # np.diff(trans_vals) < 0,
-    # trans_vals[:-1] - trans_vals[1:] < 0.2 * np.diff(time),
-    # trans_vals <= trans_vals[0],
-    # trans_vals >= trans_vals[-1],
+    np.diff(distance) > 0,
 ])
-# trans_vals = initial_trans_vals
+
+initial_trans_vals = np.linspace(1, 0, RES)
+trans_vals = opti.variable(initial_trans_vals, n_vars=RES, lower_bound=0, upper_bound=1)
+opti.subject_to([
+    trans_vals[0] == 1,
+    trans_vals[-1] == 0,
+    np.diff(trans_vals) <= 0,
+    np.abs(opti.derivative_of(trans_vals, time, -1/180)) < .1,  # Max rate of transition is 5% per second
+    trans_vals <= trans_vals[0],
+    trans_vals >= trans_vals[-1],
+])
+
+delta_T = opti.variable(100, n_vars=RES, lower_bound=0, upper_bound=weight*3)
+opti.subject_to([
+    delta_T >= 0,
+    delta_T < weight*2,
+    np.abs(np.diff(delta_T)) < 100,
+    acceleration == delta_T / ac.data.total_mass,
+])
 
 airplanes = [ac.parametric_fn(trans_val) for trans_val in initial_trans_vals] # make this trans_vals.nz
 surfaces = np.array([airplane.wings[0].area() for airplane in airplanes])
@@ -63,19 +69,12 @@ cl_max = np.array([aero.CL_max_at_trans_val(trans_val) for trans_val in trans_va
 cl_horizontal = np.minimum(cl_horizontal, cl_max)
 
 # cl_0_alpha = aero.CL_at_trans_val(trans_vals)
-cl = cl_horizontal # initial_trans_vals * cl_max + (1 - initial_trans_vals) * cl_horizontal
+cl = trans_vals * cl_max + (1 - trans_vals) * cl_horizontal
 cd = ClassIIDrag(ac, velocities, altitude=trans_altitude).CD_from_CL(cl)
 drag = cd * operating_points_0_alpha.dynamic_pressure() * surfaces
 weight_minus_lift = np.maximum(0, weight - cl * surfaces * operating_points_0_alpha.dynamic_pressure())
-vertical_component = np.maximum(np.sin(trans_vals * np.pi / 2), 1e-5)
-horizontal_component = np.maximum(np.cos(trans_vals * np.pi / 2), 1e-2)
-thrust = weight_minus_lift / vertical_component
-acceleration = (thrust * horizontal_component - drag) / ac.data.total_mass
-opti.constrain_derivative(acceleration, velocities, time, method='simpson')
-opti.subject_to([
-    np.diff(time) > .01,
-    np.diff(time) < 1,
-])
+thrust = np.sqrt((weight_minus_lift / np.maximum(np.sin(trans_vals * np.pi / 2), .1))**2
+          + (drag / np.maximum(np.cos(trans_vals * np.pi / 2), .1)**2))
 
 
 def vi_func(x, velocity=0):
@@ -88,28 +87,22 @@ profile_power = (six_engine_data.sigma * six_engine_data.CDpbar / 8
                  * np.pi * six_engine_data.R ** 2
                  * (1 + 4.65 * velocities ** 2 / (six_engine_data.omega * six_engine_data.R) ** 2))
 induced_power = k * thrust * vi
-parasite_power = drag * velocities / horizontal_component
-# acceleration_power = delta_T * velocities / horizontal_component
-total_power = profile_power + induced_power + parasite_power #+ acceleration_power
+parasite_power = drag * velocities / np.maximum(np.cos(trans_vals * np.pi / 2), .1)
+acceleration_power = delta_T * velocities / np.maximum(np.cos(trans_vals * np.pi / 2), .1)
+total_power = profile_power + induced_power + parasite_power + acceleration_power
 max_power = np.max(total_power)
-# opti.subject_to([
-#     total_power < 400_000,
-# ])
+opti.subject_to([
+    max_power < 400_000,
+])
 
 energy = np.sum(np.trapz(total_power) * np.diff(time))
 
-opti.minimize(energy)
-opti.subject_to([
-    # np.abs(np.diff(trans_vals) / np.diff(time)) < 0.2,
-    np.diff(trans_vals) < 0,
-])
+opti.minimize(max_power)
 
 sol = opti.solve(behavior_on_failure='return_last')
 time = sol(time)
 trans_vals = sol(trans_vals)
-# delta_T = sol(delta_T)
-cl_max = sol(cl_max)
-cl_horizontal = sol(cl_horizontal)
+delta_T = sol(delta_T)
 cl = sol(cl)
 cd = sol(cd)
 drag = sol(drag)
@@ -118,7 +111,7 @@ vi = sol(vi)
 profile_power = sol(profile_power)
 induced_power = sol(induced_power)
 parasite_power = sol(parasite_power)
-# acceleration_power = sol(acceleration_power)
+acceleration_power = sol(acceleration_power)
 total_power = sol(total_power)
 max_power = sol(max_power)
 energy = sol(energy)
@@ -127,14 +120,14 @@ acceleration = sol(acceleration)
 print(f"Energy: {energy / 3600000:.1f} kWh")
 print(f"Max power: {max_power / 1000:.1f} kW")
 print(f"Time: {time[-1]:.1f} s")
-print(f"Distance: {distance / 1000:.1f} km")
+print(f"Distance: {distance[-1] / 1000:.1f} km")
 
 
 p.fig, p.ax = p.plt.subplots(figsize=(8, 6))
 p.ax.plot(velocities, profile_power / 1000, label="Profile power")
 p.ax.plot(velocities, induced_power / 1000, label="Induced power")
 p.ax.plot(velocities, parasite_power / 1000, label="Parasite power")
-# p.ax.plot(velocities, acceleration_power / 1000, label="Acceleration power")
+p.ax.plot(velocities, acceleration_power / 1000, label="Acceleration power")
 p.ax.plot(velocities, total_power / 1000, label="Total power")
 p.ax.legend()
 p.show_plot(
@@ -148,7 +141,7 @@ p.fig, p.ax = p.plt.subplots(figsize=(8, 6))
 p.ax.plot(time, profile_power / 1000, label="Profile power")
 p.ax.plot(time, induced_power / 1000, label="Induced power")
 p.ax.plot(time, parasite_power / 1000, label="Parasite power")
-# p.ax.plot(time, acceleration_power / 1000, label="Acceleration power")
+p.ax.plot(time, acceleration_power / 1000, label="Acceleration power")
 p.ax.plot(time, total_power / 1000, label="Total power")
 p.ax.legend()
 p.show_plot(
@@ -160,10 +153,9 @@ p.show_plot(
 
 p.fig, p.ax = p.plt.subplots(figsize=(8, 6))
 p.ax.plot(time, velocities, label="Velocity [m/s]")
-p.ax.plot(time, thrust / 1000, label="Thrust [kN]")
+p.ax.plot(time, delta_T / 1000, label="Extra thrust [kN]")
 y = p.plt.ylim()[1]
-p.ax.set_ylim(top=y)
-p.ax.plot(time, trans_vals * y * .9, label="Transition")
+p.ax.plot(time, trans_vals * y, label="Transition")
 p.ax.legend()
 p.show_plot(
     # title="Power curve",
@@ -177,7 +169,9 @@ p.show_plot(
 # p.plt.plot(velocities, cl, label="CL")
 # p.plt.legend()
 # p.plt.show()
-
+#
+# p.plt.plot(velocities, cd, label="CD")
+# p.plt.show()
 
 
 # p.plt.plot(velocities, cd);p.plt.show()
