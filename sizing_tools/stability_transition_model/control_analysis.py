@@ -20,6 +20,7 @@ from acai import ACAICalculator
 
 
 class HexacopterControlAnalysis(Model):
+
     def __init__(self, aircraft: AC, cg, umax):
         super().__init__(aircraft.data)
         self.aircraft = aircraft.data
@@ -36,11 +37,11 @@ class HexacopterControlAnalysis(Model):
 
         # Set r_cg locations,
         r_cg = np.array([cg, 0, 0])
-        r_cg_engine = r_tip_engine - r_cg 
+        r_cg_engine = r_tip_engine - r_cg
 
         # Moment arm engines
         d = np.sqrt(r_cg_engine[:, 0]**2 + r_cg_engine[:, 1]**2)
-        d = [d[0], d[1], d[2],d[-1],d[-2],d[-3]]
+        d = [d[0], d[1], d[2], d[-1], d[-2], d[-3]]
         #angles
      
         angles = np.arctan2(r_cg_engine[:, 0], r_cg_engine[:, 1])
@@ -102,13 +103,13 @@ class HexacopterControlAnalysis(Model):
         nA = self.A.shape[0]
 
         # Control constraints
-        
-        self.umax = umax 
-        umin =0
+
+        self.umax = umax
+        umin = 0
         Uset_umin = umin * np.ones(self.rotor_angle.shape)
         Uset_umax = umax * np.ones(self.rotor_angle.shape)
 
-            # Compute ACAI
+        # Compute ACAI
         start_time = time.process_time()
         delta = 1e-10
         acai_calculator = ACAICalculator(self.Bf, Uset_umin, Uset_umax,
@@ -132,7 +133,6 @@ class HexacopterControlAnalysis(Model):
         return ACAI
 
 
-
 if __name__ == "__main__":
     ac = rot_wing
     acai_data = []
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     
     for umax in umax_values:
         acai_values = []
-        angles_list= []
+        angles_list = []
         for cg in cgs:
             analysis = HexacopterControlAnalysis(ac, cg, umax)
             ACAI_value = analysis.run_analysis()
@@ -157,13 +157,14 @@ if __name__ == "__main__":
     plt.legend()
     plt.grid()
     plt.show()
-    
+
     csv_filename = 'rotor_angles.csv'
     with open(csv_filename, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['CG'] + [f'Angle_{i+1}' for i in range(6)])  # Header row
+        writer.writerow(['CG'] + [f'Angle_{i+1}'
+                                  for i in range(6)])  # Header row
         for i, cg in enumerate(cgs):
-            writer.writerow([cg] + [angles_list[i]*180/np.pi])
+            writer.writerow([cg] + [angles_list[i] * 180 / np.pi])
 
     print(f"Rotor angles saved to {csv_filename}")
 
