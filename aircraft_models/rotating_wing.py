@@ -18,7 +18,7 @@ sys.path.append(parent_dir)
 from data.concept_parameters.aircraft import Aircraft, AC
 from sizing_tools.wing_planform import WingModel
 
-ac = Aircraft.load(version='1.4')
+ac = Aircraft.load(version='1.5')
 wing_model = WingModel(ac, altitude=ac.cruise_altitude)
 
 wing_airfoil = Airfoil("E560")
@@ -107,7 +107,7 @@ horizontal_tail = asb.Wing(
                 4.348 / 2 * np.cos(np.radians(37.62)),
                 -4.348 / 2 * np.sin(np.radians(37.62))
             ],
-            chord=1.896 * 0.4,
+            chord=1.896 - 4.348 / 2 * np.tan(np.radians(36.86)),
             twist=0,
             airfoil=tail_airfoil)
     ],
