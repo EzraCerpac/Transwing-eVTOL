@@ -31,7 +31,9 @@ class FixedEquipmentMassModel(MassModel):
     def total_mass(self, initial_total_mass: float = None) -> float:
         self.initial_total_mass = initial_total_mass if initial_total_mass else self.initial_total_mass
         mass_sum = 0
-        for mass_fn in [self.oxygen_system_mass, self.furnishings_mass, self.hinge_mass]:
+        for mass_fn in [
+                self.oxygen_system_mass, self.furnishings_mass, self.hinge_mass
+        ]:
             mass = mass_fn()
             # logger.info(f'{mass_fn.__name__} = {mass} kg')
             mass_sum += mass

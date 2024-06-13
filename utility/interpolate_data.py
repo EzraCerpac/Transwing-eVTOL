@@ -10,7 +10,9 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 DEFAULT_DATA_PATH = Path(__file__).parent.parent / "data"
 
 
-def interpolate_data(x: float | np.ndarray, path: str | Path = DEFAULT_DATA_PATH) -> float | np.ndarray:
+def interpolate_data(
+        x: float | np.ndarray,
+        path: str | Path = DEFAULT_DATA_PATH) -> float | np.ndarray:
     """
     Interpolates data from a file.
 
@@ -32,7 +34,8 @@ def load_and_interpolate(dir_path: str | Path) -> callable:
     # Load data from each file
     for file in dir_path.iterdir():
         if file.suffix == '.txt':
-            pitch = float(file.stem.split('_')[-1])  # Extract pitch from filename
+            pitch = float(
+                file.stem.split('_')[-1])  # Extract pitch from filename
             data = np.loadtxt(file, delimiter=',')
             data_dict[pitch] = data
 
