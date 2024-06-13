@@ -16,19 +16,24 @@ class FixedEquipmentMassModel(MassModel):
             'n_pax',
         ]
 
-    def oxygen_system_mass(self):
+    def oxygen_system_mass(self) -> float:
         return convert_float(7 * self.aircraft.n_pax**0.702, 'lbs', 'kg')
 
-    def furnishings_mass(self):
+    def furnishings_mass(self) -> float:
         return convert_float(
             0.412 * self.aircraft.n_pax**1.145 *
             convert_float(self.initial_total_mass, 'kg', 'lbs')**0.489, 'lbs',
             'kg')
 
+    def hinge_mass(self) -> float:
+        return 20
+
     def total_mass(self, initial_total_mass: float = None) -> float:
         self.initial_total_mass = initial_total_mass if initial_total_mass else self.initial_total_mass
         mass_sum = 0
-        for mass_fn in [self.oxygen_system_mass, self.furnishings_mass]:
+        for mass_fn in [
+                self.oxygen_system_mass, self.furnishings_mass, self.hinge_mass
+        ]:
             mass = mass_fn()
             # logger.info(f'{mass_fn.__name__} = {mass} kg')
             mass_sum += mass

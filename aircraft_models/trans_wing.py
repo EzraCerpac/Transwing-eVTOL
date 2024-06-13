@@ -5,9 +5,9 @@ from aircraft_models.rotating_wing import chord_cut, p_tip_le, p_tip_te, p_cut_l
     fuselage, wing_airfoil, wing_model, ac, propulsor_fn
 from data.concept_parameters.aircraft import AC
 
-FLUENT_MODEL = False
+FLUENT_MODEL = True
 
-r_joint = p_cut_le - 0.8 * (p_cut_te - p_cut_le)  # JOINT LOCATION
+r_joint = p_cut_le - 0.1 * (p_cut_te - p_cut_le)  # JOINT LOCATION
 twist_cut = 0
 
 rotating_wing = Wing(
@@ -86,14 +86,15 @@ def rotate_wing(trans_val: float, airplane: Airplane = base_airplane) -> Wing:
     if isinstance(trans_val, np.ndarray):
         trans_val = trans_val[:, np.newaxis, np.newaxis]
     q_range: tuple[float, float] = (0, 110)
-    alpha: float = 50
-    beta: float = 55
+    alpha: float = 40
+    beta: float = 45
     q = trans_val * (q_range[1] - q_range[0]) + q_range[0]
 
     # DEFINE AXIS OF ROTATION AND CREATE ROTATIONAL MATRIX
     alpha = np.deg2rad(alpha)
     beta = np.deg2rad(beta)
     rot_axis = np.array([[-np.sin(alpha)], [-np.cos(alpha)], [np.sin(beta)]])
+    rot_axis = rot_axis / np.linalg.norm(rot_axis)
 
     dq = -np.deg2rad(q)
     C_axis = (np.cos(dq) * np.eye(3, 3) +
@@ -168,11 +169,14 @@ trans_wing = AC(
 )
 
 if __name__ == '__main__':
-    # airplane = trans_wing.parametric_fn(1)
-    # airplane.draw_three_view()
+    airplane = trans_wing.parametric_fn(1)
+    airplane.draw_three_view()
     # airplane.draw()
 
-    for val in np.linspace(0, 1, 11):
-        para = trans_wing.parametric_fn(val)
-        para.draw_three_view()
-    para.draw()
+    print(airplane.wings[0].xsecs[-1].xyz_le[0] -
+          airplane.fuselages[0].xsecs[0].xyz_c[0])
+
+    # for val in np.linspace(0, 1, 11):
+    #     para = trans_wing.parametric_fn(val)
+    #     para.draw_three_view()
+    # para.draw()

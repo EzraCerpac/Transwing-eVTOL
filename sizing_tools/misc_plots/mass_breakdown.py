@@ -35,17 +35,19 @@ def plot_mass_breakdown(aircraft: Aircraft) -> tuple[plt.Figure, plt.Axes]:
     sub_masses.pop('payload')
     sub_masses.pop('battery')
 
-    legend1 = ax.legend(
-        wedges1,
-        [f'{k}:\t{v:>7.3g} kg'.expandtabs(6) for k, v in major_masses.items()],
-        loc="upper right",
-        bbox_to_anchor=(1.15, 1),
-        title="Major masses",
-        prop={'family': 'DejaVu Sans Mono'})
+    legend1 = ax.legend(wedges1, [
+        f'{k.replace("_", " ").capitalize()}:\t{"\t" if len(k) < 13 else ""}{v:>7.3g} kg'
+        .expandtabs(6) for k, v in major_masses.items()
+    ],
+                        loc="upper right",
+                        bbox_to_anchor=(1.15, 1),
+                        title="Major masses",
+                        prop={'family': 'DejaVu Sans Mono'})
     ax.add_artist(legend1)
     legend2 = ax.legend(wedges2[2:], [
-        "{}:{}\t{:>6.3g} kg".format(k.replace(
-            '_', ' '), "\t" if len(k) < 8 else "", v).expandtabs(9)
+        "{}:{}{}{:>6.3g} kg".format(k.replace(
+            '_', ' '), "\t" if len(k) < 18 else "", "\t" if len(k) < 8 else "",
+                                    v).expandtabs(9)
         for k, v in sub_masses.items()
     ],
                         loc="lower right",

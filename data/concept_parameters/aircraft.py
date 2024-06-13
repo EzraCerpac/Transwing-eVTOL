@@ -1,11 +1,10 @@
-from typing import Optional, NamedTuple, Any, Callable
+from typing import Optional, Any, Callable
 
 from aerosandbox import Airplane
 from pydantic import BaseModel, field_validator, Field
 
 from data.concept_parameters.aircraft_components import Propeller, Tail, Fuselage, Wing, MassObject
-from data.concept_parameters.mission_profile import MissionProfile, MissionPhase, Phase, default_mission_profile, \
-    updated_mission_profile_from_cruise_opt
+from data.concept_parameters.mission_profile import MissionProfile, mission_profile
 from utility.log import logger
 from utility.unit_conversion import convert_float
 
@@ -83,13 +82,14 @@ class Aircraft(BaseModel):
     def mass_breakdown_to_str(self) -> str:
         text = ''
         for key, value in self.mass_breakdown_dict.items():
+            key = key.replace('_', ' ').capitalize()
             if isinstance(value, dict):
-                text += f'{key.capitalize()}:\n'
+                text += f'\t{key}:\n'
                 for sub_key, sub_value in value.items():
-                    text += f'    {sub_key}: {sub_value:.2f} kg\n'
+                    text += f'\t\t{sub_key}: {sub_value:.0f} kg\n'
             else:
-                text += f'{key}: {value:.2f} kg\n'
-        return f'Mass breakdown:\n{text}'
+                text += f'\t{key}: {value:.0f} kg\n'
+        return f'Mass breakdown:\n{text}\n'
 
     def initialize_propellers(self):
         self.propellers = [
@@ -101,7 +101,7 @@ class Aircraft(BaseModel):
         ]
 
     def initialize_default_mission_profile(self):
-        self.mission_profile = updated_mission_profile_from_cruise_opt(self)
+        self.mission_profile = mission_profile()
 
     @classmethod
     @field_validator('id')
@@ -196,3 +196,37 @@ class AC:
         self.data = data
         self.parametric = parametric or parametric_fn(0)
         self.parametric_fn = parametric_fn
+
+    def __repr__(self) -> str:
+        return f'AC(name={self.name})'
+
+    def display_data(self,
+                     show_energy_breakdown: bool = False,
+                     show_mass_breakdown: bool = False) -> str:
+        text = f"""
+Data of Aircraft: {self.name}
+Total mass: {self.data.total_mass:.0f} kg
+Cruise velocity: {self.data.cruise_velocity:.1f} m/s
+Cruise altitude: {self.data.cruise_altitude:.0f} m
+Range: {self.data.range:.0f} m
+Payload mass: {self.data.payload_mass:.0f} kg
+Number of passengers: {self.data.n_pax}
+Maximum power: {max([phase.state.power for phase in self.data.mission_profile.list if phase.state.power]) / 1000:.0f} kW)
+"""
+        if show_energy_breakdown:
+            from sizing_tools.misc_plots.energy_distribution import plot_energy_breakdown_per_phase
+            text += self.data.mission_profile.energy_breakdown()
+            plot_energy_breakdown_per_phase(self.data)
+        if show_mass_breakdown:
+            from sizing_tools.misc_plots.mass_breakdown import plot_mass_breakdown
+            text += self.data.mass_breakdown_to_str()
+            plot_mass_breakdown(self.data)
+        logger.info(text)
+        return text
+
+
+if __name__ == '__main__':
+    from aircraft_models import trans_wing
+
+    trans_wing.display_data(show_energy_breakdown=True,
+                            show_mass_breakdown=True)

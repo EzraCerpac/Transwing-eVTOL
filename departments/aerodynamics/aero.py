@@ -1,7 +1,11 @@
 import aerosandbox as asb
 import aerosandbox.numpy as np
 import matplotlib.pyplot as plt
+from casadi import MX
 from scipy.interpolate import griddata
+
+from aircraft_models import rot_wing, trans_wing
+from utility.misc import interpolate_nans
 
 TRANS_VALS = np.linspace(0, 1, 31)
 
@@ -9,7 +13,7 @@ from data.concept_parameters.aircraft import AC
 
 
 class Aero:
-    def __init__(self, ac: AC, alpha: np.ndarray = np.linspace(-30, 30, 501)):
+    def __init__(self, ac: AC, alpha: np.ndarray = np.linspace(-60, 60, 501)):
         self.ac = ac
 
         self.alpha = alpha
@@ -18,9 +22,9 @@ class Aero:
         if self.ac.parametric_fn is not None:
             self.trans_aero_data: dict = self.get_aero_over_trans_val(TRANS_VALS)
 
-    def get_aero_data(self, include_wave_drag: bool = True, model_size: str = 'small') -> dict:
+    def get_aero_data(self, include_wave_drag: bool = True, model_size: str = 'small', trans_val: float = 0) -> dict:
         self.aero_data = asb.AeroBuildup(
-            airplane=rot_wing.parametric,
+            airplane=self.ac.parametric_fn(trans_val),
             op_point=asb.OperatingPoint(
                 atmosphere=asb.Atmosphere(altitude=self.ac.data.cruise_altitude),
                 velocity=self.velocity,
@@ -48,14 +52,8 @@ class Aero:
         if alpha is None and trans_val is None:
             raise ValueError("Either alpha or trans_val must be provided.")
         if trans_val is not None:
-            raise NotImplementedError
-            # alpha = alpha if alpha is not None else 0
-            # if np.isscalar(alpha) and not np.isscalar(trans_val):
-            #     alpha = np.full_like(trans_val, alpha)
-            # points = np.array([trans_val, alpha]).T
-            # values = self.trans_aero_data["CL"].flatten()
-            # xi = np.array([x.flatten() for x in np.meshgrid(TRANS_VALS, self.alpha)]).T
-            # return griddata(points, values, xi, method='nearest')
+            cl = lambda a: self.trans_aero_data["CL"][:,np.argmin(np.abs(self.alpha - a))]
+            return np.interp(trans_val, TRANS_VALS, cl(alpha))
         if alpha is not None:
             return np.interp(alpha, self.alpha, self.aero_data["CL"])
 
@@ -81,6 +79,33 @@ class Aero:
         cl = lambda a: self.trans_aero_data["CL"][:,np.argmin(np.abs(self.alpha - a))]
         return np.interp(trans_val, TRANS_VALS, cl(alpha))
 
+    def CD_at_trans_val(self, trans_val: float, alpha: float = None, CL: float = None) -> float:
+        if alpha is None and CL is None:
+            raise ValueError("Either alpha or CL must be provided.")
+        if alpha is not None and CL is not None:
+            raise ValueError("Only one of alpha or CL can be provided.")
+        def cd(trans, a):
+            return np.interpn(
+                points=(TRANS_VALS, self.alpha),
+                values=self.trans_aero_data["CD"],
+                xi=np.array([trans, a]).T,
+            )
+        def cl(trans, a):
+            return np.interpn(
+                points=(TRANS_VALS, self.alpha),
+                values=self.trans_aero_data["CL"],
+                xi=np.array([trans, a]).T,
+            )
+        if alpha is not None:
+            return cd(trans_val, alpha)
+        if CL is not None:
+            iteration_zip = zip(trans_val.nz, CL.nz) if isinstance(CL, MX) else zip(trans_val, CL)
+            alpha = np.array([np.interp(cl, self.trans_aero_data['CL'][np.argmin(TRANS_VALS-trans)], self.alpha) for trans, cl in iteration_zip])
+            alpha = np.where(np.abs(alpha) < 20, alpha, np.NAN)
+            # interpolate nans
+            alpha = interpolate_nans(alpha)
+            return cd(trans_val, alpha)
+
     @property
     def alpha_CL_max(self) -> float:
         return self.alpha[np.argmax(self.aero_data["CL"])]
@@ -91,7 +116,7 @@ class Aero:
 
 
 if __name__ == '__main__':
-    from aircraft_models import trans_wing, rot_wing
+    # from aircraft_models import trans_wing, rot_wing
 
     a = Aero(trans_wing)
     vals = np.linspace(0, 1, 51)

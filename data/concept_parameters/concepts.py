@@ -115,22 +115,23 @@ example_cg_dict = {
 }
 
 rot_wing_starting_params = Aircraft(
-    id='V1.3',
+    id='V1.5',
     name=
-    "Using updated Class II weight and drag estimates and energy estimate from cruise opt",
+    "Using span of 14m, hinge location of 1.8m from root, and updated params",
     motor_prop_count=6,
     motor_wing_count=6,
-    propeller_radius=1.85 / 2,
+    propeller_radius=2.1 / 2,
     propeller_blade_number=6,
-    hinge_location=0.2,
+    hinge_location=1.8 / (14 / 2),
     wing=Wing(
         area=14,
-        span=12,
+        span=14,
     ),
     fuselage=Fuselage(
-        length=8,
-        maximum_section_perimeter=2.5,
+        length=7.822,
+        maximum_section_perimeter=1.6577,
     ),
-    estimated_CD0=0.028,
+    estimated_CD0=0.02,
     s_fus=12.5,
+    design_load_factor=1.2,
     TA=400)

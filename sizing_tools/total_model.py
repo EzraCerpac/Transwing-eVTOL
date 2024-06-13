@@ -53,7 +53,7 @@ class TotalModel(Model):
         print(
             f"Takeoff Power: {convert_float(departments.flight_performance.power_calculations.power, 'W', 'kW'):.2f} kW"
         )
-        print(f"Cruise C_L: {self.aircraft.mission_profile.CRUISE.C_L:.2f}")
+        # print(f"Cruise C_L: {self.aircraft.mission_profile.CRUISE.C_L:.2f}")
         print(f"Hinge Load: {self.aircraft.hinge_load:.2f} N")
         print(f"Hinge Moment: {self.aircraft.hinge_moment:.2f} Nm")
         print("\n")
@@ -82,13 +82,3 @@ if __name__ == '__main__':
         hinge_loading=True,
         class1_diagram=True,
     )
-    # for concept in rotating_wings:
-    #     model = TotalModel(concept)
-    #     model.run()
-    #     model.print_results(
-    #         mass_breakdown=True,
-    #         energy_breakdown=True,
-    #         # hinge_loading=True,
-    #         class1_diagram=False,
-    #     )
-    # model.print_all_parameters()

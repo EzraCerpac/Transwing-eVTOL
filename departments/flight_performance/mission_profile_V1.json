@@ -1,0 +1,154 @@
+{
+    "name": "Mission_profile",
+    "startup": {
+        "name": "Startup",
+        "start_time": 0,
+        "duration": 5,
+        "start_position": 0,
+        "end_position": 0,
+        "start_altitude": 0,
+        "end_altitude": 0,
+        "energy": 10,
+        "state": {
+            "horizontal_speed": 0,
+            "vertical_speed": 0,
+            "power": 10,
+            "C_L": null
+        }
+    },
+    "takeoff": null,
+    "vertical_climb": {
+        "name": "Vertical_climb",
+        "start_time": 5,
+        "duration": 60,
+        "start_position": 0,
+        "end_position": 0,
+        "start_altitude": 0,
+        "end_altitude": 100,
+        "energy": null,
+        "state": {
+            "horizontal_speed": 0,
+            "start_vertical_speed": 0,
+            "end_vertical_speed": 3,
+            "power": null,
+            "C_L": null
+        }
+    },
+    "transition1": {
+        "name": "Transition1",
+        "start_time": 65,
+        "duration": 180,
+        "start_position": 0,
+        "end_position": 4000,
+        "start_altitude": 100,
+        "end_altitude": 100,
+        "energy": null,
+        "state": {
+            "start_horizontal_speed": 0,
+            "end_horizontal_speed": 45,
+            "vertical_speed": 0,
+            "power": null,
+            "C_L": null
+        }
+    },
+    "climb": {
+        "name": "Climb",
+        "start_time": 245,
+        "duration": 250,
+        "start_position": 4000,
+        "end_position": 15000,
+        "start_altitude": 100,
+        "end_altitude": 500,
+        "energy": 4.86,
+        "state": {
+            "horizontal_speed": 45,
+            "vertical_speed": 1.6,
+            "power": 70000,
+            "C_L": null
+        }
+    },
+    "cruise": {
+        "name": "Cruise",
+        "start_time": 495,
+        "duration": 1000,
+        "start_position": 15000,
+        "end_position": 70000,
+        "start_altitude": 500,
+        "end_altitude": 500,
+        "energy": 17.5,
+        "state": {
+            "horizontal_speed": 55.6,
+            "vertical_speed": 0,
+            "power": 63000,
+            "C_L": 0.52
+        }
+    },
+    "descent": {
+        "name": "Descent",
+        "start_time": 1495,
+        "duration": 450,
+        "start_position": 70000,
+        "end_position": 96000,
+        "start_altitude": 500,
+        "end_altitude": 100,
+        "energy": 0,
+        "state": {
+            "start_horizontal_speed": 55.6,
+            "end_horizontal_speed": 40,
+            "vertical_speed": 1,
+            "power": 0,
+            "C_L": null
+        }
+    },
+    "transition2": {
+        "name": "Transition2",
+        "start_time": 1945,
+        "duration": 180,
+        "start_position": 96000,
+        "end_position": 100000,
+        "start_altitude": 100,
+        "end_altitude": 100,
+        "energy": null,
+        "state": {
+            "start_horizontal_speed": 40,
+            "end_horizontal_speed": 0,
+            "vertical_speed": 0,
+            "power": null,
+            "C_L": null
+        }
+    },
+    "hover": null,
+    "vertical_descent": {
+        "name": "Vertical_descent",
+        "start_time": 2125,
+        "duration": 60,
+        "start_position": 100000,
+        "end_position": 100000,
+        "start_altitude": 100,
+        "end_altitude": 0,
+        "energy": null,
+        "state": {
+            "horizontal_speed": 0,
+            "start_vertical_speed": 3,
+            "end_vertical_speed": 0,
+            "power": null,
+            "C_L": null
+        }
+    },
+    "landing": {
+        "name": "Startup",
+        "start_time": 2160,
+        "duration": 5,
+        "start_position": 100000,
+        "end_position": 100000,
+        "start_altitude": 0,
+        "end_altitude": 0,
+        "energy": 10,
+        "state": {
+            "horizontal_speed": 0,
+            "vertical_speed": 0,
+            "power": 10,
+            "C_L": null
+        }
+    }
+}
