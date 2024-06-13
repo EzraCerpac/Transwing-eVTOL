@@ -2,6 +2,8 @@ from pprint import pprint
 
 import aerosandbox as asb
 import aerosandbox.numpy as np
+import aerosandbox.tools.pretty_plots as p
+plt = p.plt
 from aerosandbox.dynamics.flight_dynamics.airplane import get_modes
 from scipy.constants import g
 import control as ct
@@ -45,7 +47,7 @@ modes = get_modes(
     aero=aero,
 )
 
-pprint(aero)
+# pprint(aero)
 
 
 # start of ss model
@@ -87,11 +89,13 @@ C_m_q = aero['Cmq'][0]
 C_m_delta_e = 0 #aero['Cmde'] * moment_derivative_norm  #todo
 
 Q = np.array([
-    [C_X_u - 2 * mu_c * D_c, C_X_alpha, C_Z_0, C_X_q],
-    [C_Z_u, C_Z_alpha + (C_Z_alpha_dot - 2 * mu_c) * D_c, -C_X_0, C_Z_q + 2 * mu_c],
-    [0, 0, -D_c, 1],
-    [C_m_u, C_m_alpha + C_m_alpha_dot * D_c, 0, C_m_q - 2 * mu_c * K_Y_squared * D_c],
+    [-C_X_u, -C_X_alpha, -C_Z_0, 0],
+    [-C_Z_u, -C_Z_alpha, C_X_0, -(C_Z_q + 2 * mu_c)],
+    [0, 0, 0, -1],
+    [-C_m_u, -C_m_alpha, 0, -C_m_q],
 ])
+eigvals, eigvecs = np.linalg.eig(Q)
+# pprint(eigvals)
 
 R = np.array([
     [-C_X_delta_e],
@@ -100,6 +104,31 @@ R = np.array([
     [-C_m_delta_e],
 ])
 
+P = np.array([
+    [-2 * mu_c * ac.parametric.c_ref / V, 0, 0, 0],
+    [0, (C_Z_alpha_dot - 2 * mu_c) * ac.parametric.c_ref / V, 0, 0],
+    [0, 0, -ac.parametric.c_ref / V, 0],
+    [0, C_m_alpha_dot * ac.parametric.c_ref / V, 0, -2 * mu_c * K_Y_squared * ac.parametric.c_ref / V],
+])
 
-eigvals, eigvecs = np.linalg.eig(Q)
-pprint(eigvals)
+A = np.linalg.inv(P) @ Q
+B = np.linalg.inv(P) @ R
+C = np.identity(4)
+D = np.zeros_like(B)
+C[-1, -1] *= V / ac.parametric.c_ref
+D[-1, -1] *= V / ac.parametric.c_ref
+
+dt = 0.01
+sys = ct.ss(A, B, C, D,
+    inputs=[r'$\delta_e$'],
+    states=[r'$\hat{u}$', r'$\alpha$', r'$\theta$', r'$\frac{q\hat{c}}{V}$'],
+    outputs=[r'$\hat{u}$', r'$\alpha$', r'$\theta$', r'$q$'],
+    name='Longitudinal Dynamics'
+)
+X0 = np.array([V, alpha_0, theta_0, q_0])
+response = ct.initial_response(sys, X0=X0, T=1)
+
+fig, axs = plt.subplots(4, 1, figsize=(12, 12), sharex=True)
+axs = axs.reshape(-1, 1)
+response.plot(ax=axs)
+plt.show()
