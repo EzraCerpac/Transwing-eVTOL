@@ -2,7 +2,7 @@ import aerosandbox.numpy as np
 from aerosandbox import Airplane, Wing, WingXSec
 
 from aircraft_models.rotating_wing import chord_cut, p_tip_le, p_tip_te, p_cut_le, p_cut_te, root_wing, horizontal_tail, \
-    fuselage, wing_airfoil, wing_model, ac, propulsor_fn
+    fuselage, wing_airfoil, wing_model, ac, propulsor_fn, cg_location
 from data.concept_parameters.aircraft import AC
 
 FLUENT_MODEL = True
@@ -65,11 +65,11 @@ wings = [total_wing, horizontal_tail
 
 base_airplane = Airplane(
     name=ac.full_name,
-    xyz_ref=[1, 0, 0],
+    xyz_ref=cg_location,
     wings=wings,
     fuselages=[fuselage],
     s_ref=ac.wing.area,
-    c_ref=ac.wing.mean_aerodynamic_chord,
+    # c_ref=ac.wing.mean_aerodynamic_chord,
     b_ref=ac.wing.span,
 )
 

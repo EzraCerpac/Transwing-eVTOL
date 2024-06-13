@@ -34,6 +34,7 @@ tail_airfoil = Airfoil("naca0012")
 #         nose_fineness_ratio=1,  # Fineness ratio (length / diameter) of the nose section of the fuselage.
 #     )},
 # }
+cg_location = np.array([1, 0, 0])
 
 cut = ac.hinge_location
 chord_cut = wing_model.rootcrt - (wing_model.rootcrt - wing_model.tipcrt) * cut
@@ -115,7 +116,9 @@ horizontal_tail = asb.Wing(
 
 parametric = Airplane(
     name=ac.full_name,
-    xyz_ref=[1, 0, 0],  # CG location
+    xyz_ref=cg_location,
+    s_ref=ac.wing.area,
+    b_ref=ac.wing.span,
     wings=[
         Wing(
             name='Main Wing',
