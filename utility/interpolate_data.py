@@ -49,6 +49,7 @@ def load_and_interpolate(dir_path: str | Path) -> callable:
     z_vals = np.hstack([data[:, 1] for data in data_arrays])
 
     # Create 2D interpolation function
-    interp_func = CloughTocher2DInterpolator(np.array([x_vals, y_vals]).T, z_vals)
+    interp_func = CloughTocher2DInterpolator(
+        np.array([x_vals, y_vals]).T, z_vals)
 
     return interp_func
