@@ -118,6 +118,7 @@ class Wing(BaseModel):
 
     @mean_aerodynamic_chord.setter
     def mean_aerodynamic_chord(self, value):
+
         if value is None:
             return
         self._mean_aerodynamic_chord = min(value, self.max_chord)
