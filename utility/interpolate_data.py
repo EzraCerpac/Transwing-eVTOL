@@ -2,7 +2,7 @@ import warnings
 from pathlib import Path
 
 import aerosandbox.numpy as np
-from scipy.interpolate import interp2d
+from scipy.interpolate import interp2d, CloughTocher2DInterpolator
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=RuntimeWarning)
@@ -46,6 +46,6 @@ def load_and_interpolate(dir_path: str | Path) -> callable:
     z_vals = np.hstack([data[:, 1] for data in data_arrays])
 
     # Create 2D interpolation function
-    interp_func = interp2d(x_vals, y_vals, z_vals)
+    interp_func = CloughTocher2DInterpolator(np.array([x_vals, y_vals]).T, z_vals)
 
     return interp_func
