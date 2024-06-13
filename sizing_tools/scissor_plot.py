@@ -84,7 +84,7 @@ class Scissor_plot(Model):
              (self.aircraft.wing.span + 2.15 *
               self.aircraft.fuselage.maximum_section_perimeter))) * np.tan(
                   np.radians(self.parametric.wings[0].mean_sweep_angle(0.25)))
-        X_ac_n = 6 * (-4*(0.3**2 * 0.4) /
+        X_ac_n = 6 * (-4 * (0.3**2 * 0.4) /
                       (self.aircraft.wing.area *
                        self.aircraft.wing.mean_aerodynamic_chord *
                        self.Cl_alpha_tail_less()))
