@@ -21,9 +21,10 @@ class AirframeMassModel(MassModel):
         ]
 
     def fuselage_mass(self) -> float:
+        effective_fuselage_length = self.aircraft.fuselage.length / 2
         return convert_float(14.86 * convert_float(self.initial_total_mass, 'kg', 'lbs') ** 0.144 * (
-                self.aircraft.fuselage.length / self.aircraft.fuselage.maximum_section_perimeter) ** 0.778 * \
-                             convert_float(self.aircraft.fuselage.length, 'm', 'ft') ** 0.383 * self.aircraft.n_pax ** 0.455, 'lbs', 'kg')
+                effective_fuselage_length / self.aircraft.fuselage.maximum_section_perimeter) ** 0.778 * \
+                             convert_float(effective_fuselage_length, 'm', 'ft') ** 0.383 * self.aircraft.n_pax ** 0.455, 'lbs', 'kg')
 
     def wing_mass(self) -> float:
         return convert_float(0.04674 * convert_float(self.initial_total_mass, 'kg',

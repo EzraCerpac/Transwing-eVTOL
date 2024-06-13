@@ -7,7 +7,7 @@ from data.concept_parameters.aircraft import AC
 
 FLUENT_MODEL = True
 
-r_joint = p_cut_le - 0.8 * (p_cut_te - p_cut_le)  # JOINT LOCATION
+r_joint = p_cut_le - 0.1 * (p_cut_te - p_cut_le)  # JOINT LOCATION
 twist_cut = 0
 
 rotating_wing = Wing(
@@ -169,11 +169,13 @@ trans_wing = AC(
 )
 
 if __name__ == '__main__':
-    # airplane = trans_wing.parametric_fn(1)
-    # airplane.draw_three_view()
+    airplane = trans_wing.parametric_fn(1)
+    airplane.draw_three_view()
     # airplane.draw()
 
-    for val in np.linspace(0, 1, 11):
-        para = trans_wing.parametric_fn(val)
-        para.draw_three_view()
-    para.draw()
+    print(airplane.wings[0].xsecs[-1].xyz_le[0] - airplane.fuselages[0].xsecs[0].xyz_c[0])
+
+    # for val in np.linspace(0, 1, 11):
+    #     para = trans_wing.parametric_fn(val)
+    #     para.draw_three_view()
+    # para.draw()
