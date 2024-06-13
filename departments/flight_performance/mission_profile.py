@@ -13,6 +13,22 @@ from utility.log import logger
 from utility.plotting import show
 
 
+class Phase(Enum):
+    TAKEOFF = auto()
+    VERTICAL_CLIMB = auto()
+    TRANSITION1 = auto()
+    CLIMB = auto()
+    CRUISE = auto()
+    DESCENT = auto()
+    TRANSITION2 = auto()
+    HOVER = auto()
+    VERTICAL_DESCENT = auto()
+    LANDING = auto()
+
+    def __int__(self):
+        return self.value - 1
+
+
 class State(BaseModel):
     horizontal_speed: Optional[float] = None
     vertical_speed: Optional[float] = None
@@ -40,7 +56,6 @@ class MissionPhase(BaseModel):
         # self.set_end_values()
         # if self.state.power is not None:
         #     self.energy = self.state.power * self.duration
-
 
     def set_end_values(self):
         self.end_position = self.start_position + self.state.horizontal_speed * self.duration
@@ -172,64 +187,62 @@ class MissionProfile(BaseModel):
             json.dump(self.dict(), json_file, indent=4)
         logger.info(f'Mission profile saved to {file_path}')
 
+    @property
+    def dataframe(self) -> pd.DataFrame:
+        df = pd.DataFrame([phase.dict() for phase in self.list])
+        df["name"] = [phase.name.replace('_', ' ').capitalize() for phase in self.list]
+        states = list(map(State.parse_obj, df['state']))
+        vels = []
+        for state in states:
+            for key, value in state.__dict__.items():
+                if value is None:
+                    state.__dict__[key] = 0
+            vels.append(np.sqrt(state.horizontal_speed ** 2 + state.vertical_speed ** 2))
+        df['velocity'] = vels
+        return df
 
-class Phase(Enum):
-    TAKEOFF = auto()
-    VERTICAL_CLIMB = auto()
-    TRANSITION1 = auto()
-    CLIMB = auto()
-    CRUISE = auto()
-    DESCENT = auto()
-    TRANSITION2 = auto()
-    HOVER = auto()
-    VERTICAL_DESCENT = auto()
-    LANDING = auto()
-
-    def __int__(self):
-        return self.value - 1
-
-
-def plot_alt_over_distance(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
-    states = list(map(State.parse_obj, df['state']))
-    vels = []
-    for state in states:
-        for key, value in state.__dict__.items():
-            if value is None:
-                state.__dict__[key] = 0
-        vels.append(np.sqrt(state.horizontal_speed**2 + state.vertical_speed**2))
-
-    p.plot_color_by_value(
-        df['start_position'],
-        df['start_altitude'],
-        c=vels,
-        colorbar=True,
-        cmap='viridis',
-        clim=(0, 56),
-        colorbar_label='Airspeed, $V$ [m/s]')
-    p.show_plot(
-        'Altitude over distance',
-        'Distance, $x$ [m]',
-        'Altitude, $h$ [m]',
-        rotate_axis_labels=False,
-        pretty_grids=True,
-    )
+    def energy_breakdown(self) -> str:
+        text = f"""
+Energy breakdown:
+    Total energy: {self.energy:.1f} kWh
+"""
+        for phase in self.list:
+            if phase.energy is not None and phase.energy > 0:
+                text += f'\t{phase.name.replace('_', ' ').capitalize()}: {phase.energy:.1f} kWh\n'
+        return text + '\n'
 
 @show
-def plot_alt_over_time(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
-    fig, ax = plt.subplots(figsize=(10, 5))
-    ax.plot(df['start_time'], df['start_altitude'])
-    ax.set_xlabel('Time, $t$ [s]')
+def plot_mission_profile(mission_profile) -> tuple[plt.Figure, plt.Axes]:
+    # Create a figure and an axis
+    fig, ax = plt.subplots(figsize=(12, 8))
+
+    # Define colors for different phases
+    colors = ['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black']
+
+    # Plot each phase
+    for i, phase in enumerate(mission_profile.list):
+        # Color the background of the phase
+        ax.axvspan(phase.start_position, phase.end_position, facecolor=colors[i % len(colors)], alpha=0.5)
+        ax.axvline(phase.start_position, color='black', linestyle='--', linewidth=1)
+        # Plot a line for the phase
+        ax.plot([phase.start_position, phase.end_position],
+                [phase.start_altitude, phase.end_altitude],
+                color='black', linestyle='-', linewidth=2)
+
+
+        # Display the energy and time of the phase
+        mid_position = (phase.start_position + phase.end_position) / 2
+        mid_altitude = (phase.start_altitude + phase.end_altitude) / 2
+        ax.text(mid_position, mid_altitude, f"Energy: {phase.energy}\nTime: {phase.duration}")
+
+    # Set labels and show the plot
+    ax.set_xlabel('Distance, $x$ [m]')
     ax.set_ylabel('Altitude, $h$ [m]')
-    ax.grid()
     return fig, ax
 
+
 if __name__ == '__main__':
-    default_mission = MissionProfile.from_json('mission_profile_V1.json')
-    print(default_mission.dict())
-    default_mission.adjust_and_verify_phases()
-    print(default_mission.dict())
-    default_mission.save_to_json('default_mission_exp.json')
-    df = pd.DataFrame([phase.dict() for phase in default_mission.list])
-    df["name"] = [phase.name for phase in default_mission.list]
-    plot_alt_over_distance(df)
-    plot_alt_over_time(df)
+    default_mission = MissionProfile.from_json('mission_profile_V2.json')
+    # default_mission.plot_alt_over_distance()
+    # default_mission.plot_alt_over_time()
+    plot_mission_profile(default_mission)
