@@ -20,6 +20,7 @@ from acai import ACAICalculator
 
 
 class HexacopterControlAnalysis(Model):
+
     def __init__(self, aircraft: AC, cg, umax):
         super().__init__(aircraft.data)
         self.aircraft = aircraft.data
@@ -36,21 +37,25 @@ class HexacopterControlAnalysis(Model):
 
         # Set r_cg locations,
         r_cg = np.array([cg, 0, 0])
-        r_cg_engine = r_tip_engine - r_cg 
+        r_cg_engine = r_tip_engine - r_cg
 
         # Moment arm engines
         d = np.sqrt(r_cg_engine[:, 0]**2 + r_cg_engine[:, 1]**2)
-        d = [d[0], d[1], d[2],d[-1],d[-2],d[-3]]
+        d = [d[0], d[1], d[2], d[-1], d[-2], d[-3]]
         #angles
         angle1 = np.arctan2(r_cg_engine[0, 1], r_cg_engine[0, 0])
-        angle2 = np.arctan2(r_cg_engine[1, 1], r_cg_engine[1, 0]) + 1/2*np.pi
-        angle3 = np.arctan2(r_cg_engine[2, 1], r_cg_engine[2, 0]) + 1/2*np.pi
-        angle4 = np.arctan2(r_cg_engine[5, 1], r_cg_engine[5, 0]) + 1/2*np.pi
-        angle5 = np.arctan2(r_cg_engine[4, 1], r_cg_engine[4, 0]) + 1/2*np.pi
-        angle6 = np.arctan2(r_cg_engine[2, 1], r_cg_engine[3, 0]) + 1*np.pi
-        angles = [angle1,angle2,angle3, angle4, angle5, angle6]  
+        angle2 = np.arctan2(r_cg_engine[1, 1], r_cg_engine[1,
+                                                           0]) + 1 / 2 * np.pi
+        angle3 = np.arctan2(r_cg_engine[2, 1], r_cg_engine[2,
+                                                           0]) + 1 / 2 * np.pi
+        angle4 = np.arctan2(r_cg_engine[5, 1], r_cg_engine[5,
+                                                           0]) + 1 / 2 * np.pi
+        angle5 = np.arctan2(r_cg_engine[4, 1], r_cg_engine[4,
+                                                           0]) + 1 / 2 * np.pi
+        angle6 = np.arctan2(r_cg_engine[2, 1], r_cg_engine[3, 0]) + 1 * np.pi
+        angles = [angle1, angle2, angle3, angle4, angle5, angle6]
         angles = np.arctan2(r_cg_engine[:, 0], r_cg_engine[:, 1])
-        # angles = [angles[0], angles[1], angles[2],angles[-1],angles[-2],angles[-3]]   
+        # angles = [angles[0], angles[1], angles[2],angles[-1],angles[-2],angles[-3]]
         # angles_deg = np.degrees(angles)
         self.rotor_angle = np.array(angles)
 
@@ -71,8 +76,8 @@ class HexacopterControlAnalysis(Model):
         # self.rotor_ku = np.array([0.05, 0.05, 0.05, 0.05, 0.05, 0.05])
         self.rotor_ku = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
         self.rotor_d = np.array(d)
-     
-        self.rotor_Yita = np.array([0,1,1,1,1,0])
+
+        self.rotor_Yita = np.array([0, 1, 1, 1, 1, 0])
         self.Bf = self.compute_Bf()
 
         # self.Bf = np.array([
@@ -80,7 +85,7 @@ class HexacopterControlAnalysis(Model):
         #     self.Bf[:, -3], self.Bf[:, 0]
         # ]).T
 
-        self.Tg = np.array([self.aircraft.total_mass * self.g0*1.3, 0, 0, 0])
+        self.Tg = np.array([self.aircraft.total_mass * self.g0 * 1.3, 0, 0, 0])
 
     # Necessary parameters
     @property
@@ -108,13 +113,13 @@ class HexacopterControlAnalysis(Model):
         nA = self.A.shape[0]
 
         # Control constraints
-        
-        self.umax = umax 
-        umin =0
+
+        self.umax = umax
+        umin = 0
         Uset_umin = umin * np.ones(self.rotor_angle.shape)
         Uset_umax = umax * np.ones(self.rotor_angle.shape)
 
-            # Compute ACAI
+        # Compute ACAI
         start_time = time.process_time()
         delta = 1e-10
         acai_calculator = ACAICalculator(self.Bf, Uset_umin, Uset_umax,
@@ -138,16 +143,15 @@ class HexacopterControlAnalysis(Model):
         return ACAI
 
 
-
 if __name__ == "__main__":
     ac = rot_wing
     acai_data = []
     umax_values = range(6000, 7000, 1000)
-    cgs = np.linspace(2., 8.0,401)
-    
+    cgs = np.linspace(2., 8.0, 401)
+
     for umax in umax_values:
         acai_values = []
-        angles_list= []
+        angles_list = []
         for cg in cgs:
             analysis = HexacopterControlAnalysis(ac, cg, umax)
             ACAI_value = analysis.run_analysis()
@@ -163,13 +167,14 @@ if __name__ == "__main__":
     plt.legend()
     plt.grid()
     plt.show()
-    
+
     csv_filename = 'rotor_angles.csv'
     with open(csv_filename, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['CG'] + [f'Angle_{i+1}' for i in range(6)])  # Header row
+        writer.writerow(['CG'] + [f'Angle_{i+1}'
+                                  for i in range(6)])  # Header row
         for i, cg in enumerate(cgs):
-            writer.writerow([cg] + [angles_list[i]*180/np.pi])
+            writer.writerow([cg] + [angles_list[i] * 180 / np.pi])
 
     print(f"Rotor angles saved to {csv_filename}")
 
