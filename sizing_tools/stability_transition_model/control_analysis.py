@@ -29,23 +29,40 @@ class HexacopterControlAnalysis(Model):
         #constants
         self.g0 = 9.8  # m/s^2
         # self.geometry.draw()
-        r_tip_engine = []
-        for propulsor in self.geometry.propulsors:
-            tmp = propulsor.xyz_c
-            tmp[0] -= self.geometry.fuselages[0].xsecs[0].xyz_c[0]
-            r_tip_engine.append(tmp)
-
+        # r_tip_engine = []
+        # for propulsor in self.geometry.propulsors:
+        #     tmp = propulsor.xyz_c
+        #     tmp[0] -= self.geometry.fuselages[0].xsecs[0].xyz_c[0]
+        #     r_tip_engine.append(tmp)
+        
+        #engine locations
+        engine_xy= ([2.302, 1.95],[4.647, 1.95],[6.992, 1.95],[6.992, -1.95],[4.647, -1.95],[2.302, -1.95])
+        
         # Set r_cg locations,
-        r_cg = np.array([cg, 0, 0])
-        r_cg_engine = r_tip_engine - r_cg
+        r_cg = np.array([cg, 0])
+        r_cg_engine = engine_xy - r_cg
 
         # Moment arm engines
         d = np.sqrt(r_cg_engine[:, 0]**2 + r_cg_engine[:, 1]**2)
         d = [d[0], d[1], d[2], d[-1], d[-2], d[-3]]
         #angles
-     
-        angles = np.arctan2(r_cg_engine[:, 0], r_cg_engine[:, 1])
-        angles = [angles[0], angles[1], angles[2],angles[-1],angles[-2],angles[-3]]   
+        if cg < engine_xy[1][0]:
+            angle1 = np.arctan(-r_cg_engine[0][1]/r_cg_engine[0][0])
+            angle2 = np.arctan(r_cg_engine[1][0]/r_cg_engine[1][1]) +np.pi/2
+            angle3 = np.arctan(r_cg_engine[2][0]/r_cg_engine[2][1]) +np.pi/2
+            angle4 = np.arctan(-r_cg_engine[3][1]/r_cg_engine[3][0]) +np.pi
+            angle5 = np.arctan(-r_cg_engine[4][1]/r_cg_engine[4][0]) +np.pi
+            angle6 = np.arctan(-r_cg_engine[5][0]/-r_cg_engine[5][1]) +3/2*np.pi
+            angles = ([angle1, angle2,angle3,angle4,angle5,angle6])
+        if cg > engine_xy[1][0]:
+            angle1 = np.arctan(-r_cg_engine[0][1]/r_cg_engine[0][0])
+            angle2 = np.arctan(-r_cg_engine[1][1]/r_cg_engine[1][0]) 
+            angle3 = np.arctan(r_cg_engine[2][0]/r_cg_engine[2][1]) +np.pi/2
+            angle4 = np.arctan(-r_cg_engine[3][1]/r_cg_engine[3][0]) +np.pi
+            angle5 = np.arctan(r_cg_engine[4][0]/r_cg_engine[4][1]) +3*np.pi/2
+            angle6 = np.arctan(r_cg_engine[5][0]/r_cg_engine[5][1]) +3*np.pi/2
+            angles = ([angle1, angle2,angle3,angle4,angle5,angle6])
+                
       
         self.rotor_angle = np.array(angles)
 
@@ -63,11 +80,11 @@ class HexacopterControlAnalysis(Model):
             self.s2i['anticlockwise'], self.s2i['anticlockwise'],
             self.s2i['clockwise'], self.s2i['anticlockwise']
         ])
-        # self.rotor_ku = np.array([0.05, 0.05, 0.05, 0.05, 0.05, 0.05])
+       
         self.rotor_ku = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
         self.rotor_d = np.array(d)
      
-        self.rotor_Yita = np.array([1,1,1,1,1,1])
+        self.rotor_Yita = np.array([0,1,1,1,1,0])
         self.Bf = self.compute_Bf()
 
         # self.Bf = np.array([
@@ -136,8 +153,8 @@ class HexacopterControlAnalysis(Model):
 if __name__ == "__main__":
     ac = rot_wing
     acai_data = []
-    umax_values = range(2000, 7000, 1000)
-    cgs = np.linspace(2,4.1 ,21)
+    umax_values = range(3000, 10000, 500)
+    cgs = np.linspace(2.4 ,6.8 ,15)
     
     for umax in umax_values:
         acai_values = []
@@ -158,15 +175,15 @@ if __name__ == "__main__":
     plt.grid()
     plt.show()
 
-    csv_filename = 'rotor_angles.csv'
-    with open(csv_filename, mode='w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(['CG'] + [f'Angle_{i+1}'
-                                  for i in range(6)])  # Header row
-        for i, cg in enumerate(cgs):
-            writer.writerow([cg] + [angles_list[i] * 180 / np.pi])
+    # csv_filename = 'rotor_angles.csv'
+    # with open(csv_filename, mode='w', newline='') as file:
+    #     writer = csv.writer(file)
+    #     writer.writerow(['CG'] + [f'Angle_{i+1}'
+    #                               for i in range(6)])  # Header row
+    #     for i, cg in enumerate(cgs):
+    #         writer.writerow([cg] + [angles_list[i] * 180 / np.pi])
 
-    print(f"Rotor angles saved to {csv_filename}")
+    # print(f"Rotor angles saved to {csv_filename}")
 
 # def plot_controllable_region(acai_data, cgs, umax_values):
 #     fig = plt.figure(figsize=(18, 6))
