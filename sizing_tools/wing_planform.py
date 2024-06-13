@@ -87,4 +87,4 @@ if __name__ == '__main__':
     ac = rot_wing
 
     model = WingModel(ac.data)
-    print(model.le_sweep, model.sweep)
+    print(model.le_sweep, model.wing)

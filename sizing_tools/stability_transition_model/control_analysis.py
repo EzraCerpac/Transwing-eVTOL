@@ -42,16 +42,10 @@ class HexacopterControlAnalysis(Model):
         d = np.sqrt(r_cg_engine[:, 0]**2 + r_cg_engine[:, 1]**2)
         d = [d[0], d[1], d[2],d[-1],d[-2],d[-3]]
         #angles
-        angle1 = np.arctan2(r_cg_engine[0, 1], r_cg_engine[0, 0])
-        angle2 = np.arctan2(r_cg_engine[1, 1], r_cg_engine[1, 0]) + 1/2*np.pi
-        angle3 = np.arctan2(r_cg_engine[2, 1], r_cg_engine[2, 0]) + 1/2*np.pi
-        angle4 = np.arctan2(r_cg_engine[5, 1], r_cg_engine[5, 0]) + 1/2*np.pi
-        angle5 = np.arctan2(r_cg_engine[4, 1], r_cg_engine[4, 0]) + 1/2*np.pi
-        angle6 = np.arctan2(r_cg_engine[2, 1], r_cg_engine[3, 0]) + 1*np.pi
-        angles = [angle1,angle2,angle3, angle4, angle5, angle6]  
+     
         angles = np.arctan2(r_cg_engine[:, 0], r_cg_engine[:, 1])
-        # angles = [angles[0], angles[1], angles[2],angles[-1],angles[-2],angles[-3]]   
-        # angles_deg = np.degrees(angles)
+        angles = [angles[0], angles[1], angles[2],angles[-1],angles[-2],angles[-3]]   
+      
         self.rotor_angle = np.array(angles)
 
         self.A = np.block([[np.zeros((4, 4)), np.eye(4)], [np.zeros((4, 8))]])
@@ -72,7 +66,7 @@ class HexacopterControlAnalysis(Model):
         self.rotor_ku = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
         self.rotor_d = np.array(d)
      
-        self.rotor_Yita = np.array([0,1,1,1,1,0])
+        self.rotor_Yita = np.array([1,1,1,1,1,1])
         self.Bf = self.compute_Bf()
 
         # self.Bf = np.array([
@@ -80,7 +74,7 @@ class HexacopterControlAnalysis(Model):
         #     self.Bf[:, -3], self.Bf[:, 0]
         # ]).T
 
-        self.Tg = np.array([self.aircraft.total_mass * self.g0*1.3, 0, 0, 0])
+        self.Tg = np.array([self.aircraft.total_mass * self.g0*1.2, 0, 0, 0])
 
     # Necessary parameters
     @property
@@ -142,8 +136,8 @@ class HexacopterControlAnalysis(Model):
 if __name__ == "__main__":
     ac = rot_wing
     acai_data = []
-    umax_values = range(6000, 7000, 1000)
-    cgs = np.linspace(2., 8.0,401)
+    umax_values = range(2000, 7000, 1000)
+    cgs = np.linspace(2,4.1 ,21)
     
     for umax in umax_values:
         acai_values = []
