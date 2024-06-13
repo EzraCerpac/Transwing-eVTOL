@@ -21,7 +21,7 @@ from sizing_tools.wing_planform import WingModel
 ac = Aircraft.load(version='1.5')
 wing_model = WingModel(ac, altitude=ac.cruise_altitude)
 ac.wing.span = 14
-hinge_location = 1.8 # m from root
+hinge_location = 1.8  # m from root
 ac.hinge_location = hinge_location / (ac.wing.span / 2)
 
 wing_airfoil = Airfoil("E560")
