@@ -36,15 +36,22 @@ class HexacopterControlAnalysis(Model):
 
         # Set r_cg locations,
         r_cg = np.array([cg, 0, 0])
-        r_cg_engine = r_tip_engine - r_cg
+        r_cg_engine = r_tip_engine - r_cg 
 
         # Moment arm engines
         d = np.sqrt(r_cg_engine[:, 0]**2 + r_cg_engine[:, 1]**2)
         d = [d[0], d[1], d[2],d[-1],d[-2],d[-3]]
         #angles
+        angle1 = np.arctan2(r_cg_engine[0, 1], r_cg_engine[0, 0])
+        angle2 = np.arctan2(r_cg_engine[1, 1], r_cg_engine[1, 0]) + 1/2*np.pi
+        angle3 = np.arctan2(r_cg_engine[2, 1], r_cg_engine[2, 0]) + 1/2*np.pi
+        angle4 = np.arctan2(r_cg_engine[5, 1], r_cg_engine[5, 0]) + 1/2*np.pi
+        angle5 = np.arctan2(r_cg_engine[4, 1], r_cg_engine[4, 0]) + 1/2*np.pi
+        angle6 = np.arctan2(r_cg_engine[2, 1], r_cg_engine[3, 0]) + 1*np.pi
+        angles = [angle1,angle2,angle3, angle4, angle5, angle6]  
         angles = np.arctan2(r_cg_engine[:, 0], r_cg_engine[:, 1])
-        angles = [angles[0], angles[1], angles[2],angles[-1],angles[-2],angles[-3]]   
-
+        # angles = [angles[0], angles[1], angles[2],angles[-1],angles[-2],angles[-3]]   
+        # angles_deg = np.degrees(angles)
         self.rotor_angle = np.array(angles)
 
         self.A = np.block([[np.zeros((4, 4)), np.eye(4)], [np.zeros((4, 8))]])
@@ -61,10 +68,11 @@ class HexacopterControlAnalysis(Model):
             self.s2i['anticlockwise'], self.s2i['anticlockwise'],
             self.s2i['clockwise'], self.s2i['anticlockwise']
         ])
+        # self.rotor_ku = np.array([0.05, 0.05, 0.05, 0.05, 0.05, 0.05])
         self.rotor_ku = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
         self.rotor_d = np.array(d)
-        # self.rotor_Yita = np.array(setting)
-        self.rotor_Yita = np.array([1,1,1,1,1,1])
+     
+        self.rotor_Yita = np.array([0,1,1,1,1,0])
         self.Bf = self.compute_Bf()
 
         # self.Bf = np.array([
@@ -72,7 +80,7 @@ class HexacopterControlAnalysis(Model):
         #     self.Bf[:, -3], self.Bf[:, 0]
         # ]).T
 
-        self.Tg = np.array([self.aircraft.total_mass * self.g0*1.2, 0, 0, 0])
+        self.Tg = np.array([self.aircraft.total_mass * self.g0*1.3, 0, 0, 0])
 
     # Necessary parameters
     @property
@@ -134,17 +142,19 @@ class HexacopterControlAnalysis(Model):
 if __name__ == "__main__":
     ac = rot_wing
     acai_data = []
-    umax_values = range(3000, 6000, 1000)
-    cgs = np.linspace(5.0, 5.5, 51)
+    umax_values = range(6000, 7000, 1000)
+    cgs = np.linspace(2., 8.0,401)
     
     for umax in umax_values:
         acai_values = []
+        angles_list= []
         for cg in cgs:
             analysis = HexacopterControlAnalysis(ac, cg, umax)
             ACAI_value = analysis.run_analysis()
             acai_values.append(ACAI_value)
+            angles_list.append(analysis.rotor_angle)
         acai_data.append(acai_values)
-
+        angles_list.append(analysis.rotor_angle)
     # Plotting
     for i, umax in enumerate(umax_values):
         plt.plot(cgs, acai_data[i], label=f"umax={umax}")
@@ -154,7 +164,14 @@ if __name__ == "__main__":
     plt.grid()
     plt.show()
     
+    csv_filename = 'rotor_angles.csv'
+    with open(csv_filename, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['CG'] + [f'Angle_{i+1}' for i in range(6)])  # Header row
+        for i, cg in enumerate(cgs):
+            writer.writerow([cg] + [angles_list[i]*180/np.pi])
 
+    print(f"Rotor angles saved to {csv_filename}")
 
 # def plot_controllable_region(acai_data, cgs, umax_values):
 #     fig = plt.figure(figsize=(18, 6))
@@ -189,116 +206,3 @@ if __name__ == "__main__":
 
 #     plt.tight_layout()
 #     plt.show()
-
-# # # Plotting the 3D region and 2D projections
-# plot_controllable_region(acai_data, cgs, umax_values)
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    # # Create a CSV file to write the results
-    # with open('acai_results.csv', mode='w', newline='') as file:
-    #     writer = csv.writer(file, delimiter=';')  # Specify delimiter as semicolon
-    #     # Write the header
-    #     writer.writerow(['cg', 'engine1', 'engine2', 'engine3', 'engine4', 'engine5', 'engine6', 'ACAI'])
-
-    #     # Make data.
-    #     engine1 = np.linspace(0.6, 1, 5)
-    #     engine2 = np.linspace(0.6, 1, 5)
-    #     engine3 = np.linspace(0.6, 1, 5)
-    #     engine4 = np.linspace(0.6, 1, 5)
-    #     engine5 = np.linspace(0.6, 1, 5)
-    #     engine6 = np.linspace(0.6, 1, 5)
-
-    #     # Nested loops to get every combination
-    #     for i in range(len(engine1)):
-    #         for j in range(len(engine2)):
-    #             for k in range(len(engine3)):
-    #                 for l in range(len(engine4)):
-    #                     for m in range(len(engine5)):
-    #                         for n in range(len(engine6)):
-    #                             combination = [engine1[i], engine2[j], engine3[k], engine4[l], engine5[m], engine6[n]]
-
-    #                             for cg in cgs:
-    #                                 analysis = HexacopterControlAnalysis(ac, cg, combination)
-    #                                 ACAI_value = analysis.run_analysis()
-    #                                 # Append the results to the CSV file
-    #                                 # Format numerical values with dots as commas
-    #                                 cg_formatted = str(cg).replace('.', ',')
-    #                                 engine1_i_formatted = str(engine1[i]).replace('.', ',')
-    #                                 engine2_j_formatted = str(engine2[j]).replace('.', ',')
-    #                                 engine3_k_formatted = str(engine3[k]).replace('.', ',')
-    #                                 engine4_l_formatted = str(engine4[l]).replace('.', ',')
-    #                                 engine5_m_formatted = str(engine5[m]).replace('.', ',')
-    #                                 engine6_n_formatted = str(engine6[n]).replace('.', ',')
-    #                                 ACAI_value_formatted = str(ACAI_value).replace('.', ',')
-    #                                 # Append the results to the CSV file
-    #                                 writer.writerow([cg_formatted, engine1_i_formatted, engine2_j_formatted, engine3_k_formatted, engine4_l_formatted, engine5_m_formatted, engine6_n_formatted, ACAI_value_formatted])
-    # print("ACAI results have been written to acai_results.csv")
