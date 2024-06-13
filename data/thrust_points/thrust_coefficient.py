@@ -11,8 +11,7 @@ from utility.plotting import show
 DIR = Path(__file__).parent
 
 
-def thrust_coefficient(J: float | np.ndarray,
-                       pitch: float | np.ndarray) -> float | np.ndarray:
+def thrust_coefficient(J: float | np.ndarray, pitch: float | np.ndarray) -> float | np.ndarray:
     """
     Calculate the thrust coefficient for a propeller.
 
