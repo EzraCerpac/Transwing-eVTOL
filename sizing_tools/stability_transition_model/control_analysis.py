@@ -7,7 +7,8 @@ from mpl_toolkits.mplot3d import Axes3D
 import csv
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-root_dir = os.path.abspath(os.path.join(current_dir, '..', '..'))  # Adjust as needed
+root_dir = os.path.abspath(os.path.join(current_dir, '..',
+                                        '..'))  # Adjust as needed
 sys.path.append(root_dir)
 
 from sizing_tools.model import Model
@@ -23,7 +24,7 @@ class HexacopterControlAnalysis(Model):
         super().__init__(aircraft.data)
         self.aircraft = aircraft.data
         self.geometry = trans_wing.parametric_fn(1)
-        
+
         #constants
         self.g0 = 9.8  # m/s^2
         # self.geometry.draw()
@@ -45,15 +46,14 @@ class HexacopterControlAnalysis(Model):
         angles = [angles[0], angles[1], angles[2],angles[-1],angles[-2],angles[-3]]   
 
         self.rotor_angle = np.array(angles)
-        
+
         self.A = np.block([[np.zeros((4, 4)), np.eye(4)], [np.zeros((4, 8))]])
         #mass moment of inertia
         self.Jx, self.Jy, self.Jz = 213.033, 1188.061, 1205.822
         self.Jf = np.diag(
             [-self.aircraft.total_mass, self.Jx, self.Jy, self.Jz])
         self.B = np.block([[np.zeros((4, 4))], [np.linalg.inv(self.Jf)]])
-        
-        
+
         #Rotation of the rotors according a predefined configuration
         self.s2i = {'anticlockwise': 1, 'clockwise': -1}
         self.rotor_dir = np.array([
@@ -80,10 +80,12 @@ class HexacopterControlAnalysis(Model):
         return []
 
     def compute_Bf(self):
-        bt = self.rotor_Yita #lift
-        bl = -self.rotor_d * np.sin(self.rotor_angle) * self.rotor_Yita #roll torque
-        bm = self.rotor_d * np.cos(self.rotor_angle) * self.rotor_Yita #pitch Torque
-        bn = self.rotor_dir * self.rotor_ku * self.rotor_Yita #yaw torque
+        bt = self.rotor_Yita  #lift
+        bl = -self.rotor_d * np.sin(
+            self.rotor_angle) * self.rotor_Yita  #roll torque
+        bm = self.rotor_d * np.cos(
+            self.rotor_angle) * self.rotor_Yita  #pitch Torque
+        bn = self.rotor_dir * self.rotor_ku * self.rotor_Yita  #yaw torque
         Bf = np.vstack((bt, bl, bm, bn))
         return Bf
 
@@ -107,8 +109,9 @@ class HexacopterControlAnalysis(Model):
             # Compute ACAI
         start_time = time.process_time()
         delta = 1e-10
-        acai_calculator = ACAICalculator(self.Bf, Uset_umin, Uset_umax, self.Tg)
-        ACAI = round(acai_calculator.compute_acai(),2)
+        acai_calculator = ACAICalculator(self.Bf, Uset_umin, Uset_umax,
+                                         self.Tg)
+        ACAI = round(acai_calculator.compute_acai(), 2)
         if -delta < ACAI < delta:
             ACAI = 0
             print(f"ACAI: {ACAI}")
