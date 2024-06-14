@@ -38,9 +38,16 @@ tail_airfoil = Airfoil("naca0012")
 #     )},
 # }
 cg_location = np.array([.77, 0, -0.5])
-mass_props = asb.MassProperties(mass=ac.total_mass, x_cg=cg_location[0], y_cg=cg_location[1],
-                                z_cg=cg_location[2], Ixx=9600, Iyy=19700, Izz=5000, Ixy=0, Ixz=0, Iyz=0)
-
+mass_props = asb.MassProperties(mass=ac.total_mass,
+                                x_cg=cg_location[0],
+                                y_cg=cg_location[1],
+                                z_cg=cg_location[2],
+                                Ixx=9600,
+                                Iyy=19700,
+                                Izz=5000,
+                                Ixy=0,
+                                Ixz=0,
+                                Iyz=0)
 
 cut = ac.hinge_location
 chord_cut = wing_model.rootcrt - (wing_model.rootcrt - wing_model.tipcrt) * cut
