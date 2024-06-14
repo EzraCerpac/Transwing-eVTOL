@@ -11,3 +11,4 @@ if __name__ == '__main__':
     #     True,
     # )
     print(WingModel(rot_wing.data).MAC)
+    print(rot_wing.parametric.fuselages[0].volume())
