@@ -89,8 +89,8 @@ class HexacopterControlAnalysis(Model):
 
         self.rotor_ku = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
         self.rotor_d = np.array(d)
-     
-        self.rotor_Yita = np.array([1,1,1,1,1,1])
+
+        self.rotor_Yita = np.array([1, 1, 1, 1, 1, 1])
         self.Bf = self.compute_Bf()
 
         # self.Bf = np.array([
@@ -160,8 +160,8 @@ if __name__ == "__main__":
     ac = rot_wing
     acai_data = []
     umax_values = range(4000, 10000, 1000)
-    cgs = np.linspace(2.4 ,6.8 ,15)
-    
+    cgs = np.linspace(2.4, 6.8, 15)
+
     for umax in umax_values:
         acai_values = []
         angles_list = []
