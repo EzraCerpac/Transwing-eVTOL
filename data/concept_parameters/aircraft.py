@@ -187,13 +187,14 @@ class Aircraft(BaseModel):
 
 class AC:
 
-    def __init__(self,
-                 name: str,
-                 data: Aircraft,
-                 parametric: Airplane = None,
-                 parametric_fn: Callable[[float], Airplane] = None,
-                 mass_props: MassProperties = None,
-                 ):
+    def __init__(
+        self,
+        name: str,
+        data: Aircraft,
+        parametric: Airplane = None,
+        parametric_fn: Callable[[float], Airplane] = None,
+        mass_props: MassProperties = None,
+    ):
         self.name = name
         self.data = data
         self.parametric = parametric or parametric_fn(0)
