@@ -44,7 +44,7 @@ class HexacopterControlAnalysis(Model):
 
         # Moment arm engines
         d = np.sqrt(r_cg_engine[:, 0]**2 + r_cg_engine[:, 1]**2)
-        d = [d[0], d[1], d[2], d[-1], d[-2], d[-3]]
+        # d = [d[0], d[1], d[2], d[-1], d[-2], d[-3]]
         #angles
         if cg < engine_xy[1][0]:
             angle1 = np.arctan(-r_cg_engine[0][1]/r_cg_engine[0][0])
@@ -84,7 +84,7 @@ class HexacopterControlAnalysis(Model):
         self.rotor_ku = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
         self.rotor_d = np.array(d)
      
-        self.rotor_Yita = np.array([0,1,1,1,1,0])
+        self.rotor_Yita = np.array([1,1,1,1,1,1])
         self.Bf = self.compute_Bf()
 
         # self.Bf = np.array([
@@ -153,7 +153,7 @@ class HexacopterControlAnalysis(Model):
 if __name__ == "__main__":
     ac = rot_wing
     acai_data = []
-    umax_values = range(3000, 10000, 500)
+    umax_values = range(4000, 10000, 1000)
     cgs = np.linspace(2.4 ,6.8 ,15)
     
     for umax in umax_values:
