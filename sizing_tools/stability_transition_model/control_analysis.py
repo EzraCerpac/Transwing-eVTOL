@@ -34,10 +34,11 @@ class HexacopterControlAnalysis(Model):
         #     tmp = propulsor.xyz_c
         #     tmp[0] -= self.geometry.fuselages[0].xsecs[0].xyz_c[0]
         #     r_tip_engine.append(tmp)
-        
+
         #engine locations
-        engine_xy= ([2.302, 1.95],[4.647, 1.95],[6.992, 1.95],[6.992, -1.95],[4.647, -1.95],[2.302, -1.95])
-        
+        engine_xy = ([2.302, 1.95], [4.647, 1.95], [6.992, 1.95],
+                     [6.992, -1.95], [4.647, -1.95], [2.302, -1.95])
+
         # Set r_cg locations,
         r_cg = np.array([cg, 0])
         r_cg_engine = engine_xy - r_cg
@@ -47,23 +48,28 @@ class HexacopterControlAnalysis(Model):
         # d = [d[0], d[1], d[2], d[-1], d[-2], d[-3]]
         #angles
         if cg < engine_xy[1][0]:
-            angle1 = np.arctan(-r_cg_engine[0][1]/r_cg_engine[0][0])
-            angle2 = np.arctan(r_cg_engine[1][0]/r_cg_engine[1][1]) +np.pi/2
-            angle3 = np.arctan(r_cg_engine[2][0]/r_cg_engine[2][1]) +np.pi/2
-            angle4 = np.arctan(-r_cg_engine[3][1]/r_cg_engine[3][0]) +np.pi
-            angle5 = np.arctan(-r_cg_engine[4][1]/r_cg_engine[4][0]) +np.pi
-            angle6 = np.arctan(-r_cg_engine[5][0]/-r_cg_engine[5][1]) +3/2*np.pi
-            angles = ([angle1, angle2,angle3,angle4,angle5,angle6])
+            angle1 = np.arctan(-r_cg_engine[0][1] / r_cg_engine[0][0])
+            angle2 = np.arctan(
+                r_cg_engine[1][0] / r_cg_engine[1][1]) + np.pi / 2
+            angle3 = np.arctan(
+                r_cg_engine[2][0] / r_cg_engine[2][1]) + np.pi / 2
+            angle4 = np.arctan(-r_cg_engine[3][1] / r_cg_engine[3][0]) + np.pi
+            angle5 = np.arctan(-r_cg_engine[4][1] / r_cg_engine[4][0]) + np.pi
+            angle6 = np.arctan(
+                -r_cg_engine[5][0] / -r_cg_engine[5][1]) + 3 / 2 * np.pi
+            angles = ([angle1, angle2, angle3, angle4, angle5, angle6])
         if cg > engine_xy[1][0]:
-            angle1 = np.arctan(-r_cg_engine[0][1]/r_cg_engine[0][0])
-            angle2 = np.arctan(-r_cg_engine[1][1]/r_cg_engine[1][0]) 
-            angle3 = np.arctan(r_cg_engine[2][0]/r_cg_engine[2][1]) +np.pi/2
-            angle4 = np.arctan(-r_cg_engine[3][1]/r_cg_engine[3][0]) +np.pi
-            angle5 = np.arctan(r_cg_engine[4][0]/r_cg_engine[4][1]) +3*np.pi/2
-            angle6 = np.arctan(r_cg_engine[5][0]/r_cg_engine[5][1]) +3*np.pi/2
-            angles = ([angle1, angle2,angle3,angle4,angle5,angle6])
-                
-      
+            angle1 = np.arctan(-r_cg_engine[0][1] / r_cg_engine[0][0])
+            angle2 = np.arctan(-r_cg_engine[1][1] / r_cg_engine[1][0])
+            angle3 = np.arctan(
+                r_cg_engine[2][0] / r_cg_engine[2][1]) + np.pi / 2
+            angle4 = np.arctan(-r_cg_engine[3][1] / r_cg_engine[3][0]) + np.pi
+            angle5 = np.arctan(
+                r_cg_engine[4][0] / r_cg_engine[4][1]) + 3 * np.pi / 2
+            angle6 = np.arctan(
+                r_cg_engine[5][0] / r_cg_engine[5][1]) + 3 * np.pi / 2
+            angles = ([angle1, angle2, angle3, angle4, angle5, angle6])
+
         self.rotor_angle = np.array(angles)
 
         self.A = np.block([[np.zeros((4, 4)), np.eye(4)], [np.zeros((4, 8))]])
@@ -80,7 +86,7 @@ class HexacopterControlAnalysis(Model):
             self.s2i['anticlockwise'], self.s2i['anticlockwise'],
             self.s2i['clockwise'], self.s2i['anticlockwise']
         ])
-       
+
         self.rotor_ku = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
         self.rotor_d = np.array(d)
      
@@ -92,7 +98,7 @@ class HexacopterControlAnalysis(Model):
         #     self.Bf[:, -3], self.Bf[:, 0]
         # ]).T
 
-        self.Tg = np.array([self.aircraft.total_mass * self.g0*1.2, 0, 0, 0])
+        self.Tg = np.array([self.aircraft.total_mass * self.g0 * 1.2, 0, 0, 0])
 
     # Necessary parameters
     @property
@@ -167,6 +173,7 @@ if __name__ == "__main__":
         acai_data.append(acai_values)
         angles_list.append(analysis.rotor_angle)
     # Plotting
+    fig, ax = plt.subplots(figsize=(12, 8))
     for i, umax in enumerate(umax_values):
         plt.plot(cgs, acai_data[i], label=f"umax={umax}")
     plt.xlabel('CG')
