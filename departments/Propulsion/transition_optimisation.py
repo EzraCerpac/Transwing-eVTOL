@@ -170,6 +170,20 @@ p.show_plot(
     rotate_axis_labels=False,
 )
 
+import pandas as pd
+from data.flight_data.main import DATA_DIR
+df = pd.DataFrame({
+    "time": time,
+    "x": np.concatenate([[0], distance]),
+    "altitude": np.ones_like(time) * trans_altitude,
+    "u": velocities,
+    "w": np.zeros_like(time),
+    "speed": velocities,
+    "thrust": thrust + delta_T,
+    "power": total_power,
+})
+df.to_csv(DATA_DIR / 'Transition.csv')
+
 # p.plt.plot(velocities, cl_horizontal, label="Horizontal flight")
 # p.plt.plot(velocities, cl_max, label="Max lift")
 # p.plt.plot(velocities, cl, label="CL")

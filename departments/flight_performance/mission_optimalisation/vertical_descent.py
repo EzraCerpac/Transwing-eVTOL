@@ -16,7 +16,7 @@ ALPHA_i = 0
 
 
 # E423
-class VerticalClimb(Optimalisation):
+class VerticalDescent(Optimalisation):
 
     def __init__(self, aircraft: AC, opt_param: OptParam, *args, **kwargs):
         aero = CLCDPolar(aircraft.parametric_fn(1),
@@ -66,12 +66,12 @@ class VerticalClimb(Optimalisation):
                                           Iyy=500,
                                           Izz=500),
             z_e=self.opti.variable(init_guess=np.linspace(
-                0, -self.trans_altitude, self.n_timesteps),
+                -self.trans_altitude, 0, self.n_timesteps),
                                    upper_bound=0),
             w_e=self.opti.variable(init_guess=np.concatenate([
-                np.linspace(0, -self.aircraft.rate_of_climb,
+                np.linspace(0, self.aircraft.rate_of_climb,
                             self.n_timesteps // 2),
-                np.linspace(-self.aircraft.rate_of_climb, 0, self.n_timesteps -
+                np.linspace(self.aircraft.rate_of_climb, 0, self.n_timesteps -
                             self.n_timesteps // 2)
             ])),
         )
@@ -80,11 +80,12 @@ class VerticalClimb(Optimalisation):
                                                log_transform=True,
                                                upper_bound=1)
         self.opti.subject_to([
-            self.dyn.altitude[0] == 0,
-            self.dyn.altitude[-1] == self.trans_altitude,
+            self.dyn.altitude[0] == self.trans_altitude,
+            self.dyn.altitude[-1] == 0,
             self.dyn.altitude >= 0,
             self.dyn.w_e[0] == 0,
-            self.dyn.w_e <= 0,
+            self.dyn.w_e >= 0,
+            self.dyn.w_e[-1] < 0.5,
             # self.dyn.w_e[-1] >= -2,
             self.end_time < 60,
             # self.thrust_level[0] == 1e-8,
@@ -135,11 +136,11 @@ class VerticalClimb(Optimalisation):
 
 if __name__ == '__main__':
     ac = trans_wing
-    mission_profile_optimization = VerticalClimb(ac,
-                                                 opt_param=OptParam.MAX_POWER,
-                                                 n_timesteps=501,
-                                                 max_iter=1000,
-                                                 n_logs=100)
+    mission_profile_optimization = VerticalDescent(ac,
+                                               opt_param=OptParam.MAX_POWER,
+                                               n_timesteps=501,
+                                               max_iter=1000,
+                                               n_logs=100)
     mission_profile_optimization.run()
 
     df = mission_profile_optimization.to_dataframe()

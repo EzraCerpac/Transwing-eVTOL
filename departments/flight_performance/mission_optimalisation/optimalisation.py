@@ -233,3 +233,9 @@ class Optimalisation(Model, ABC):
     @show
     def plot_logs_over_time(self) -> tuple[plt.Figure, plt.Axes]:
         return self.plot_logs_over('time')
+
+    def save_data(self):
+        from data.flight_data.main import DATA_DIR
+        filename = DATA_DIR / f"{self.__class__.__name__}.csv"
+        self.to_dataframe().to_csv(filename)
+        logger.info(f"Data saved to {filename}")
