@@ -180,7 +180,7 @@ Energy breakdown:
 """
         for phase in self.list:
             if phase.energy is not None and phase.energy > 0:
-                text += f'\t{phase.name.replace('_', ' ').capitalize()}: {phase.energy:.1f} kWh\n'
+                text += f'\t{phase.name.replace("_", " " ).capitalize()}: {phase.energy:.1f} kWh\n'
         return text + '\n'
 
 
