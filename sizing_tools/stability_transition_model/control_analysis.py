@@ -77,7 +77,7 @@ class HexacopterControlAnalysis(Model):
         self.rotor_ku = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
         self.rotor_d = np.array(d)
 
-        self.rotor_Yita = np.array([0, 1, 1, 1, 1, 0])
+        self.rotor_Yita = np.array([0, 1, 1, 1, 1, 1])
         self.Bf = self.compute_Bf()
 
         # self.Bf = np.array([
@@ -146,7 +146,7 @@ class HexacopterControlAnalysis(Model):
 if __name__ == "__main__":
     ac = rot_wing
     acai_data = []
-    umax_values = range(6000, 7000, 1000)
+    umax_values = np.linspace(4000, 5000, 5)
     cgs = np.linspace(2., 8.0, 401)
 
     for umax in umax_values:
@@ -160,6 +160,7 @@ if __name__ == "__main__":
         acai_data.append(acai_values)
         angles_list.append(analysis.rotor_angle)
     # Plotting
+    fig, ax = plt.subplots(figsize=(12, 8))
     for i, umax in enumerate(umax_values):
         plt.plot(cgs, acai_data[i], label=f"umax={umax}")
     plt.xlabel('CG')
