@@ -37,7 +37,10 @@ tail_airfoil = Airfoil("naca0012")
 #         nose_fineness_ratio=1,  # Fineness ratio (length / diameter) of the nose section of the fuselage.
 #     )},
 # }
-cg_location = np.array([1, 0, 0])
+cg_location = np.array([.77, 0, -0.5])
+mass_props = asb.MassProperties(mass=ac.total_mass, x_cg=cg_location[0], y_cg=cg_location[1],
+                                z_cg=cg_location[2], Ixx=9600, Iyy=19700, Izz=5000, Ixy=0, Ixz=0, Iyz=0)
+
 
 cut = ac.hinge_location
 chord_cut = wing_model.rootcrt - (wing_model.rootcrt - wing_model.tipcrt) * cut
@@ -88,7 +91,7 @@ root_wing = asb.Wing(
             airfoil=wing_airfoil),
     ],
 ).translate([0, 0, 0])
-fuselage = generate_fuselage(wing_pos=np.array([1.5, 0, 1.2]))
+fuselage = generate_fuselage(wing_pos=np.array([1.6, 0, 1.2]))
 horizontal_tail = asb.Wing(
     name='Horizontal Stabilizer',
     symmetric=True,
@@ -187,6 +190,7 @@ rot_wing = AC(
     name=ac.full_name,
     data=ac,
     parametric=parametric,
+    mass_props=mass_props,
 )
 
 if __name__ == '__main__':

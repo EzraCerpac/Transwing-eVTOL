@@ -2,10 +2,10 @@ import aerosandbox.numpy as np
 from aerosandbox import Airplane, Wing, WingXSec
 
 from aircraft_models.rotating_wing import chord_cut, p_tip_le, p_tip_te, p_cut_le, p_cut_te, root_wing, horizontal_tail, \
-    fuselage, wing_airfoil, wing_model, ac, propulsor_fn, cg_location
+    fuselage, wing_airfoil, wing_model, ac, propulsor_fn, cg_location, mass_props
 from data.concept_parameters.aircraft import AC
 
-FLUENT_MODEL = True
+FLUENT_MODEL = False
 
 r_joint = p_cut_le - 0.1 * (p_cut_te - p_cut_le)  # JOINT LOCATION
 twist_cut = 0
@@ -166,6 +166,7 @@ trans_wing = AC(
     name=ac.full_name,
     data=ac,
     parametric_fn=generate_airplane,
+    mass_props=mass_props,
 )
 
 if __name__ == '__main__':
