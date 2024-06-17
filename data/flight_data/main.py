@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
+from utility.misc import interpolate_nans
+
 DATA_DIR = Path(__file__).parent
 
 vertical_climb_data = pd.read_csv(DATA_DIR / 'VerticalClimb.csv')
@@ -30,13 +32,22 @@ transition2_data['x'] = transition2_data['x'] + cruise_data['x'].iloc[-1]
 vertical_descent_data[
     'x'] = vertical_descent_data['x'] + transition2_data['x'].iloc[-1]
 
+
+
 mission_data = pd.concat([
     vertical_climb_data, transition_data, cruise_data, transition2_data,
     vertical_descent_data
 ])
+
+
+# smoothen power data
+mission_data['power'] = interpolate_nans(np.where(np.abs(mission_data['power'].diff()/mission_data['time'].diff()) > 500,
+                                    np.NAN,
+                                    mission_data['power']))
+
 mission_data.to_csv(DATA_DIR / 'mission_data.csv', index=False)
 
 if __name__ == '__main__':
-    mission_data.plot(x='time', y='power')
+    mission_data.plot(x='time', y='power', legend=False, grid=True)
     plt.ylim(bottom=0)
     plt.show()
