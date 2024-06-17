@@ -90,8 +90,8 @@ class HexacopterControlAnalysis(Model):
 
         self.rotor_ku = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
         self.rotor_d = np.array(d)
-     
-        self.rotor_Yita = np.array([1,1,1,1,1,1])
+
+        self.rotor_Yita = np.array([1, 1, 1, 1, 1, 1])
         self.Bf = self.compute_Bf()
 
         # self.Bf = np.array([
