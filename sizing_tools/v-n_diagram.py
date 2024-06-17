@@ -31,7 +31,8 @@ class VNDiagram(Model):
     def necessary_parameters(self):
         return []
 
-    def stall_speed(self):
+    def stall_speed(self):  # this is not the stall speed!
+        raise NotImplementedError
         # wing_loading = self.aircraft.total_mass * g / self.aircraft.wing.area
         # stall_speed = np.sqrt(2 * wing_loading / (Atmosphere(self.aircraft.cruise_altitude).density() * 1.1 * CL_MAX )) #TODO CLmax
         stall_speed = self.aircraft.v_stall

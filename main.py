@@ -6,9 +6,9 @@ if __name__ == '__main__':
     print(rot_wing.parametric.wings[0].xsecs[-1].chord)
     print(rot_wing.parametric.wings[0].xsecs[0].chord)
     print(WingModel(rot_wing.data).le_sweep)
-    # rot_wing.display_data(
-    #     True,
-    #     True,
-    # )
+    rot_wing.display_data(
+        True,
+        True,
+    )
     print(WingModel(rot_wing.data).MAC)
     print(rot_wing.parametric.fuselages[0].volume())
