@@ -16,12 +16,8 @@ from sizing_tools.model import Model
 
 from aerosandbox import Atmosphere
 from scipy.constants import g
-
-CL_MAX = 1.7  #from airfoil data
-NEG_CL_MAX = 1.18  # from airfoil data
-CLALPHA = 5.44  #rad^-1
-
-
+moment_arm=4.74
+wing_LE=1.6
 class Scissor_plot(Model):
 
     def __init__(self, aircraft: AC):
@@ -44,6 +40,7 @@ class Scissor_plot(Model):
     def Cl_alpha_wing(self):
         sweep_angle_half_chord = np.radians(
             self.parametric.wings[0].mean_sweep_angle(0))
+        print(self.parametric.wings[0].aspect_ratio())
         return (2 * np.pi * self.parametric.wings[0].aspect_ratio()) / (
             2 +
             np.sqrt(4 + (self.parametric.wings[0].aspect_ratio() *
@@ -53,7 +50,7 @@ class Scissor_plot(Model):
     def Cl_alpha_tail(self):
         sweep_angle_half_chord = np.radians(
             self.parametric.wings[1].mean_sweep_angle(0))
-        aspect_ratio_tail = 2.59
+        aspect_ratio_tail = 2.5
         # print(aspect_ratio_tail)
         return (2 * np.pi * aspect_ratio_tail) / (
             2 +
@@ -72,7 +69,7 @@ class Scissor_plot(Model):
     def X_ac(self):
         X_ac_w = 0.25
         X_ac_f1 = -(1.8 / self.Cl_alpha_tail_less()) * (
-            self.aircraft.fuselage.maximum_section_perimeter**2 * 1 /
+            self.aircraft.fuselage.maximum_section_perimeter**2 * wing_LE /
             (self.aircraft.wing.area *
              self.aircraft.wing.mean_aerodynamic_chord))
         cg = self.aircraft.wing.area / self.aircraft.wing.span
@@ -84,7 +81,7 @@ class Scissor_plot(Model):
              (self.aircraft.wing.span + 2.15 *
               self.aircraft.fuselage.maximum_section_perimeter))) * np.tan(
                   np.radians(self.parametric.wings[0].mean_sweep_angle(0.25)))
-        X_ac_n = 6 * (-4 * (0.3**2 * 0.4) /
+        X_ac_n = 6 * (-4 * (0.33**2 * 0.4) /
                       (self.aircraft.wing.area *
                        self.aircraft.wing.mean_aerodynamic_chord *
                        self.Cl_alpha_tail_less()))
@@ -97,7 +94,7 @@ class Scissor_plot(Model):
         return 0.0
 
     def Cl_tail(self):
-        aspect_ratio_tail = 2.59
+        aspect_ratio_tail = 2.5
         return -0.35 * aspect_ratio_tail**(1 / 3)
 
     def calculate_C_m_ac_w(
@@ -144,7 +141,7 @@ class Scissor_plot(Model):
         C_m_0_nac = 0.004  #due to high wing, assume no fillets
         C_l = 0.73  #assume cruise lift is at 0 angle of attack
         C_m_nac = C_m_0_nac + C_l * 6 * (
-            (0.3 * 0.4) / (self.aircraft.wing.area * self.aircraft.wing.
+            (0.33**2 * 0.4) / (self.aircraft.wing.area * self.aircraft.wing.
                            mean_aerodynamic_chord * self.Cl_alpha_tail_less()))
         return C_m_nac
 
@@ -153,23 +150,22 @@ class Scissor_plot(Model):
 
         sh_s = (1 / ((self.Cl_alpha_tail() / self.Cl_alpha_tail_less()) *
                      (1 - self.dedalpha()) *
-                     (5.5 / self.aircraft.wing.mean_aerodynamic_chord) *
+                     (moment_arm/ self.aircraft.wing.mean_aerodynamic_chord) *
                      self.vh_v()**2)) * x_cg - (self.X_ac() - 0.05) / (
                          (self.Cl_alpha_tail() / self.Cl_alpha_tail_less()) *
                          (1 - self.dedalpha()) *
-                         (5.5 / self.aircraft.wing.mean_aerodynamic_chord) *
+                         (moment_arm / self.aircraft.wing.mean_aerodynamic_chord) *
                          self.vh_v()**2)  #S.M=0.05
         sh_s1 = (1 / (
             (self.Cl_tail() / self.Cl_tail_less()) *
-            (5.5 / self.aircraft.wing.mean_aerodynamic_chord) * self.vh_v()**2
+            (moment_arm/ self.aircraft.wing.mean_aerodynamic_chord) * self.vh_v()**2
         )) * x_cg - (self.C_m_ac() / self.Cl_tail_less() - self.X_ac()) / (
             (self.Cl_tail() / self.Cl_tail_less()) *
-            (5.5 / self.aircraft.wing.mean_aerodynamic_chord) * self.vh_v()**2)
+            (moment_arm / self.aircraft.wing.mean_aerodynamic_chord) * self.vh_v()**2)
         print(self.aircraft.wing.mean_aerodynamic_chord)
         plt.plot(x_cg, sh_s)
         plt.plot(x_cg, sh_s1)
-        plt.hlines(0.343, xmin=0.68, xmax=0.7555,
-                   color='red')  #final size 0.343, to resize tai
+        plt.hlines(0.32, xmin=0.64, xmax=0.72, color='red') #final size 0.343, to resize tai
         print(self.parametric.wings[0].mean_sweep_angle(0))
         print(self.parametric.wings[0].mean_sweep_angle(0.25))
         plt.show()
