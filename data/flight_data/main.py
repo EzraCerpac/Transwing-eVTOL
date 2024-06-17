@@ -34,14 +34,17 @@ vertical_descent_data[
 
 mission_data = pd.concat([
     vertical_climb_data, transition_data, cruise_data, transition2_data,
-    vertical_descent_data
-])
+    vertical_descent_data,
+], ignore_index=True)
 
 # smoothen power data
 mission_data['power'] = interpolate_nans(
     np.where(
-        np.abs(mission_data['power'].diff() / mission_data['time'].diff())
-        > 500, np.NAN, mission_data['power']))
+        np.abs(mission_data['power'].diff() / mission_data['time'].diff()) > 1000,
+        np.NAN, mission_data['power']))
+
+mission_data.loc[0, 'power'] = 0
+mission_data.iloc[-1, mission_data.columns.get_loc('power')] = 0
 
 mission_data.to_csv(DATA_DIR / 'mission_data.csv', index=False)
 
