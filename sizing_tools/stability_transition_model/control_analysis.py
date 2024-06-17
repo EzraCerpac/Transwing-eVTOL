@@ -136,8 +136,8 @@ class HexacopterControlAnalysis(Model):
         # Compute ACAI
         start_time = time.process_time()
         delta = 1e-10
-        acai_calculator = ACAICalculator(self.Bf, self.Uset_umin, self.Uset_umax,
-                                         self.Tg)
+        acai_calculator = ACAICalculator(self.Bf, self.Uset_umin,
+                                         self.Uset_umax, self.Tg)
         ACAI = round(acai_calculator.compute_acai(), 2)
         if -delta < ACAI < delta:
             ACAI = 0
@@ -155,6 +155,7 @@ class HexacopterControlAnalysis(Model):
                 print('controllable')
 
         return ACAI
+
     # def find_engine_umax(self, ACAI_value):
     #     if ACAI_value == 0:
     #         print("ACAI value is zero, no engine is at u_max.")
@@ -171,12 +172,13 @@ class HexacopterControlAnalysis(Model):
     #     print("No engine is at u_max.")
     #     return None
 
+
 if __name__ == "__main__":
     ac = rot_wing
     acai_data = []
     umax_values = range(4500, 5500, 100)
-    cgs = np.linspace(2.4 ,6.8 ,120)
-    
+    cgs = np.linspace(2.4, 6.8, 120)
+
     for umax in umax_values:
         acai_values = []
         angles_list = []
@@ -188,7 +190,7 @@ if __name__ == "__main__":
             # analysis.find_engine_umax(ACAI_value)
         acai_data.append(acai_values)
         angles_list.append(analysis.rotor_angle)
-    
+
     # Plotting
     fig, ax = plt.subplots(figsize=(12, 8))
     for i, umax in enumerate(umax_values):
