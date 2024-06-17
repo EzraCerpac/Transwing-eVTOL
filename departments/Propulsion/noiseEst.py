@@ -3,15 +3,15 @@ import numpy as np
 from math import pi
 
 # all variables shall be in imperial upon usage!
-Ttot = 1350 * 9.81 * 1.3  # [N]
+Ttot = 1700  # [N]
 Ptot = 350  # [kW]
-Mtmax = 0.3
+Mtmax = 0.4
 V = 200  # [m/s]
 c = 343  # [m/s]
-Mto = 1350  # [kg]
+Mto = 1500  # [kg]
 rho = 1.225  # [kg/m3]
 k = 1.1  # from induced power Pi equation
-nearField = True
+nearField = False
 
 # global variables for C2 method (NASA), imperial units
 r = 330
@@ -55,17 +55,17 @@ class Sixengs:
         self.Aeq = 15.787544272497389 / 10.764  # read from Marilena's graph and convert to m2. 5-100ft2 for helis
         self.CDpbar = 0.01  # read from Marilena's graph
         self.vibar = 0.24444443345560393  # read from Marilena's graph
-        self.D = 1.7
+        self.D = 1.96
         self.R = self.D / 2
         self.T = Ttot / self.Neng
         self.Pbr = Ptot / self.Neng
-        self.rpm = Mtmax * 60 * c / pi / self.D
+        self.Vt = Mtmax * c  # rotational speed in m/s
+        self.omega = self.Vt / self.R
+        self.rpm = self.omega * 9.5492968
         self.A = pi * (self.D / 2)**2
-        self.Vt = pi * self.D * self.rpm / 60  # rotational speed in m/s
         self.Mt = self.Vt / c
         self.ZD = Z / toimp_dist(self.D)
         self.fn = self.B * self.rpm / 60
-        self.omega = self.Vt / self.R
         self.CT = Mto * 9.81 / (rho * pi * self.R**2 *(self.omega * self.R)**2)
         self.c = 0.0108 * (Mto * 9.81)**0.539 / (self.Neng * self.B)**0.714
         self.sigma = self.B * self.c / (pi * self.R)  # rotor solidity
@@ -97,7 +97,6 @@ def class_to_dict(classs):
 
 
 def AFactor(freq):
-    w = 0
     ACorr = 0
     for w in range(0, len(frequencies)):
         if freq == frequencies[w]:
@@ -144,7 +143,7 @@ def harmonicNoise(choice, B):
         overallNoise = (configuration["L1"] + 20 * np.log10(4 / B) +
                         40 * np.log10(15.5 / toimp_dist(config.D)) +
                         configuration["B3"] + configuration["B8"] -
-                        20 * np.log10((np.sqrt(r ** 2 + 1)) - 1)) - 10
+                        20 * np.log10((np.sqrt(r ** 2 + 1)) - 1))
     harmonicNoise.append(overallNoise - 2)
     for i in range(1, int(20000/config.fn)):
         harmonicNoise.append(overallNoise + correction(i))
@@ -202,7 +201,8 @@ def overalldBA(AnoiseArray):
         overallNoise += L*Sixengs().fn/BPF
     return 10*np.log10(overallNoise)
 
+
 if __name__ == '__main__':
     class_to_dict(Sixengs())
     plot_harm("sei")
-    print(overalldBA(total_noiseA("sei", 6)))
+    print(overalldBA(total_noiseA("sei", Sixengs().B)))
