@@ -48,7 +48,7 @@ class TotalModel(Model):
         print(f"Concept: {self.aircraft.full_name}")
         print(f"Total Mass: {self.aircraft.total_mass:.2f} kg")
         print(
-            f"Total Energy: {convert_float(self.aircraft.mission_profile.energy, 'J', 'kWh'):.2f} kWh"
+            f"Total Mission Energy: {self.aircraft.mission_profile.energy:.1f} kWh"
         )
         print(
             f"Takeoff Power: {convert_float(departments.flight_performance.power_calculations.power, 'W', 'kW'):.2f} kW"
