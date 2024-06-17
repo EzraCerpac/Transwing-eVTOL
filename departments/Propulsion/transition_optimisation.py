@@ -171,7 +171,7 @@ p.show_plot(
 )
 
 import pandas as pd
-from data.flight_data.main import DATA_DIR
+from data.flight_data.mission_data import DATA_DIR
 df = pd.DataFrame({
     "time": time,
     "x": np.concatenate([[0], distance]),

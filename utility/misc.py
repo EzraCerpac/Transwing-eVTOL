@@ -1,5 +1,7 @@
 import inspect
 
+from scipy.interpolate import interp1d
+
 
 def get_caller_file_name(n_back: int = 2, n_dirs: int = 1) -> str:
     """
@@ -29,5 +31,6 @@ import numpy as np
 def interpolate_nans(data):
     nans = np.isnan(data)
     x = lambda z: z.nonzero()[0]
-    data[nans] = np.interp(x(nans), x(~nans), data[~nans])
+    spline = interp1d(x(~nans), data[~nans], kind='slinear')
+    data[nans] = spline(x(nans))
     return data
