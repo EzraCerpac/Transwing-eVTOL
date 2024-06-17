@@ -4,7 +4,7 @@ import aerosandbox as asb
 import aerosandbox.numpy as np
 from scipy.optimize import brentq
 
-from departments.Propulsion.noiseEst import k, sixengs, Ttot
+from departments.Propulsion.noiseEst import k, Sixengs, Ttot
 
 DATA_DIR = Path(__file__).parent.parent.parent / 'Propulsion' / 'power_output'
 
@@ -16,7 +16,7 @@ def power_required(velocity: float | np.ndarray) -> float | np.ndarray:
     return np.interp(velocity, velocity_data, power_data)
 
 
-six_engine_data = sixengs()
+six_engine_data = Sixengs()
 atmosphere = asb.Atmosphere(altitude=500)
 
 

@@ -235,7 +235,7 @@ class Optimalisation(Model, ABC):
         return self.plot_logs_over('time')
 
     def save_data(self):
-        from data.flight_data.main import DATA_DIR
+        from data.flight_data.mission_data import DATA_DIR
         filename = DATA_DIR / f"{self.__class__.__name__}.csv"
         self.to_dataframe().to_csv(filename)
         logger.info(f"Data saved to {filename}")

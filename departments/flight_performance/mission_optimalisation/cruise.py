@@ -57,7 +57,7 @@ class CruiseOpt(Optimalisation):
                                      upper_bound=20),
         )
 
-        self.max_power = self.opti.parameter(350_000)
+        self.max_power = self.opti.parameter(80_000)
         self.thrust = self.opti.variable(init_guess=1000, n_vars=self.n_timesteps, log_transform=True)
         self.power = power_from_thrust(self.thrust, self.dyn.speed)
         self.thrust_level = self.max_power / self.power
@@ -135,7 +135,7 @@ class CruiseOpt(Optimalisation):
         self.opti.subject_to([
             start_cruise_time > 300,
             start_cruise_time < end_cruise_time - 0.4 * self.end_time,
-            end_cruise_time < self.end_time - 300,
+            end_cruise_time < self.end_time - 200,
         ])
         cruise_steps = self.n_timesteps // 3
         start_cruise_index = self.n_timesteps // 3
@@ -146,8 +146,8 @@ class CruiseOpt(Optimalisation):
         descent_time = np.cosspace(end_cruise_time, self.end_time,
                                    self.n_timesteps - end_cruise_index)
         self.time = np.concatenate([climb_time, cruise_time, descent_time])
-        cruise_altitude = self.opti.variable(
-            init_guess=self.aircraft.cruise_altitude, log_transform=True)
+        cruise_altitude = self.opti.parameter(self.aircraft.cruise_altitude) #self.opti.variable(
+            # init_guess=self.aircraft.cruise_altitude, log_transform=True)
         cruise_speed = self.opti.parameter(self.aircraft.cruise_velocity)  # enforced because power-curve is probably not correct
         self.opti.subject_to([
             cruise_altitude >= self.aircraft.cruise_altitude,
@@ -174,8 +174,8 @@ class CruiseOpt(Optimalisation):
             np.diff(self.dyn.altitude[end_cruise_index:]) < 0,
             np.diff(self.dyn.speed[:start_cruise_index]) > 0,
             np.diff(self.dyn.speed[end_cruise_index:]) < 0,
-            np.diff(self.power[end_cruise_index:]) < 0,
-            # self.power[end_cruise_index:] == 0,
+            np.diff(self.power[end_cruise_index:]) <= 0,
+            self.power[end_cruise_index+self.n_timesteps//10:] == 0,
         ])
 
     def dynamics(self, use_aero: bool = False):
