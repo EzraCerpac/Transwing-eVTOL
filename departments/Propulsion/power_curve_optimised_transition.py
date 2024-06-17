@@ -6,7 +6,7 @@ from scipy.optimize import brentq
 
 from aircraft_models import trans_wing
 from departments.Propulsion.helper import TRANS_SAVE_DIR, POWER_SAVE_DIR
-from departments.Propulsion.noiseEst import sixengs, k, Ttot
+from departments.Propulsion.noiseEst import Sixengs, k, Ttot
 from departments.aerodynamics.aero import Aero
 from sizing_tools.drag_model.class_II_drag import ClassIIDrag
 
@@ -14,7 +14,7 @@ RES = 500
 
 ac = trans_wing
 aero = Aero(ac)
-six_engine_data = sixengs()
+six_engine_data = Sixengs()
 
 weight = ac.data.total_mass * g
 end_vel = 100
@@ -60,7 +60,7 @@ def vi_func(x, velocity=0):
 
 
 vi = np.array([brentq(vi_func, 0, 5, args=velocity) * six_engine_data.vih for velocity in velocities])
-omega = six_engine_data.omega * (thrust / Ttot)
+omega = six_engine_data.omega
 profile_power = (six_engine_data.sigma * six_engine_data.CDpbar / 8
                  * atmosphere.density() * (omega * six_engine_data.R) ** 3
                  * np.pi * six_engine_data.R ** 2
@@ -71,7 +71,6 @@ acceleration_power = delta_T * velocities / np.maximum(np.cos(trans_vals * np.pi
 total_power = profile_power + induced_power + parasite_power + acceleration_power
 
 # Post-processing
-
 p.fig, p.ax = p.plt.subplots(figsize=(8, 6))
 p.ax.plot(velocities, profile_power / 1000, label="Profile power")
 p.ax.plot(velocities, induced_power / 1000, label="Induced power")
@@ -90,7 +89,7 @@ p.show_plot(
 
 
 power_required = total_power - acceleration_power
-print(f"Maximum power required: {np.max(power_required) / 1000:.1f} kW")
+print(f"Maximum power required: {np.max(total_power) / 1000:.1f} kW")
 print(f"Power required at {cruise_velocity} m/s: {power_required[np.argmin(np.abs(velocities - cruise_velocity))] / 1000:.1f} kW")
 print(f"Power required at {trans_velocity} m/s: {power_required[np.argmin(np.abs(velocities - trans_velocity))] / 1000:.1f} kW")
 np.save(POWER_SAVE_DIR / "velocities.npy", velocities)
