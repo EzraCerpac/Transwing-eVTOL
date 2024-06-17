@@ -18,7 +18,7 @@ sys.path.append(parent_dir)
 from data.concept_parameters.aircraft import Aircraft, AC
 from sizing_tools.wing_planform import WingModel
 
-ac = Aircraft.load(version='1.5')
+ac = Aircraft.load(version='1.6')
 wing_model = WingModel(ac, altitude=ac.cruise_altitude)
 ac.wing.span = 14
 hinge_location = 1.8  # m from root
