@@ -22,6 +22,7 @@ class PropulsionSystemMassModel(MassModel):
         Calculate the mass of the motor
         :return: mass of the motor in kg
         """
+        return 13.5 * self.aircraft.motor_prop_count
         power = departments.flight_performance.power_calculations.power
         return engine_mass(convert_float(power, 'W', 'kW'),
                            self.aircraft.motor_power_margin,

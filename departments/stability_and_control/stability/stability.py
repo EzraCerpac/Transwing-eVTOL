@@ -2,7 +2,7 @@ import aerosandbox as asb
 import aerosandbox.numpy as np
 import aerosandbox.tools.pretty_plots as p
 
-from departments.stability_and_control.stability.state_space import SS_asymetric
+from departments.stability_and_control.stability.state_space import SS_asymetric, SS_symetric
 
 plt = p.plt
 from aerosandbox.dynamics.flight_dynamics.airplane import get_modes
@@ -64,27 +64,22 @@ Z_0 = -ac.mass_props.mass * g * np.cos(theta_0)
 C_X_0 = X_0 * force_norm
 C_X_u = -2 * aero['CD'][0]
 C_X_alpha = aero['CL'][0] * (1 - aero['CLa'][0] / (
-            np.pi * ac.parametric.b_ref ** 2 / ac.parametric.s_ref * aero['wing_aero_components'][
-        0].oswalds_efficiency))
+        np.pi * ac.parametric.b_ref ** 2 / ac.parametric.s_ref * aero['wing_aero_components'][
+    0].oswalds_efficiency))
 C_X_q = 0  # aero['CDq'][0]
-C_X_delta_e = 3.79621824e-06  # todo
 C_Z_0 = Z_0 * force_norm / V
 C_Z_u = -2 * aero['CL'][0]
 C_Z_alpha = -aero['CLa'][0]
 C_Z_alpha_dot = -aero['CLq'][0] / V * ac.parametric.c_ref
 C_Z_q = -aero['CLq'][0]
-C_Z_delta_e = -0.00014608  # todo
 C_m_0 = 0
 C_m_u = 2 * C_m_0 + 0
 C_m_alpha = aero['Cma'][0]
 C_m_alpha_dot = -aero['Cmq'][0] / V * ac.parametric.c_ref
 C_m_q = aero['Cmq'][0]
-C_m_delta_e = -0.0006453  # todo
-
-# SS_symetric(C_X_u, C_X_alpha, C_Z_0, C_X_q, C_Z_u, C_Z_alpha, C_X_0, C_Z_q, \
-#             mu_c, C_m_u, C_m_alpha, C_m_q, C_X_delta_e, C_Z_delta_e, C_m_delta_e, ac.parametric.c_ref, V, C_Z_alpha_dot,
-#             C_m_alpha_dot, \
-#             K_Y_squared, T=100)
+C_X_delta_e = -0.03407082
+C_Z_delta_e = -1.32378707
+C_m_delta_e = -5.11807994
 
 C_L = aero['CL'][0]
 C_Y_beta = aero['CYb'][0]
@@ -99,9 +94,9 @@ C_n_p = aero['Cnp'][0]
 C_Y_r = aero['CYr'][0]
 C_l_r = aero['Clr'][0]
 C_n_r = aero['Cnr'][0]
-C_Y_delta_a = -3.30798597e-05
-C_l_delta_a = -0.00013132
-C_n_delta_a = -7.20657464e-07
+C_Y_delta_a = -0.18953364
+C_l_delta_a = -0.75240091
+C_n_delta_a = -0.00426444
 C_Y_delta_r = 0
 C_l_delta_r = 0
 C_n_delta_r = 0
@@ -111,30 +106,11 @@ K_X_squared = ac.mass_props.Ixx / (ac.mass_props.mass * ac.parametric.c_ref ** 2
 K_XZ = ac.mass_props.Ixz / (ac.mass_props.mass * ac.parametric.c_ref ** 2)
 K_Z_squared = ac.mass_props.Izz / (ac.mass_props.mass * ac.parametric.c_ref ** 2)
 
-SS_asymetric(C_L,
-             C_Y_beta,
-             C_Y_beta_dot,
-             C_l_beta,
-             C_l_beta_dot,
-             C_n_beta,
-             C_n_beta_dot,
-             C_Y_p,
-             C_l_p,
-             C_n_p,
-             C_Y_r,
-             C_l_r,
-             C_n_r,
-             C_Y_delta_a,
-             C_l_delta_a,
-             C_n_delta_a,
-             C_Y_delta_r,
-             C_l_delta_r,
-             C_n_delta_r,
-             mu_b,
-             ac.parametric.b_ref,
-             V,
-             K_X_squared,
-             K_XZ,
-             K_Z_squared,
-             T=100,
- )
+SS_symetric(C_X_u, C_X_alpha, C_Z_0, C_X_q, C_Z_u, C_Z_alpha, C_X_0, C_Z_q, \
+            mu_c, C_m_u, C_m_alpha, C_m_q, C_X_delta_e, C_Z_delta_e, C_m_delta_e, ac.parametric.c_ref, V, C_Z_alpha_dot,
+            C_m_alpha_dot, K_Y_squared, T=100, u=np.radians(5))
+
+SS_asymetric(C_L, C_Y_beta, C_Y_beta_dot, C_l_beta, C_l_beta_dot, C_n_beta, C_n_beta_dot, C_Y_p, C_l_p, C_n_p, C_Y_r,
+             C_l_r, C_n_r, C_Y_delta_a, C_l_delta_a, C_n_delta_a, C_Y_delta_r, C_l_delta_r, C_n_delta_r, mu_b,
+             ac.parametric.b_ref, V, K_X_squared, K_XZ, K_Z_squared, T=200, u=np.radians(22.5)
+             )

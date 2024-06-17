@@ -20,9 +20,6 @@ from sizing_tools.wing_planform import WingModel
 
 ac = Aircraft.load(version='1.6')
 wing_model = WingModel(ac, altitude=ac.cruise_altitude)
-ac.wing.span = 14
-hinge_location = 1.8  # m from root
-ac.hinge_location = hinge_location / (ac.wing.span / 2)
 
 wing_airfoil = Airfoil("E560")
 # wing_airfoil = Airfoil("E423")
@@ -42,9 +39,9 @@ mass_props = asb.MassProperties(mass=ac.total_mass,
                                 x_cg=cg_location[0],
                                 y_cg=cg_location[1],
                                 z_cg=cg_location[2],
-                                Ixx=9600,
-                                Iyy=19700,
-                                Izz=514,
+                                Ixx=10150,
+                                Iyy=20240,
+                                Izz=20417,
                                 Ixy=0,
                                 Ixz=0,
                                 Iyz=0)
@@ -119,7 +116,7 @@ horizontal_tail = asb.Wing(
             xyz_le=[
                 2.255 - 0.90, 3.946 / 2, -3.946 / 2 * np.sin(np.radians(34.51))
             ],
-            chord=0.90,
+            chord=1.896 * 0.4,
             twist=0,
             airfoil=tail_airfoil)
     ],
@@ -195,6 +192,7 @@ rot_wing = AC(
     name=ac.full_name,
     data=ac,
     parametric=parametric,
+    mass_props=mass_props,
 )
 
 if __name__ == '__main__':

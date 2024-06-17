@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 def SS_symetric(C_X_u, C_X_alpha, C_Z_0, C_X_q, C_Z_u, C_Z_alpha, C_X_0, C_Z_q, \
                 mu_c, C_m_u, C_m_alpha, C_m_q, C_X_delta_e, C_Z_delta_e, C_m_delta_e, c, V, C_Z_alpha_dot,
                 C_m_alpha_dot, \
-                K_Y_squared, T=1):
+                K_Y_squared, T=1, u=None):
     Q = np.array([
         [-C_X_u, -C_X_alpha, -C_Z_0, -C_X_q],
         [-C_Z_u, -C_Z_alpha, C_X_0, -(C_Z_q + 2 * mu_c)],
@@ -33,7 +33,6 @@ def SS_symetric(C_X_u, C_X_alpha, C_Z_0, C_X_q, C_Z_u, C_Z_alpha, C_X_0, C_Z_q, 
     C = np.identity(4)
     D = np.zeros_like(B)
     C[-1, -1] *= V / c
-    D[-1, -1] *= V / c
 
     sys = ct.ss(A, B, C, D,
                 inputs=[r'$\delta_e$'],
@@ -49,13 +48,25 @@ def SS_symetric(C_X_u, C_X_alpha, C_Z_0, C_X_q, C_Z_u, C_Z_alpha, C_X_0, C_Z_q, 
     T = np.linspace(0, T, 1000)
     X0 = np.array([0, alpha_0, theta_0, q_0])
     U = np.zeros((1, T.shape[0]))
-    U[:, 0] = -5
+    U[:, 0] = u
 
     response = ct.forced_response(sys, X0=X0, T=T, U=U)
     fig, axs = plt.subplots(5, 1, figsize=(12, 12), sharex=True)
     axs = axs.reshape(-1, 1)
     response.plot(ax=axs)
     plt.show()
+
+    # C = np.array([0, 0, 1, 0])
+    # D = np.array([0])
+    # sys_pz = ct.ss(A, B, C, D,
+    #                  inputs=[r'$\delta_e$'],
+    #                  states=[r'$\hat{u}$', r'$\alpha$', r'$\theta$', r'$\frac{q\hat{c}}{V}$'],
+    #                  outputs=[r'$\hat{u}$'],
+    #                  name='Longitudinal Dynamics'
+    #                  )
+    #
+    # ct.nyquist_plot(sys_pz)
+    # plt.show()
 
 
 def SS_asymetric(
@@ -85,6 +96,7 @@ def SS_asymetric(
         K_XZ,
         K_Z_squared,
         T=1,
+        u=None,
 ):
     Q = -np.array([
         [C_Y_beta, C_L, C_Y_p, C_Y_r - 4 * mu_b],
@@ -110,12 +122,13 @@ def SS_asymetric(
     A = np.linalg.inv(P) @ Q
     B = np.linalg.inv(P) @ R
     C = np.diag([1, 1, 2 * V / b, 2 * V / b])
-    D = np.array([0, 0, 2 * V / b, 2 * V / b]).reshape(-1, 1)
+    D = np.zeros_like(B)
+    C = np.degrees(C)
 
     sys = ct.ss(A, B, C, D,
                 inputs=[r'$\delta_a$'],
                 states=[r'$\beta$', r'$\phi$', r'$\frac{pb}{2V}$', r'$\frac{rb}{2V}$'],
-                outputs=[r'$\beta$', r'$\phi$', r'$p$', r'$r$'],
+                outputs=[r'$\beta$ [deg]', r'$\phi$ [deg]', r'$p$ [deg]', r'$r$ [deg]'],
                 name='Lateral Dynamics'
                 )
 
@@ -123,18 +136,32 @@ def SS_asymetric(
     T = np.linspace(0, T, 1000)
     X0 = np.zeros(4)
     U = np.zeros(T.shape[0])
-    U[0] = -5
+    U[0] = u
 
     response = ct.forced_response(sys, X0=X0, T=T, U=U)
     fig, axs = plt.subplots(5, 1, figsize=(12, 12), sharex=True)
     axs = axs.reshape(-1, 1)
     response.plot(ax=axs)
+
     plt.show()
+
+    # C = np.array([1, 0, 0, 0])
+    # D = np.array([0])
+    # sys_pz = ct.ss(A, B, C, D,
+    #                  inputs=[r'$\delta_e$'],
+    #                  states=[r'$\hat{u}$', r'$\alpha$', r'$\theta$', r'$\frac{q\hat{c}}{V}$'],
+    #                  outputs=[r'$\hat{u}$'],
+    #                  name='Longitudinal Dynamics'
+    #                  )
+    #
+    # ct.pole_zero_plot(sys_pz, grid=True)
+    # plt.show()
 
 
 
 def cessna_SS(T=1):
     c = 2.022
+    b = 13.36
     V = 59.9
 
     mu_c = 102.7
@@ -158,10 +185,40 @@ def cessna_SS(T=1):
     C_m_q = -7.0400
     C_m_delta_e = -1.5530
 
-    SS_symetric(C_X_u, C_X_alpha, C_Z_0, C_X_q, C_Z_u, C_Z_alpha, C_X_0, C_Z_q, \
-                mu_c, C_m_u, C_m_alpha, C_m_q, C_X_delta_e, C_Z_delta_e, C_m_delta_e, c, V, C_Z_alpha_dot,
-                C_m_alpha_dot, \
-                K_Y_squared, T=T)
+    K_X_squared = 0.012
+    K_XZ = 0.002
+    K_Z_squared = 0.037
+    mu_b = 15.5
+
+    C_L = 1.1360
+    C_Y_beta = -0.9896
+    C_Y_beta_dot = 0
+    C_l_beta = -0.0772
+    C_l_beta_dot = 0
+    C_n_beta = 0.1638
+    C_n_beta_dot = 0
+    C_Y_p = -0.087
+    C_l_p = -0.344
+    C_n_p = -0.0108
+    C_Y_r = 0.43
+    C_l_r = 0.28
+    C_n_r = -0.1930
+    C_Y_delta_a = 0
+    C_l_delta_a = -0.2349
+    C_n_delta_a = 0.0286
+    C_Y_delta_r = 0.3037
+    C_l_delta_r = 0.0286
+    C_n_delta_r = -0.1261
+
+    # SS_symetric(C_X_u, C_X_alpha, C_Z_0, C_X_q, C_Z_u, C_Z_alpha, C_X_0, C_Z_q, \
+    #             mu_c, C_m_u, C_m_alpha, C_m_q, C_X_delta_e, C_Z_delta_e, C_m_delta_e, c, V, C_Z_alpha_dot,
+    #             C_m_alpha_dot, \
+    #             K_Y_squared, T=T)
+
+    SS_asymetric(C_L, C_Y_beta, C_Y_beta_dot, C_l_beta, C_l_beta_dot, C_n_beta, C_n_beta_dot, C_Y_p, C_l_p, C_n_p, C_Y_r,
+                 C_l_r, C_n_r, C_Y_delta_a, C_l_delta_a, C_n_delta_a, C_Y_delta_r, C_l_delta_r, C_n_delta_r, mu_b,
+                 b, V, K_X_squared, K_XZ, K_Z_squared, T=T,
+                 )
 
 
 if __name__ == '__main__':

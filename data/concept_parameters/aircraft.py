@@ -1,6 +1,6 @@
 from typing import Optional, Any, Callable
 
-from aerosandbox import Airplane
+from aerosandbox import Airplane, MassProperties
 from pydantic import BaseModel, field_validator, Field
 
 from data.concept_parameters.aircraft_components import Propeller, Tail, Fuselage, Wing, MassObject
@@ -191,11 +191,14 @@ class AC:
                  name: str,
                  data: Aircraft,
                  parametric: Airplane = None,
-                 parametric_fn: Callable[[float], Airplane] = None):
+                 parametric_fn: Callable[[float], Airplane] = None,
+                mass_props: MassProperties = None
+                 ):
         self.name = name
         self.data = data
         self.parametric = parametric or parametric_fn(0)
         self.parametric_fn = parametric_fn
+        self.mass_props = mass_props
 
     def __repr__(self) -> str:
         return f'AC(name={self.name})'
