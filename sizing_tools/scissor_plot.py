@@ -168,7 +168,7 @@ class Scissor_plot(Model):
         print(self.aircraft.wing.mean_aerodynamic_chord)
         plt.plot(x_cg, sh_s)
         plt.plot(x_cg, sh_s1)
-        plt.hlines(0.2856, xmin=0.256, xmax=0.586, color='red')
+        plt.hlines(0.343, xmin=0.68, xmax=0.7555, color='red') #final size 0.343, to resize tai
         print(self.parametric.wings[0].mean_sweep_angle(0))
         print(self.parametric.wings[0].mean_sweep_angle(0.25))
         plt.show()
