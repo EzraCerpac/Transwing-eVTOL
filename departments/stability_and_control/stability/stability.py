@@ -2,7 +2,7 @@ import aerosandbox as asb
 import aerosandbox.numpy as np
 import aerosandbox.tools.pretty_plots as p
 
-from departments.stability_and_control.state_space import SS_symetric, SS_asymetric
+from departments.stability_and_control.stability.state_space import SS_asymetric
 
 plt = p.plt
 from aerosandbox.dynamics.flight_dynamics.airplane import get_modes

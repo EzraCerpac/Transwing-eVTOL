@@ -1,4 +1,8 @@
+import numpy as np
+
 from aircraft_models import rot_wing
+from data.flight_data.main import mission_data
+from utility.unit_conversion import convert_float
 
 #print(rot_wing.data.mission_profile.
 
@@ -14,4 +18,7 @@ W_tot = Total_Energy / rho_E
 print(W_tot)
 
 C_pack = (W_tot * rho_E)/(System_Voltage * n_pack)
-Power =
+Power = mission_data.power.to_numpy()
+Time = mission_data.time.to_numpy()
+energy = np.sum(Power[1:] * np.diff(Time))
+print(convert_float(energy, 'J', 'kWh'))
