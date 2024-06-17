@@ -52,7 +52,7 @@ mission_data['power'] = interpolate_nans(
         np.abs(mission_data['power'].diff() / mission_data['time'].diff())
         > 1000, np.NAN, mission_data['power']))
 
-pd.concat([
+mission_data = pd.concat([
     pd.DataFrame({
         'time': [0],
         'x': [0],
@@ -66,7 +66,7 @@ pd.concat([
     mission_data,
     pd.DataFrame({
         'time':
-        [mission_data['time'].iloc[-1] + mission_data['time'].iloc[-1]],
+        [mission_data['time'].iloc[-1] + mission_data['time'].iloc[-5:].diff().mean()],
         'x': [mission_data['x'].iloc[-1]],
         'altitude':
         0,
@@ -82,6 +82,6 @@ pd.concat([
 mission_data.to_csv(DATA_DIR / 'mission_data.csv', index=False)
 
 if __name__ == '__main__':
-    mission_data.plot(x='time', y='power', legend=False, grid=True)
+    mission_data.plot(x='x', y='power', legend=False, grid=True)
     plt.ylim(bottom=0)
     plt.show()
