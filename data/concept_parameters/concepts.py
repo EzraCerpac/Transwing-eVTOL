@@ -114,24 +114,22 @@ example_cg_dict = {
     'propellers': 0.4,
 }
 
-rot_wing_starting_params = Aircraft(
-    id='V1.6',
-    name=
-    "Using battery mass of 400 kg",
-    motor_prop_count=6,
-    motor_wing_count=6,
-    propeller_radius=2.1 / 2,
-    propeller_blade_number=6,
-    hinge_location=1.8 / (14 / 2),
-    wing=Wing(
-        area=14,
-        span=14,
-    ),
-    fuselage=Fuselage(
-        length=7.822,
-        maximum_section_perimeter=1.6577,
-    ),
-    estimated_CD0=0.02,
-    s_fus=12.5,
-    design_load_factor=1.2,
-    TA=400)
+rot_wing_starting_params = Aircraft(id='V1.6',
+                                    name="Using battery mass of 400 kg",
+                                    motor_prop_count=6,
+                                    motor_wing_count=6,
+                                    propeller_radius=2.1 / 2,
+                                    propeller_blade_number=6,
+                                    hinge_location=1.8 / (14 / 2),
+                                    wing=Wing(
+                                        area=14,
+                                        span=14,
+                                    ),
+                                    fuselage=Fuselage(
+                                        length=7.822,
+                                        maximum_section_perimeter=1.6577,
+                                    ),
+                                    estimated_CD0=0.02,
+                                    s_fus=12.5,
+                                    design_load_factor=1.2,
+                                    TA=400)
