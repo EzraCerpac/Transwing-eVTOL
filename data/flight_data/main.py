@@ -16,7 +16,12 @@ vertical_descent_data = pd.read_csv(DATA_DIR / 'VerticalDescent.csv')
 vertical_descent_data['x'] = np.zeros_like(vertical_descent_data['time'])
 
 transition2_data = transition_data.copy()
+transition2_data['thrust'] = transition2_data.iloc[::-1]['thrust'].values * 0.7
 transition2_data['power'] = transition2_data.iloc[::-1]['power'].values * 0.7
+transition2_data['speed'] = transition2_data.iloc[::-1]['speed'].values
+transition2_data['altitude'] = transition2_data.iloc[::-1]['altitude'].values
+transition2_data['u'] = transition2_data.iloc[::-1]['u'].values
+transition2_data['w'] = transition2_data.iloc[::-1]['w'].values
 
 transition_data[
     'time'] = transition_data['time'] + vertical_climb_data['time'].iloc[-1]
@@ -39,7 +44,7 @@ mission_data = pd.concat([
     transition2_data,
     vertical_descent_data,
 ],
-                         ignore_index=True)
+    ignore_index=True)
 
 # smoothen power data
 mission_data['power'] = interpolate_nans(
@@ -47,8 +52,29 @@ mission_data['power'] = interpolate_nans(
         np.abs(mission_data['power'].diff() / mission_data['time'].diff())
         > 1000, np.NAN, mission_data['power']))
 
-mission_data.loc[0, 'power'] = 0
-mission_data.iloc[-1, mission_data.columns.get_loc('power')] = 0
+pd.concat([
+    pd.DataFrame({
+        'time': [0],
+        'x': [0],
+        'altitude': [0],
+        'u': [0],
+        'w': [0],
+        'speed': [0],
+        'thrust': [0],
+        'power': [0],
+    }),
+    mission_data,
+    pd.DataFrame({
+        'time': [mission_data['time'].iloc[-1] + mission_data['time'].iloc[-1]],
+        'x': [mission_data['x'].iloc[-1]],
+        'altitude': 0,
+        'u': [0],
+        'w': [0],
+        'speed': [0],
+        'thrust': [0],
+        'power': [0],
+    }),
+], ignore_index=True)
 
 mission_data.to_csv(DATA_DIR / 'mission_data.csv', index=False)
 
