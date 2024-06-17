@@ -166,7 +166,6 @@ trans_wing = AC(
     name=ac.full_name,
     data=ac,
     parametric_fn=generate_airplane,
-
 )
 
 if __name__ == '__main__':
