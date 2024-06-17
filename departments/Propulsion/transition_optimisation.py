@@ -6,7 +6,7 @@ from scipy.optimize import brentq
 
 from aircraft_models import trans_wing
 from departments.Propulsion.helper import TRANS_SAVE_DIR
-from departments.Propulsion.noiseEst import k, sixengs
+from departments.Propulsion.noiseEst import k, Sixengs
 from departments.aerodynamics.aero import Aero
 from sizing_tools.drag_model.class_II_drag import ClassIIDrag
 
@@ -14,7 +14,7 @@ RES = 300
 
 ac = trans_wing
 aero = Aero(ac)
-six_engine_data = sixengs()
+six_engine_data = Sixengs()
 
 weight = ac.data.total_mass * g
 

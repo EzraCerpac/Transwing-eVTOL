@@ -71,6 +71,7 @@ acceleration_power = delta_T * velocities / np.maximum(np.cos(trans_vals * np.pi
 total_power = profile_power + induced_power + parasite_power + acceleration_power
 
 # Post-processing
+
 p.fig, p.ax = p.plt.subplots(figsize=(8, 6))
 p.ax.plot(velocities, profile_power / 1000, label="Profile power")
 p.ax.plot(velocities, induced_power / 1000, label="Induced power")
@@ -89,7 +90,7 @@ p.show_plot(
 
 
 power_required = total_power - acceleration_power
-print(f"Maximum power required: {np.max(total_power) / 1000:.1f} kW")
+print(f"Maximum power: {np.max(total_power) / 1000:.1f} kW")
 print(f"Power required at {cruise_velocity} m/s: {power_required[np.argmin(np.abs(velocities - cruise_velocity))] / 1000:.1f} kW")
 print(f"Power required at {trans_velocity} m/s: {power_required[np.argmin(np.abs(velocities - trans_velocity))] / 1000:.1f} kW")
 np.save(POWER_SAVE_DIR / "velocities.npy", velocities)
