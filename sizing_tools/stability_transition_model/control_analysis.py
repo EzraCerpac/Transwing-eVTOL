@@ -39,6 +39,7 @@ class HexacopterControlAnalysis(Model):
         engine_xy = ([2.302, 1.95], [4.647, 1.95], [6.992, 1.95],
                      [6.992, -1.95], [4.647, -1.95], [2.302, -1.95])
 
+        self.aircraft.total_mass = 1645
         # Set r_cg locations,
         r_cg = np.array([cg, 0])
         r_cg_engine = engine_xy - r_cg
@@ -98,7 +99,7 @@ class HexacopterControlAnalysis(Model):
         #     self.Bf[:, -3], self.Bf[:, 0]
         # ]).T
 
-        self.Tg = np.array([self.aircraft.total_mass * self.g0 * 1.2, 0, 0, 0])
+        self.Tg = np.array([self.aircraft.total_mass * self.g0 * 1.0, 0, 0, 0])
 
     # Necessary parameters
     @property
@@ -129,13 +130,13 @@ class HexacopterControlAnalysis(Model):
 
         self.umax = umax
         umin = 0
-        Uset_umin = umin * np.ones(self.rotor_angle.shape)
-        Uset_umax = umax * np.ones(self.rotor_angle.shape)
+        self.Uset_umin = umin * np.ones(self.rotor_angle.shape)
+        self.Uset_umax = umax * np.ones(self.rotor_angle.shape)
 
         # Compute ACAI
         start_time = time.process_time()
         delta = 1e-10
-        acai_calculator = ACAICalculator(self.Bf, Uset_umin, Uset_umax,
+        acai_calculator = ACAICalculator(self.Bf, self.Uset_umin, self.Uset_umax,
                                          self.Tg)
         ACAI = round(acai_calculator.compute_acai(), 2)
         if -delta < ACAI < delta:
@@ -154,13 +155,27 @@ class HexacopterControlAnalysis(Model):
                 print('controllable')
 
         return ACAI
+    # def find_engine_umax(self, ACAI_value):
+    #     if ACAI_value == 0:
+    #         print("ACAI value is zero, no engine is at u_max.")
+    #         return None
+    #     for i in range(len(self.rotor_angle)):
+    #         fc = (self.Uset_umin + self.Uset_umax) / 2
+    #         Fc = np.dot(self.Bf, fc)  # Central point
 
+    #         # Check the force on each engine
+    #         force = Fc[i]
+    #         if force >= self.umax:
+    #             print(f"Engine {i + 1} is at u_max.")
+    #             return i + 1
+    #     print("No engine is at u_max.")
+    #     return None
 
 if __name__ == "__main__":
     ac = rot_wing
     acai_data = []
-    umax_values = range(4000, 10000, 1000)
-    cgs = np.linspace(2.4 ,6.8 ,15)
+    umax_values = range(4500, 5500, 100)
+    cgs = np.linspace(2.4 ,6.8 ,120)
     
     for umax in umax_values:
         acai_values = []
@@ -170,16 +185,20 @@ if __name__ == "__main__":
             ACAI_value = analysis.run_analysis()
             acai_values.append(ACAI_value)
             angles_list.append(analysis.rotor_angle)
+            # analysis.find_engine_umax(ACAI_value)
         acai_data.append(acai_values)
         angles_list.append(analysis.rotor_angle)
+    
     # Plotting
     fig, ax = plt.subplots(figsize=(12, 8))
     for i, umax in enumerate(umax_values):
-        plt.plot(cgs, acai_data[i], label=f"umax={umax}")
-    plt.xlabel('CG')
+        plt.plot(cgs, acai_data[i], label=f"umax={umax} [N]")
+    plt.xlabel('CG [m]')
+    plt.xlim(cgs[0], cgs[-1])
+    # plt.xticks(np.arange(2.4, 7.0 ,.4))
     plt.ylabel('ACAI')
     plt.legend()
-    plt.grid()
+    plt.grid('Both')
     plt.show()
 
     # csv_filename = 'rotor_angles.csv'
