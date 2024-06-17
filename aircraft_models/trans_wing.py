@@ -174,7 +174,8 @@ if __name__ == '__main__':
     airplane.draw_three_view()
     airplane.draw()
 
-    print(airplane.wings[0].xsecs[-1].xyz_le[0] - airplane.fuselages[0].xsecs[0].xyz_c[0])
+    print(airplane.wings[0].xsecs[-1].xyz_le[0] -
+          airplane.fuselages[0].xsecs[0].xyz_c[0])
 
     # for val in np.linspace(0, 1, 11):
     #     para = trans_wing.parametric_fn(val)
