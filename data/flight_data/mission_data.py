@@ -82,6 +82,7 @@ mission_data = pd.concat([
     }),
 ],
           ignore_index=True)
+mission_data.loc[1, 'time'] = (mission_data.loc[0, 'time'] + mission_data.loc[2, 'time']) / 2
 
 mission_data.to_csv(DATA_DIR / 'mission_data.csv', index=False)
 
