@@ -44,7 +44,7 @@ mission_data = pd.concat([
     transition2_data,
     vertical_descent_data,
 ],
-    ignore_index=True)
+                         ignore_index=True)
 
 # smoothen power data
 mission_data['power'] = interpolate_nans(
@@ -65,16 +65,19 @@ pd.concat([
     }),
     mission_data,
     pd.DataFrame({
-        'time': [mission_data['time'].iloc[-1] + mission_data['time'].iloc[-1]],
+        'time':
+        [mission_data['time'].iloc[-1] + mission_data['time'].iloc[-1]],
         'x': [mission_data['x'].iloc[-1]],
-        'altitude': 0,
+        'altitude':
+        0,
         'u': [0],
         'w': [0],
         'speed': [0],
         'thrust': [0],
         'power': [0],
     }),
-], ignore_index=True)
+],
+          ignore_index=True)
 
 mission_data.to_csv(DATA_DIR / 'mission_data.csv', index=False)
 
