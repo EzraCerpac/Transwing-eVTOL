@@ -65,8 +65,10 @@ mission_data = pd.concat([
     }),
     mission_data,
     pd.DataFrame({
-        'time':
-        [mission_data['time'].iloc[-1] + mission_data['time'].iloc[-5:].diff().mean()],
+        'time': [
+            mission_data['time'].iloc[-1] +
+            mission_data['time'].iloc[-5:].diff().mean()
+        ],
         'x': [mission_data['x'].iloc[-1]],
         'altitude':
         0,
@@ -77,7 +79,7 @@ mission_data = pd.concat([
         'power': [0],
     }),
 ],
-          ignore_index=True)
+                         ignore_index=True)
 
 mission_data.to_csv(DATA_DIR / 'mission_data.csv', index=False)
 
