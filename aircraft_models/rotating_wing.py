@@ -123,7 +123,10 @@ horizontal_tail = asb.Wing(
             twist=0,
             airfoil=tail_airfoil)
     ],
-).translate([(fuselage.xsecs[-1].xyz_c[0]-fuselage.xsecs[0].xyz_c[0]) - 1.6 - 2.255, 0, fuselage.xsecs[-1].xyz_c[2]])
+).translate([
+    (fuselage.xsecs[-1].xyz_c[0] - fuselage.xsecs[0].xyz_c[0]) - 1.6 - 2.255,
+    0, fuselage.xsecs[-1].xyz_c[2]
+])
 
 parametric = Airplane(
     name=ac.full_name,
