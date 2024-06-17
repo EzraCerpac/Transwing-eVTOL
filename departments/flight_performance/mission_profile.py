@@ -103,7 +103,15 @@ class MissionProfile(BaseModel):
                                             title='Landing phase',
                                             description='Landing phase',
                                             repr=False)
-    energy: Optional[float] = None
+    _energy: Optional[float] = None
+
+    @property
+    def energy(self):
+        return self._energy or sum([phase.energy for phase in self.list if phase.energy is not None])
+
+    @energy.setter
+    def energy(self, value):
+        self._energy = value
 
     @classmethod
     def from_json(cls, file_path: str | Path) -> 'MissionProfile':

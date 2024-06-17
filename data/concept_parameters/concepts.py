@@ -115,9 +115,9 @@ example_cg_dict = {
 }
 
 rot_wing_starting_params = Aircraft(
-    id='V1.5',
+    id='V1.6',
     name=
-    "Using span of 14m, hinge location of 1.8m from root, and updated params",
+    "Using battery mass of 400 kg",
     motor_prop_count=6,
     motor_wing_count=6,
     propeller_radius=2.1 / 2,
