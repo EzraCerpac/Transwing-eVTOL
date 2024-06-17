@@ -24,7 +24,7 @@ class Aero:
 
     def get_aero_data(self, include_wave_drag: bool = True, model_size: str = 'small', trans_val: float = 0) -> dict:
         self.aero_data = asb.AeroBuildup(
-            airplane=self.ac.parametric_fn(trans_val),
+            airplane=self.ac.parametric,
             op_point=asb.OperatingPoint(
                 atmosphere=asb.Atmosphere(altitude=self.ac.data.cruise_altitude),
                 velocity=self.velocity,

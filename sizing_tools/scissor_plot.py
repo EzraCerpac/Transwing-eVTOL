@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import sys
 import os
 
+from departments.aerodynamics.aero import Aero
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
 sys.path.append(parent_dir)
@@ -17,9 +19,6 @@ from sizing_tools.model import Model
 from aerosandbox import Atmosphere
 from scipy.constants import g
 
-CL_MAX = 1.7  #from airfoil data
-NEG_CL_MAX = 1.18  # from airfoil data
-CLALPHA = 5.44  #rad^-1
 
 
 class Scissor_plot(Model):
@@ -27,6 +26,7 @@ class Scissor_plot(Model):
     def __init__(self, aircraft: AC):
         super().__init__(aircraft.data)
         self.parametric = aircraft.parametric
+        self.aero = Aero(aircraft)
 
     @property
     def necessary_parameters(self):
@@ -84,7 +84,7 @@ class Scissor_plot(Model):
              (self.aircraft.wing.span + 2.15 *
               self.aircraft.fuselage.maximum_section_perimeter))) * np.tan(
                   np.radians(self.parametric.wings[0].mean_sweep_angle(0.25)))
-        X_ac_n = 6 * ((0.3 * 0.4) /
+        X_ac_n = 6 * (-4 *(0.3**2 * 0.35) /
                       (self.aircraft.wing.area *
                        self.aircraft.wing.mean_aerodynamic_chord *
                        self.Cl_alpha_tail_less()))
@@ -98,25 +98,36 @@ class Scissor_plot(Model):
 
     def plot(self):
         x_cg = np.arange(-1, 1, 0.01)
-
+        moment_arm = 4.74
         sh_s = (1 / (
             (self.Cl_alpha_tail() / self.Cl_alpha_tail_less()) *
             (1 - self.dedalpha()) *
-            (5.5 / self.aircraft.wing.mean_aerodynamic_chord) * self.vh_v()**2
+            (moment_arm / self.aircraft.wing.mean_aerodynamic_chord) * self.vh_v()**2
         )) * x_cg - (self.X_ac() - 0.05) / (
             (self.Cl_alpha_tail() / self.Cl_alpha_tail_less()) *
             (1 - self.dedalpha()) *
-            (5.5 / self.aircraft.wing.mean_aerodynamic_chord) * self.vh_v()**2)
-        print(self.aircraft.wing.mean_aerodynamic_chord)
+            (4. / self.aircraft.wing.mean_aerodynamic_chord) * self.vh_v()**2)
+        # print(self.aircraft.wing.mean_aerodynamic_chord)
         plt.plot(x_cg, sh_s)
         plt.hlines(0.2856, xmin=0.256, xmax=0.586, color='red')
-        print(self.parametric.wings[0].mean_sweep_angle(0))
-        print(self.parametric.wings[0].mean_sweep_angle(0.25))
+        # print(self.parametric.wings[0].mean_sweep_angle(0))
+        # print(self.parametric.wings[0].mean_sweep_angle(0.25))
         plt.show()
+
+    def stall_speed(self):
+        wing_loading = self.aircraft.total_mass * g / self.aircraft.wing.area
+        stall_speed = np.sqrt(2 * wing_loading / (Atmosphere(self.aircraft.cruise_altitude).density() * self.aero.CL_max))
+
+        return stall_speed  #stall speed in m/s
 
 
 if __name__ == "__main__":
     ac = rot_wing
+    ac.display_data(show_mass_breakdown=True)
     model = Scissor_plot(ac)
-    print(model.beta_A())
+    # print(model.beta_A())
+
     model.plot()
+
+    # print(model.stall_speed())
+

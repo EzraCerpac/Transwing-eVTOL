@@ -30,44 +30,44 @@ class Loading_diagram:
     @show
     def diagram(self) -> tuple[plt.Figure, plt.Axes]:
         fig, ax = plt.subplots()
-        oew_coordinate = 2.51 #TODO update 2.51
-        Luggage_coordinate = 3.2 #TODO update 3.2
-        back_seat_coordinate = 2.7 
-        front_seat_coordinate = 1.85 
+        oew_coordinate = 2.4098143 #TODO update
+        Luggage_coordinate = 3
+        back_seat_coordinate = 2.5
+        front_seat_coordinate = 1.65
 
         mass = {
-            'OEW': self.aircraft.total_mass - self.aircraft.payload_mass, 
+            'OEW': 1643.50 - self.aircraft.payload_mass,
         }
         arms = {
             'OEW': oew_coordinate
         }
         oew, oew_x = self.mass_CG(mass, arms)
-
+        print('oew', oew_x)
         mass.update([('luggage', 80)])
         arms.update([('luggage', Luggage_coordinate)]) 
         luggage, luggage_x = self.mass_CG(mass, arms)
-
-        mass.update([('b2f_passenger', 160)])
-        arms.update([('b2f_passenger', back_seat_coordinate)]) 
+        print('luggage', luggage_x)
+        mass.update([('b_passenger', 160)])
+        arms.update([('b_passenger', back_seat_coordinate)])
         b2f_passenger, b2f_passenger_x = self.mass_CG(mass, arms)
-
-        mass.update([('f2b_passenger', 160)])
-        arms.update([('f2b_passenger', front_seat_coordinate)]) 
-        mass['b2f_passenger'] = 0
-        arms['b2f_passenger'] = 0
-        f2b_passenger, f2b_passenger_x = self.mass_CG(mass, arms)
-
-        mass['b2f_passenger'] = 160
-        arms['b2f_passenger'] = back_seat_coordinate
+        print('b_passenger', b2f_passenger_x)
+        mass.update([('f_passenger', 160)])
+        arms.update([('f_passenger', front_seat_coordinate)])
+        # mass['b2f_passenger'] = 0
+        # arms['b2f_passenger'] = 0
+        # f2b_passenger, f2b_passenger_x = self.mass_CG(mass, arms)
+        # 
+        # mass['b2f_passenger'] = 160
+        # arms['b2f_passenger'] = back_seat_coordinate
 
         passenger, passenger_x = self.mass_CG(mass, arms)
-
+        print('passenger', passenger_x)
+        print(max(oew_x,luggage_x,b2f_passenger_x,passenger_x ))
         plt.plot([oew_x, luggage_x], [oew, luggage], color = 'blue', label='Luggage')
         plt.plot([luggage_x, b2f_passenger_x], [luggage, b2f_passenger], color= 'green', label='b2f passengers')
         plt.plot([b2f_passenger_x, passenger_x], [b2f_passenger, passenger], color = 'green')
-        plt.plot([luggage_x, f2b_passenger_x], [luggage, f2b_passenger], color = 'red', label='f2b passengers')
-        plt.plot([f2b_passenger_x, passenger_x], [f2b_passenger, passenger], color = 'red')
         plt.legend()
+        plt.show()
         return fig, ax
     
     def mass_CG(self, mass_kg={}, arms_m={}) -> tuple[float, float]:
@@ -102,4 +102,5 @@ class Loading_diagram:
 if __name__ == "__main__":
     model = rot_wing
     Perfromance_model = Loading_diagram(model)
-    print(Perfromance_model.diagram)
+    Perfromance_model.diagram()
+    #print(Perfromance_model.diagram)

@@ -166,13 +166,13 @@ trans_wing = AC(
     name=ac.full_name,
     data=ac,
     parametric_fn=generate_airplane,
-    mass_props=mass_props,
+
 )
 
 if __name__ == '__main__':
     airplane = trans_wing.parametric_fn(1)
     airplane.draw_three_view()
-    # airplane.draw()
+    airplane.draw()
 
     print(airplane.wings[0].xsecs[-1].xyz_le[0] -
           airplane.fuselages[0].xsecs[0].xyz_c[0])
