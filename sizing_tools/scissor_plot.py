@@ -16,8 +16,11 @@ from sizing_tools.model import Model
 
 from aerosandbox import Atmosphere
 from scipy.constants import g
-moment_arm=4.74
-wing_LE=1.6
+
+moment_arm = 4.74
+wing_LE = 1.6
+
+
 class Scissor_plot(Model):
 
     def __init__(self, aircraft: AC):
@@ -141,31 +144,36 @@ class Scissor_plot(Model):
         C_m_0_nac = 0.004  #due to high wing, assume no fillets
         C_l = 0.73  #assume cruise lift is at 0 angle of attack
         C_m_nac = C_m_0_nac + C_l * 6 * (
-            (0.33**2 * 0.4) / (self.aircraft.wing.area * self.aircraft.wing.
-                           mean_aerodynamic_chord * self.Cl_alpha_tail_less()))
+            (0.33**2 * 0.4) /
+            (self.aircraft.wing.area * self.aircraft.wing.
+             mean_aerodynamic_chord * self.Cl_alpha_tail_less()))
         return C_m_nac
 
     def plot(self):
         x_cg = np.arange(-1, 1, 0.01)
 
-        sh_s = (1 / ((self.Cl_alpha_tail() / self.Cl_alpha_tail_less()) *
+        sh_s = (1 /
+                ((self.Cl_alpha_tail() / self.Cl_alpha_tail_less()) *
+                 (1 - self.dedalpha()) *
+                 (moment_arm / self.aircraft.wing.mean_aerodynamic_chord) *
+                 self.vh_v()**2)) * x_cg - (self.X_ac() - 0.05) / (
+                     (self.Cl_alpha_tail() / self.Cl_alpha_tail_less()) *
                      (1 - self.dedalpha()) *
-                     (moment_arm/ self.aircraft.wing.mean_aerodynamic_chord) *
-                     self.vh_v()**2)) * x_cg - (self.X_ac() - 0.05) / (
-                         (self.Cl_alpha_tail() / self.Cl_alpha_tail_less()) *
-                         (1 - self.dedalpha()) *
-                         (moment_arm / self.aircraft.wing.mean_aerodynamic_chord) *
-                         self.vh_v()**2)  #S.M=0.05
+                     (moment_arm / self.aircraft.wing.mean_aerodynamic_chord) *
+                     self.vh_v()**2)  #S.M=0.05
         sh_s1 = (1 / (
             (self.Cl_tail() / self.Cl_tail_less()) *
-            (moment_arm/ self.aircraft.wing.mean_aerodynamic_chord) * self.vh_v()**2
-        )) * x_cg - (self.C_m_ac() / self.Cl_tail_less() - self.X_ac()) / (
-            (self.Cl_tail() / self.Cl_tail_less()) *
-            (moment_arm / self.aircraft.wing.mean_aerodynamic_chord) * self.vh_v()**2)
+            (moment_arm / self.aircraft.wing.mean_aerodynamic_chord) *
+            self.vh_v()**2)) * x_cg - (
+                self.C_m_ac() / self.Cl_tail_less() - self.X_ac()) / (
+                    (self.Cl_tail() / self.Cl_tail_less()) *
+                    (moment_arm / self.aircraft.wing.mean_aerodynamic_chord) *
+                    self.vh_v()**2)
         print(self.aircraft.wing.mean_aerodynamic_chord)
         plt.plot(x_cg, sh_s)
         plt.plot(x_cg, sh_s1)
-        plt.hlines(0.32, xmin=0.64, xmax=0.72, color='red') #final size 0.343, to resize tai
+        plt.hlines(0.32, xmin=0.64, xmax=0.72,
+                   color='red')  #final size 0.343, to resize tai
         print(self.parametric.wings[0].mean_sweep_angle(0))
         print(self.parametric.wings[0].mean_sweep_angle(0.25))
         plt.show()
