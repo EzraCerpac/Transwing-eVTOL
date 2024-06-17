@@ -117,9 +117,7 @@ horizontal_tail = asb.Wing(
         ),
         asb.WingXSec(  # tip
             xyz_le=[
-                2.255-0.90,
-                3.946/2,
-                -3.946 / 2 * np.sin(np.radians(34.51))
+                2.255 - 0.90, 3.946 / 2, -3.946 / 2 * np.sin(np.radians(34.51))
             ],
             chord=0.90,
             twist=0,
@@ -197,7 +195,6 @@ rot_wing = AC(
     name=ac.full_name,
     data=ac,
     parametric=parametric,
-
 )
 
 if __name__ == '__main__':
