@@ -37,7 +37,7 @@ tail_airfoil = Airfoil("naca0012")
 #         nose_fineness_ratio=1,  # Fineness ratio (length / diameter) of the nose section of the fuselage.
 #     )},
 # }
-cg_location = np.array([2.36 - 1.6, 0, 1.15 - 1.7])
+cg_location = np.array([2.37 - 1.6, 0, 1.15 - 1.7])
 mass_props = asb.MassProperties(mass=ac.total_mass,
                                 x_cg=cg_location[0],
                                 y_cg=cg_location[1],
@@ -105,7 +105,7 @@ horizontal_tail = asb.Wing(
     xsecs=[
         asb.WingXSec(  # root
             xyz_le=[0, 0, 0],
-            chord=1.896,
+            chord=2.255,
             twist=0,
             airfoil=tail_airfoil,
             control_surfaces=[
@@ -117,11 +117,11 @@ horizontal_tail = asb.Wing(
         ),
         asb.WingXSec(  # tip
             xyz_le=[
-                4.348 / 2 * np.tan(np.radians(36.86)),
-                4.348 / 2 * np.cos(np.radians(37.62)),
-                -4.348 / 2 * np.sin(np.radians(37.62))
+                2.255-0.90,
+                3.946/2,
+                -3.946 / 2 * np.sin(np.radians(34.51))
             ],
-            chord=1.896 - 4.348 / 2 * np.tan(np.radians(36.86)),
+            chord=0.90,
             twist=0,
             airfoil=tail_airfoil)
     ],
@@ -197,7 +197,7 @@ rot_wing = AC(
     name=ac.full_name,
     data=ac,
     parametric=parametric,
-    mass_props=mass_props,
+
 )
 
 if __name__ == '__main__':
