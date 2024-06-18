@@ -30,7 +30,7 @@ opti.subject_to([
     time[0] == 0,
     np.diff(time) > 0,
     # time >= 0,
-    time[-1] < 180,
+    time[-1] < 100,
     time <= time[-1],
 ])
 acceleration = opti.derivative_of(velocities, with_respect_to=time, derivative_init_guess=1)

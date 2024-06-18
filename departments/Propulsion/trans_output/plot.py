@@ -46,7 +46,8 @@ def plot_inputs(time: np.ndarray, velocities: np.ndarray, delta_T: np.ndarray, t
 
     fig.legend(loc='center right', bbox_to_anchor=(.9, .5), ncol=1)
     fig.tight_layout()  # To ensure that the right y-label is not slightly clipped
-    plt.savefig('transition_free_variables_over_time.pdf', bbox_inches='tight')
+    # plt.savefig('transition_free_variables_over_time.pdf', bbox_inches='tight')
+    plt.show()
 
 
 
