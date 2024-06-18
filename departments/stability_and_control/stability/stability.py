@@ -112,5 +112,5 @@ SS_symetric(C_X_u, C_X_alpha, C_Z_0, C_X_q, C_Z_u, C_Z_alpha, C_X_0, C_Z_q, \
 
 SS_asymetric(C_L, C_Y_beta, C_Y_beta_dot, C_l_beta, C_l_beta_dot, C_n_beta, C_n_beta_dot, C_Y_p, C_l_p, C_n_p, C_Y_r,
              C_l_r, C_n_r, C_Y_delta_a, C_l_delta_a, C_n_delta_a, C_Y_delta_r, C_l_delta_r, C_n_delta_r, mu_b,
-             ac.parametric.b_ref, V, K_X_squared, K_XZ, K_Z_squared, T=200, u=np.radians(22.5)
+             ac.parametric.b_ref, V, K_X_squared, K_XZ, K_Z_squared, T=10, u=np.radians(-30)
              )

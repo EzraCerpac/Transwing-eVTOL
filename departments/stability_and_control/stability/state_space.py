@@ -30,14 +30,13 @@ def SS_symetric(C_X_u, C_X_alpha, C_Z_0, C_X_q, C_Z_u, C_Z_alpha, C_X_0, C_Z_q, 
     ])
     A = np.linalg.inv(P) @ Q
     B = np.linalg.inv(P) @ R
-    C = np.identity(4)
+    C = np.diag([1, np.degrees(1), np.degrees(1), V / c * np.degrees(1)])
     D = np.zeros_like(B)
-    C[-1, -1] *= V / c
 
     sys = ct.ss(A, B, C, D,
-                inputs=[r'$\delta_e$'],
+                inputs=[r'$\delta_e$ [rad]'],
                 states=[r'$\hat{u}$', r'$\alpha$', r'$\theta$', r'$\frac{q\hat{c}}{V}$'],
-                outputs=[r'$\hat{u}$', r'$\alpha$', r'$\theta$', r'$q$'],
+                outputs=[r'$\hat{u} [m/s]$', r'$\alpha [deg]$', r'$\theta$ [deg]', r'$q$ [deg/s]'],
                 name='Longitudinal Dynamics'
                 )
 
@@ -128,7 +127,7 @@ def SS_asymetric(
     sys = ct.ss(A, B, C, D,
                 inputs=[r'$\delta_a$'],
                 states=[r'$\beta$', r'$\phi$', r'$\frac{pb}{2V}$', r'$\frac{rb}{2V}$'],
-                outputs=[r'$\beta$ [deg]', r'$\phi$ [deg]', r'$p$ [deg]', r'$r$ [deg]'],
+                outputs=[r'$\beta$ [deg]', r'$\phi$ [deg]', r'$p$ [deg/s]', r'$r$ [deg/s]'],
                 name='Lateral Dynamics'
                 )
 
@@ -136,7 +135,7 @@ def SS_asymetric(
     T = np.linspace(0, T, 1000)
     X0 = np.zeros(4)
     U = np.zeros(T.shape[0])
-    U[0] = u
+    U = u
 
     response = ct.forced_response(sys, X0=X0, T=T, U=U)
     fig, axs = plt.subplots(5, 1, figsize=(12, 12), sharex=True)
