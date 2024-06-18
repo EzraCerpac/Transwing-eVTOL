@@ -134,6 +134,7 @@ trans_vals = np.concatenate([trans_vals[:cuttoff], np.linspace(trans_vals[cuttof
 np.save(TRANS_SAVE_DIR / "time", time)
 np.save(TRANS_SAVE_DIR / "velocities", velocities)
 np.save(TRANS_SAVE_DIR / "delta_T", delta_T)
+np.save(TRANS_SAVE_DIR / "thrust", thrust)
 np.save(TRANS_SAVE_DIR / "trans_vals", trans_vals)
 
 
