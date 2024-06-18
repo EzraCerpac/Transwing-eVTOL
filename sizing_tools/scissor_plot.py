@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import sys
 import os
 
+import pylab as pl
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
 sys.path.append(parent_dir)
@@ -16,11 +18,8 @@ from sizing_tools.model import Model
 
 from aerosandbox import Atmosphere
 from scipy.constants import g
-
-moment_arm = 4.74
-wing_LE = 1.6
-
-
+moment_arm=4.74
+wing_LE=1.6
 class Scissor_plot(Model):
 
     def __init__(self, aircraft: AC):
@@ -43,7 +42,7 @@ class Scissor_plot(Model):
     def Cl_alpha_wing(self):
         sweep_angle_half_chord = np.radians(
             self.parametric.wings[0].mean_sweep_angle(0))
-        print(self.parametric.wings[0].aspect_ratio())
+        #print(self.parametric.wings[0].aspect_ratio())
         return (2 * np.pi * self.parametric.wings[0].aspect_ratio()) / (
             2 +
             np.sqrt(4 + (self.parametric.wings[0].aspect_ratio() *
@@ -144,36 +143,35 @@ class Scissor_plot(Model):
         C_m_0_nac = 0.004  #due to high wing, assume no fillets
         C_l = 0.73  #assume cruise lift is at 0 angle of attack
         C_m_nac = C_m_0_nac + C_l * 6 * (
-            (0.33**2 * 0.4) /
-            (self.aircraft.wing.area * self.aircraft.wing.
-             mean_aerodynamic_chord * self.Cl_alpha_tail_less()))
+            (0.33**2 * 0.4) / (self.aircraft.wing.area * self.aircraft.wing.
+                           mean_aerodynamic_chord * self.Cl_alpha_tail_less()))
         return C_m_nac
 
     def plot(self):
         x_cg = np.arange(-1, 1, 0.01)
 
-        sh_s = (1 /
-                ((self.Cl_alpha_tail() / self.Cl_alpha_tail_less()) *
-                 (1 - self.dedalpha()) *
-                 (moment_arm / self.aircraft.wing.mean_aerodynamic_chord) *
-                 self.vh_v()**2)) * x_cg - (self.X_ac() - 0.05) / (
-                     (self.Cl_alpha_tail() / self.Cl_alpha_tail_less()) *
+        sh_s = (1 / ((self.Cl_alpha_tail() / self.Cl_alpha_tail_less()) *
                      (1 - self.dedalpha()) *
-                     (moment_arm / self.aircraft.wing.mean_aerodynamic_chord) *
-                     self.vh_v()**2)  #S.M=0.05
+                     (moment_arm/ self.aircraft.wing.mean_aerodynamic_chord) *
+                     self.vh_v()**2)) * x_cg - (self.X_ac() - 0.05) / (
+                         (self.Cl_alpha_tail() / self.Cl_alpha_tail_less()) *
+                         (1 - self.dedalpha()) *
+                         (moment_arm / self.aircraft.wing.mean_aerodynamic_chord) *
+                         self.vh_v()**2)  #S.M=0.05
         sh_s1 = (1 / (
             (self.Cl_tail() / self.Cl_tail_less()) *
-            (moment_arm / self.aircraft.wing.mean_aerodynamic_chord) *
-            self.vh_v()**2)) * x_cg - (
-                self.C_m_ac() / self.Cl_tail_less() - self.X_ac()) / (
-                    (self.Cl_tail() / self.Cl_tail_less()) *
-                    (moment_arm / self.aircraft.wing.mean_aerodynamic_chord) *
-                    self.vh_v()**2)
+            (moment_arm/ self.aircraft.wing.mean_aerodynamic_chord) * self.vh_v()**2
+        )) * x_cg - (self.C_m_ac() / self.Cl_tail_less() - self.X_ac()) / (
+            (self.Cl_tail() / self.Cl_tail_less()) *
+            (moment_arm / self.aircraft.wing.mean_aerodynamic_chord) * self.vh_v()**2)
         print(self.aircraft.wing.mean_aerodynamic_chord)
-        plt.plot(x_cg, sh_s)
-        plt.plot(x_cg, sh_s1)
-        plt.hlines(0.32, xmin=0.64, xmax=0.72,
-                   color='red')  #final size 0.343, to resize tai
+        plt.plot(x_cg, sh_s,label= "Stability Curve")
+        plt.plot(x_cg, sh_s1, label = "Controllability Curve")
+        plt.ylim(0)
+        plt.hlines(0.32, xmin=0.64, xmax=0.72, color='red',label='CG Excursion') #final size 0.343, to resize tail
+        plt.legend()
+        print("Here")
+        print(self.parametric.wings[0].area())
         print(self.parametric.wings[0].mean_sweep_angle(0))
         print(self.parametric.wings[0].mean_sweep_angle(0.25))
         plt.show()
@@ -182,5 +180,5 @@ class Scissor_plot(Model):
 if __name__ == "__main__":
     ac = rot_wing
     model = Scissor_plot(ac)
-    print(model.beta_A())
+    #print(model.beta_A())
     model.plot()
