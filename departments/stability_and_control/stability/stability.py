@@ -108,9 +108,8 @@ K_Z_squared = ac.mass_props.Izz / (ac.mass_props.mass * ac.parametric.c_ref ** 2
 
 SS_symetric(C_X_u, C_X_alpha, C_Z_0, C_X_q, C_Z_u, C_Z_alpha, C_X_0, C_Z_q, \
             mu_c, C_m_u, C_m_alpha, C_m_q, C_X_delta_e, C_Z_delta_e, C_m_delta_e, ac.parametric.c_ref, V, C_Z_alpha_dot,
-            C_m_alpha_dot, K_Y_squared, T=100, u=np.radians(5))
+            C_m_alpha_dot, K_Y_squared, T=10, u=np.radians(30), show_3D=True)
 
 SS_asymetric(C_L, C_Y_beta, C_Y_beta_dot, C_l_beta, C_l_beta_dot, C_n_beta, C_n_beta_dot, C_Y_p, C_l_p, C_n_p, C_Y_r,
              C_l_r, C_n_r, C_Y_delta_a, C_l_delta_a, C_n_delta_a, C_Y_delta_r, C_l_delta_r, C_n_delta_r, mu_b,
-             ac.parametric.b_ref, V, K_X_squared, K_XZ, K_Z_squared, T=10, u=np.radians(-30)
-             )
+             ac.parametric.b_ref, V, K_X_squared, K_XZ, K_Z_squared, T=10, u=np.radians(-30), show_3D=True)

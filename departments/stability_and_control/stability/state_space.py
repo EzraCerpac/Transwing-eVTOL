@@ -2,11 +2,13 @@ import control as ct
 from aerosandbox import numpy as np
 from matplotlib import pyplot as plt
 
+from departments.stability_and_control.stability.visualisation import show_3D_lateral, show_3D_longitudinal
+
 
 def SS_symetric(C_X_u, C_X_alpha, C_Z_0, C_X_q, C_Z_u, C_Z_alpha, C_X_0, C_Z_q, \
                 mu_c, C_m_u, C_m_alpha, C_m_q, C_X_delta_e, C_Z_delta_e, C_m_delta_e, c, V, C_Z_alpha_dot,
                 C_m_alpha_dot, \
-                K_Y_squared, T=1, u=None):
+                K_Y_squared, T=1, u=None, show_3D=False):
     Q = np.array([
         [-C_X_u, -C_X_alpha, -C_Z_0, -C_X_q],
         [-C_Z_u, -C_Z_alpha, C_X_0, -(C_Z_q + 2 * mu_c)],
@@ -55,6 +57,9 @@ def SS_symetric(C_X_u, C_X_alpha, C_Z_0, C_X_q, C_Z_u, C_Z_alpha, C_X_0, C_Z_q, 
     response.plot(ax=axs)
     plt.show()
 
+    if show_3D:
+        show_3D_longitudinal(response)
+
     # C = np.array([0, 0, 1, 0])
     # D = np.array([0])
     # sys_pz = ct.ss(A, B, C, D,
@@ -96,6 +101,7 @@ def SS_asymetric(
         K_Z_squared,
         T=1,
         u=None,
+        show_3D=False,
 ):
     Q = -np.array([
         [C_Y_beta, C_L, C_Y_p, C_Y_r - 4 * mu_b],
@@ -143,6 +149,9 @@ def SS_asymetric(
     response.plot(ax=axs)
 
     plt.show()
+
+    if show_3D:
+        show_3D_lateral(response)
 
     # C = np.array([1, 0, 0, 0])
     # D = np.array([0])
