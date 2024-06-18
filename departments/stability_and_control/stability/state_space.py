@@ -107,6 +107,7 @@ def SS_asymetric(
         [0, 0, -4 * mu_b * K_X_squared, 4 * mu_b * K_XZ],
         [C_n_beta_dot, 0, 4 * mu_b * K_XZ, -4 * mu_b * K_Z_squared],
     ])
+
     A = np.linalg.inv(P) @ Q
     B = np.linalg.inv(P) @ R
     C = np.diag([1, 1, 2 * V / b, 2 * V / b])

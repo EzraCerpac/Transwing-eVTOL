@@ -124,6 +124,13 @@ print(f"Max power: {max_power / 1000:.1f} kW")
 print(f"Time: {time[-1]:.1f} s")
 print(f"Distance: {distance[-1] / 1000:.1f} km")
 
+cuttoff = np.argmin(np.abs(velocities - 43))
+
+time = np.concatenate([time[:cuttoff], np.linspace(time[cuttoff], time[cuttoff] + 3, RES - cuttoff)])
+velocities = np.concatenate([velocities[:cuttoff], np.linspace(velocities[cuttoff], 45, RES - cuttoff)])
+delta_T = np.concatenate([delta_T[:cuttoff], np.linspace(delta_T[cuttoff], delta_T[-1], RES - cuttoff)])
+trans_vals = np.concatenate([trans_vals[:cuttoff], np.linspace(trans_vals[cuttoff], 0, RES - cuttoff)])
+
 np.save(TRANS_SAVE_DIR / "time", time)
 np.save(TRANS_SAVE_DIR / "velocities", velocities)
 np.save(TRANS_SAVE_DIR / "delta_T", delta_T)
