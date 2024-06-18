@@ -11,7 +11,7 @@ from matplotlib import pyplot as plt
 from data.concept_parameters.aircraft import AC
 from sizing_tools.model import Model
 from utility.log import logger
-from utility.plotting import show
+from utility.plotting import show, save_with_name
 
 
 class OptParam(Enum):
@@ -233,6 +233,25 @@ class Optimalisation(Model, ABC):
     @show
     def plot_logs_over_time(self) -> tuple[plt.Figure, plt.Axes]:
         return self.plot_logs_over('time')
+
+    @show
+    @save_with_name(lambda self: f"{self.__class__.__name__}_over_time")
+    def plot_alt_and_thrust_over_time(self) -> tuple[plt.Figure, plt.Axes]:
+        fig, ax1 = plt.subplots(figsize=(10, 6))
+        df = self.to_dataframe()
+        ax2 = ax1.twinx()
+        ax1.plot(df['time'], df['altitude'], label='Altitude', color='b')
+        ax2.plot(df['time'], df['thrust'] / 1000, label='Thrust', color='r')
+        ax1.set_xlabel('Time [s]')
+        ax1.set_ylabel('Altitude, $h$ [m]', color='b')
+        ax2.set_ylabel('Thrust, $T$ [kN]', color='r')
+        fig.legend(loc='center left', bbox_to_anchor=(.1, .7), ncol=1)
+        # ax2.set_yticks(ax1.get_yticks())
+        ax1.set_ylim(bottom=0)
+        ax2.set_ylim(bottom=15.7)
+        ax1.grid(True)
+        plt.tight_layout()
+        return fig, (ax1, ax2)
 
     def save_data(self):
         from data.flight_data.mission_data import DATA_DIR

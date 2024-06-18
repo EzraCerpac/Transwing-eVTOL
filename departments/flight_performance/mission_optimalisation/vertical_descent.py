@@ -148,3 +148,5 @@ if __name__ == '__main__':
     mission_profile_optimization.plot_over_time()
     # mission_profile_optimization.plot_logs_over_time()
     mission_profile_optimization.save_data()
+
+    mission_profile_optimization.plot_alt_and_thrust_over_time()

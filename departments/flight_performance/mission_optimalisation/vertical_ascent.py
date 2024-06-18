@@ -1,16 +1,12 @@
-from enum import Enum
-
 import aerosandbox as asb
 import aerosandbox.numpy as np
-import pandas as pd
 from matplotlib import pyplot as plt
 
+from aircraft_models import trans_wing
 from data.concept_parameters.aircraft import AC
 from departments.aerodynamics.cl_cd_polars import CLCDPolar
 from departments.flight_performance.mission_optimalisation.optimalisation import Optimalisation, OptParam
-from aircraft_models import trans_wing
 from sizing_tools.formula.aero import hover_thrust_from_power, rotor_disk_area
-from sizing_tools.model import Model
 
 ALPHA_i = 0
 
@@ -33,7 +29,7 @@ class VerticalClimb(Optimalisation):
         self.max_power = self.opti.variable(
             init_guess=self.aircraft.mission_profile.vertical_climb.state.power,
             log_transform=True,
-)
+        )
         self.opti.subject_to([
             # self.max_power < self.aircraft.mission_profile.TAKEOFF.power,
             self.max_power > 100000,
@@ -67,7 +63,7 @@ class VerticalClimb(Optimalisation):
                                           Izz=500),
             z_e=self.opti.variable(init_guess=np.linspace(
                 0, -self.trans_altitude, self.n_timesteps),
-                                   upper_bound=0),
+                upper_bound=0),
             w_e=self.opti.variable(init_guess=np.concatenate([
                 np.linspace(0, -self.aircraft.rate_of_climb,
                             self.n_timesteps // 2),
@@ -147,3 +143,5 @@ if __name__ == '__main__':
     mission_profile_optimization.plot_over_time()
     # mission_profile_optimization.plot_logs_over_time()
     mission_profile_optimization.save_data()
+
+    mission_profile_optimization.plot_alt_and_thrust_over_time()
