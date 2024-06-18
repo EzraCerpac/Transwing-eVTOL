@@ -232,6 +232,8 @@ if __name__ == '__main__':
     mission_profile_optimization.plot_over_distance()
     mission_profile_optimization.save_data()
 
+    mission_profile_optimization.plot_alt_hor_ver_vel_power_over_distance()
+
     # aero = CLCDPolar(ac.parametric,
          #             velocity=ac.data.cruise_velocity,
     #             altitude=ac.data.cruise_altitude)
