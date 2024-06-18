@@ -5,10 +5,10 @@ from math import pi
 # all variables shall be in imperial upon usage!
 Ttot = 1700  # [N]
 Ptot = 350  # [kW]
-Mtmax = 0.4
+Mtmax = 0.5
 V = 200  # [m/s]
 c = 343  # [m/s]
-Mto = 1500  # [kg]
+Mto = 1650  # [kg]
 rho = 1.225  # [kg/m3]
 k = 1.1  # from induced power Pi equation
 nearField = False
@@ -55,7 +55,7 @@ class Sixengs:
         self.Aeq = 15.787544272497389 / 10.764  # read from Marilena's graph and convert to m2. 5-100ft2 for helis
         self.CDpbar = 0.01  # read from Marilena's graph
         self.vibar = 0.24444443345560393  # read from Marilena's graph
-        self.D = 1.96
+        self.D = 2.1
         self.R = self.D / 2
         self.T = Ttot / self.Neng
         self.Pbr = Ptot / self.Neng
@@ -113,7 +113,7 @@ def AFactor(freq):
 
 six = {
     "L1": 110,
-    "B3": -10, #-7.07
+    "B3": -7.7, #-18 if cruise, -8 if vertical
     "B8": 4,
 }
 
@@ -184,12 +184,28 @@ def plot_harm(choice):
     freqArray = []
     for i in range(0, int(20000/config.fn)):
         freqArray.append(config.fn * (i + 1))
-    plt.figure()
     B = config.B
+    plt.figure(figsize=(10, 8))
     print("Total harmonic noise:", len(frequencies), total_noise("sei", B))
     print("\n A-weighted harmonic noise:", total_noiseA("sei", B))
-    plt.plot(freqArray, total_noise("sei", B))
-    plt.plot(freqArray, total_noiseA("sei", B))
+    plt.plot(freqArray, total_noise("sei", B), label='SPL [dB]', color='blue')
+    plt.plot(freqArray, total_noiseA("sei", B), label='A-Weighted SPL [dBA]', color='red')
+    plt.title('Sound Pressure Level Spectrum')
+    plt.xlabel('Frequency [Hz]')
+    plt.ylabel('SPL')
+    plt.grid(color='gray', linestyle='--', linewidth=0.5)
+    plt.xlim(120, 20000)
+    plt.legend()
+    # plt.annotate('70 dB', xy=(120, 70), xytext=(2000, 72),
+    #              arrowprops=dict(facecolor='black', arrowstyle='->'),
+    #              fontsize=12, color='blue', fontweight='bold')
+    # plt.annotate('70 dBA', xy=(120, 70), xytext=(2000, 75),
+    #              arrowprops=dict(facecolor='black', arrowstyle='->'),
+    #              fontsize=12, color='red', fontweight='bold')
+    # plt.annotate('125 Hz', xy=(125, 10), xytext=(125, 10),
+    #              arrowprops=dict(facecolor='black', arrowstyle='->'),
+    #              fontsize=12, color='black', fontweight='bold')
+    plt.tight_layout()
     plt.show()
 
 
@@ -204,5 +220,56 @@ def overalldBA(AnoiseArray):
 
 if __name__ == '__main__':
     class_to_dict(Sixengs())
-    plot_harm("sei")
+    config = Sixengs()
+    r = 330
+    #plot_harm("sei")
+    freqArray = []
+    for i in range(0, int(20000 / config.fn)):
+        freqArray.append(config.fn * (i + 1))
+    B = config.B
+    plt.figure(figsize=(10, 8))
+    #plt.subplot2grid((2, 2), (0, 0))
+    plt.plot(freqArray, total_noise("sei", B), label='SPL [dB]', color='blue')
+    plt.plot(freqArray, total_noiseA("sei", B), label='A-Weighted SPL [dBA]', color='red')
+    tot = str(int(overalldBA(total_noiseA("sei", Sixengs().B))))
+    plt.annotate(f'OASPL: {67.6}dBA', xy=(10500,57), xytext=(10500, 57))
+    plt.title('SPL spectrum during vertical flight (r=330ft, RPM=1300)')
+    plt.xlabel('Frequency [Hz]')
+    plt.ylabel('SPL')
+    plt.grid(color='gray', linestyle='--', linewidth=0.5)
+    plt.legend()
     print(overalldBA(total_noiseA("sei", Sixengs().B)))
+    # nearField=True
+    # r = 25
+    # plt.subplot2grid((2, 2), (0, 1))
+    # plt.plot(freqArray, total_noise("sei", B), label='SPL [dB]', color='blue')
+    # plt.plot(freqArray, total_noiseA("sei", B), label='A-Weighted SPL [dBA]', color='red')
+    # plt.title('SPL Spectrum during vertical flight (r=7ft, RPM=1250)')
+    # plt.xlabel('Frequency [Hz]')
+    # plt.ylabel('SPL')
+    # plt.grid(color='gray', linestyle='--', linewidth=0.5)
+    # tot = str(int(overalldBA(total_noiseA("sei", Sixengs().B))))
+    # plt.annotate(f'OASPL: {tot}dBA', xy=(10500, 67), xytext=(10500, 67))
+    # plt.legend()
+    #
+    # r=1640
+    # nearField=False
+    # six = {
+    #     "L1": 110,
+    #     "B3": -18,  # -18 if cruise, -8 if vertical
+    #     "B8": 4,
+    # }
+    # plt.subplot2grid((2, 2), (1, 0), colspan=2)
+    # plt.plot(freqArray, total_noise("sei", B), label='SPL [dB]', color='blue')
+    # plt.plot(freqArray, total_noiseA("sei", B), label='A-Weighted SPL [dBA]', color='red')
+    # plt.title('SPL spectrum during cruise (r=1640ft, RPM=600)')
+    # plt.xlabel('Frequency [Hz]')
+    # plt.ylabel('SPL')
+    # plt.grid(color='gray', linestyle='--', linewidth=0.5)
+    # tot = str(int(overalldBA(total_noiseA("sei", Sixengs().B))))
+    # plt.annotate(f'OASPL: {tot}dBA', xy=(10500, 32), xytext=(10500, 32))
+    # plt.legend()
+    #
+
+    plt.tight_layout()
+    plt.show()
