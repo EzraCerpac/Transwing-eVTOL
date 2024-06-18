@@ -49,10 +49,10 @@ def operating_cost_per_pax_mile(aircraft: Aircraft,
         num_crew=0,
         battery_fraction_used_on_nominal_mission=1 - aircraft.SoC_min,
         typical_passenger_utilization=0.75,
-        flight_hours_per_year=15 * 365,
+        flight_hours_per_year=6 * 365,
         airframe_lifetime_years=10,
         airframe_eol_resale_value_fraction=0.6,
-        electricity_cost_per_kWh=0.145,
+        electricity_cost_per_kWh=0.41,
         ascent_time=aircraft.mission_profile.transition1.duration + aircraft.mission_profile.climb.duration,
         descent_time=aircraft.mission_profile.transition2.duration + aircraft.mission_profile.vertical_descent.duration,
     )
@@ -64,13 +64,13 @@ if __name__ == '__main__':
     n_planes = np.logspace(2, 4, 11)
     prod_costs = []
     op_costs = []
-    for n in n_planes:
-        prod_costs.append(production_cost_per_ac(ac, n))
-        op_costs.append(operating_cost_per_pax_mile(ac, prod_costs[-1]))
-    # prod_cost = production_cost_per_ac(ac, n_planes)
-    # op_cost = operating_cost_per_pax_mile(ac, prod_cost)
-    # print(f'Production cost: {prod_cost/1000:.2f} kUSD/aircraft')
-    # print(f'Operating cost:  {op_cost:.2f} USD/passenger-mile')
+    # for n in n_planes:
+    #     prod_costs.append(production_cost_per_ac(ac, n))
+    #     op_costs.append(operating_cost_per_pax_mile(ac, prod_costs[-1]))
+    prod_cost_1000 = production_cost_per_ac(ac, 200)
+    op_cost = operating_cost_per_pax_mile(ac, prod_cost_1000)
+    print(f'Production cost: {prod_cost_1000/1000:.2f} kUSD/aircraft')
+    print(f'Operating cost:  {op_cost:.2f} USD/passenger-mile')
 
     import matplotlib.pyplot as plt
 

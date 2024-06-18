@@ -112,6 +112,7 @@ vi = sol(vi)
 profile_power = sol(profile_power)
 induced_power = sol(induced_power)
 parasite_power = sol(parasite_power)
+power_required = profile_power + induced_power + parasite_power
 acceleration_power = sol(acceleration_power)
 total_power = sol(total_power)
 max_power = sol(max_power)
@@ -129,47 +130,6 @@ np.save(TRANS_SAVE_DIR / "delta_T", delta_T)
 np.save(TRANS_SAVE_DIR / "trans_vals", trans_vals)
 
 
-p.fig, p.ax = p.plt.subplots(figsize=(8, 6))
-p.ax.plot(velocities, profile_power / 1000, label="Profile power")
-p.ax.plot(velocities, induced_power / 1000, label="Induced power")
-p.ax.plot(velocities, parasite_power / 1000, label="Parasite power")
-p.ax.plot(velocities, acceleration_power / 1000, label="Acceleration power")
-p.ax.plot(velocities, total_power / 1000, label="Total power")
-p.ax.legend()
-p.show_plot(
-    # title="Power curve",
-    xlabel="Velocity, $V$ [m/s]",
-    ylabel="Power, $P_r$ [kW]",
-    rotate_axis_labels=False,
-)
-
-p.fig, p.ax = p.plt.subplots(figsize=(8, 6))
-p.ax.plot(time, profile_power / 1000, label="Profile power")
-p.ax.plot(time, induced_power / 1000, label="Induced power")
-p.ax.plot(time, parasite_power / 1000, label="Parasite power")
-p.ax.plot(time, acceleration_power / 1000, label="Acceleration power")
-p.ax.plot(time, total_power / 1000, label="Total power")
-p.ax.legend()
-p.show_plot(
-    # title="Power curve",
-    xlabel="Time, $t$ [m/s]",
-    ylabel="Power, $P_r$ [kW]",
-    rotate_axis_labels=False,
-)
-
-p.fig, p.ax = p.plt.subplots(figsize=(8, 6))
-p.ax.plot(time, velocities, label="Velocity [m/s]")
-p.ax.plot(time, delta_T / 1000, label="Extra thrust [kN]")
-y = p.plt.ylim()[1]
-p.ax.plot(time, trans_vals * y, label="Transition")
-p.ax.legend()
-p.show_plot(
-    # title="Power curve",
-    xlabel="Time, $t$ [s]",
-    # ylabel="Power, $P_r$ [kW]",
-    rotate_axis_labels=False,
-)
-
 import pandas as pd
 from data.flight_data.mission_data import DATA_DIR
 df = pd.DataFrame({
@@ -183,16 +143,3 @@ df = pd.DataFrame({
     "power": total_power,
 })
 df.to_csv(DATA_DIR / 'Transition.csv')
-
-# p.plt.plot(velocities, cl_horizontal, label="Horizontal flight")
-# p.plt.plot(velocities, cl_max, label="Max lift")
-# p.plt.plot(velocities, cl, label="CL")
-# p.plt.legend()
-# p.plt.show()
-#
-# p.plt.plot(velocities, cd, label="CD")
-# p.plt.show()
-
-
-# p.plt.plot(velocities, cd);p.plt.show()
-# p.plt.plot(velocities, drag);p.plt.show()
