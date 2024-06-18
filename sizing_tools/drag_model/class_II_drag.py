@@ -1,3 +1,5 @@
+from pprint import pprint
+
 import aerosandbox as asb
 import aerosandbox.numpy as np
 
@@ -111,7 +113,7 @@ class ClassIIDrag(Model):
         lam_percent_fus = 25  # Assumption, probably between 25 and 35
         lam_percent_wings = 50  # Assumption, probably between 50 and 70
         """According to Raymer laminar flow only for reynolds numbers below half a million"""
-        C_f_wing = self.C_f_RAYMER(self.MAC, 0)
+        self.C_f_wing = self.C_f_RAYMER(self.MAC, 0)
         C_f_fus = self.C_f_RAYMER(self.l_fus, 0)
 
         # Component Form Factor
@@ -129,9 +131,9 @@ class ClassIIDrag(Model):
         # Miscellaneous drag
         # maybe fuselage upsweep
 
-        wing_CD0 = 1 / self.S * C_f_wing * FF_wing * S_wet_w
+        wing_CD0 = 1 / self.S * self.C_f_wing * FF_wing * S_wet_w
         fuselage_CD0 = 1 / self.S * C_f_fus * FF_fus * S_wet_fus
-        tail_CD0 = 1 / self.S * C_f_wing * FF_wing * S_wet_HT
+        tail_CD0 = 1 / self.S * self.C_f_wing * FF_wing * S_wet_HT
         total_drag = (wing_CD0 + fuselage_CD0 + tail_CD0
                       ) * EXTRA_DRAG_MARGIN  # For Excrescence drag and leakage
         if verbose:

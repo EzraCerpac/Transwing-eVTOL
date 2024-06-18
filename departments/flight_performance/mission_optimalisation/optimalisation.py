@@ -11,7 +11,7 @@ from matplotlib import pyplot as plt
 from data.concept_parameters.aircraft import AC
 from sizing_tools.model import Model
 from utility.log import logger
-from utility.plotting import show, save_with_name
+from utility.plotting import show, save_with_name, save
 
 
 class OptParam(Enum):
@@ -252,6 +252,29 @@ class Optimalisation(Model, ABC):
         ax1.grid(True)
         plt.tight_layout()
         return fig, (ax1, ax2)
+
+    @show
+    @save
+    def plot_alt_hor_ver_vel_power_over_distance(self) -> tuple[plt.Figure, plt.Axes]:
+        fig, axs = plt.subplots(2, 2, figsize=(15, 10), sharex=True)
+        df = self.to_dataframe()
+        axs[0, 0].plot(df['x'] / 1000, df['altitude'], label='Altitude', color='b')
+        axs[0, 1].plot(df['x'] / 1000, df['power'] / 1000, label='Power', color='g')
+        axs[1, 0].plot(df['x'] / 1000, df['u'], label='Horizontal velocity', color='r')
+        axs[1, 1].plot(df['x'] / 1000, -df['w'], label='Vertical velocity', color='m')
+        for ax in axs.flatten():
+            ax.grid()
+        for ax in axs[1]:
+            ax.set_xlabel('Distance [km]')
+        axs[0, 0].set_ylabel('Altitude, $h$ [m]', color='b')
+        axs[0, 0].set_ylim(bottom=0)
+        axs[0, 1].set_ylabel('Power, $P$ [kW]', color='g')
+        axs[0, 1].set_ylim(bottom=0)
+        axs[1, 0].set_ylabel('Horizontal velocity, $u$ [m/s]', color='r')
+        axs[1, 0].set_ylim(bottom=0)
+        axs[1, 1].set_ylabel('Vertical velocity, $v$ [m/s]', color='m')
+        axs[1, 1].set_ylim(-3, 3)
+        return fig, axs
 
     def save_data(self):
         from data.flight_data.mission_data import DATA_DIR
