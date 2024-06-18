@@ -69,8 +69,10 @@ mission_data = pd.concat([
     }),
     mission_data,
     pd.DataFrame({
-        'time':
-        [mission_data['time'].iloc[-1] + mission_data['time'].iloc[-5:].diff().mean()],
+        'time': [
+            mission_data['time'].iloc[-1] +
+            mission_data['time'].iloc[-5:].diff().mean()
+        ],
         'x': [mission_data['x'].iloc[-1]],
         'altitude':
         0,
@@ -81,8 +83,9 @@ mission_data = pd.concat([
         'power': [0],
     }),
 ],
-          ignore_index=True)
-mission_data.loc[1, 'time'] = (mission_data.loc[0, 'time'] + mission_data.loc[2, 'time']) / 2
+                         ignore_index=True)
+mission_data.loc[1, 'time'] = (mission_data.loc[0, 'time'] +
+                               mission_data.loc[2, 'time']) / 2
 
 mission_data.to_csv(DATA_DIR / 'mission_data.csv', index=False)
 
@@ -91,4 +94,6 @@ if __name__ == '__main__':
     plot = ggplot(mission_data, aes(x='time', y='power')) + geom_line()
     plot.show()
 
-    print(f'Cruise distance fraction: {(cruise_data["x"].iloc[-1] - cruise_data["x"].iloc[0]) / mission_data["x"].iloc[-1]}')
+    print(
+        f'Cruise distance fraction: {(cruise_data["x"].iloc[-1] - cruise_data["x"].iloc[0]) / mission_data["x"].iloc[-1]}'
+    )
