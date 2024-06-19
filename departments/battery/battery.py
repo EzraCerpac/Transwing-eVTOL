@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib
 import math as m
-# matplotlib.use('TkAgg')
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from aircraft_models import rot_wing
 from data.flight_data.mission_data import mission_data, cruise_data
