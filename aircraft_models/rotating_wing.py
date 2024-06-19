@@ -1,14 +1,12 @@
-import sys
 import os
+import sys
 
 import aerosandbox as asb
-import matplotlib.pyplot as plt
-from aerosandbox import Airplane, Wing, WingXSec, Airfoil, ControlSurface
 import aerosandbox.numpy as np
+from aerosandbox import Airplane, Wing, WingXSec, Airfoil, ControlSurface
 from aerosandbox.numpy import tan, tand
 
 from aircraft_models.helper import xyz_le_func, xyz_direction_func, generate_fuselage
-from data.concept_parameters.aircraft_components import Fuselage
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
@@ -168,13 +166,13 @@ parametric = Airplane(
 
 
 def propulsor_fn(airplane: Airplane = parametric) -> list[asb.Propulsor]:
-    root_offset = 0.1
+    root_offset = cut
     tip_offset = 0.1
     le_offset = np.array([-.2, 0, 0])
     xyz_normal = np.array([-1, 0, 0])
     left_props = [
         asb.Propulsor(
-            name=f"Left {i+1}",
+            name=f"Left {i + 1}",
             xyz_c=xyz_le_func(x, airplane, offset=le_offset),
             xyz_normal=xyz_direction_func(x, airplane, xyz_n0=xyz_normal),
             radius=ac.propeller_radius,
@@ -192,6 +190,26 @@ def propulsor_fn(airplane: Airplane = parametric) -> list[asb.Propulsor]:
 
 
 parametric.propulsors = propulsor_fn(parametric)
+
+# Nacelles
+nacelle_offset = 0.2
+nacelle_initial_radius = 0.3
+nacelle_end_radius = 0.1
+nacelle_length = 1.3
+nacelles = [asb.Fuselage(
+    name=f"Nacelle {i + 1}",
+    xsecs=[
+        asb.FuselageXSec(
+            xyz_c=[0, 0, 0],
+            radius=nacelle_initial_radius,
+        ),
+        asb.FuselageXSec(
+            xyz_c=[nacelle_length, 0, 0],
+            radius=nacelle_end_radius,
+        ),
+    ],
+).translate(parametric.propulsors[i].xyz_c + np.array([nacelle_offset, 0, 0])) for i in range(ac.motor_prop_count)]
+parametric.fuselages += nacelles
 
 rot_wing = AC(
     name=ac.full_name,
