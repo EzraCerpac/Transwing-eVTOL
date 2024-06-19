@@ -216,7 +216,11 @@ def plot_energy_distribution() -> (plt.Figure, plt.Axes):
 if __name__ == '__main__':
     # plot_mission_profile_over_distance()
     # plot_mission_profile_over_time()
-    plot_energy_distribution()
+    # plot_energy_distribution()
+
+    print(f'Max power: {mission_data["power"].max() / 1000} kW')
+    print(f'Max thrust: {mission_data["thrust"].max() / 1000} kN')
+    print(f'Flight time: {mission_data["time"].iloc[-1] / 60} min')
 
     print(
         f'Cruise distance fraction: {(cruise_data["x"].iloc[-1] - cruise_data["x"].iloc[0]) / mission_data["x"].iloc[-1]}'
