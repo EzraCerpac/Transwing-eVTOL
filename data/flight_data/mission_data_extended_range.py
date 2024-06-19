@@ -52,11 +52,11 @@ cruise_alt = cruise_data['altitude'].max() - 1
 cruise_data.loc[cruise_data['altitude'] > cruise_alt, 'segment'] = 'Cruise'
 mid_time = cruise_data['time'].iloc[len(cruise_data) // 2]
 cruise_data.loc[np.all(
-    [cruise_data['time'] < mid_time, cruise_data['altitude'] < cruise_alt], axis=0),
-'segment'] = 'Climb'
+    [cruise_data['time'] < mid_time, cruise_data['altitude'] < cruise_alt],
+    axis=0), 'segment'] = 'Climb'
 cruise_data.loc[np.all(
-    [cruise_data['time'] > mid_time, cruise_data['altitude'] < cruise_alt], axis=0),
-'segment'] = 'Descend'
+    [cruise_data['time'] > mid_time, cruise_data['altitude'] < cruise_alt],
+    axis=0), 'segment'] = 'Descend'
 transition2_data['segment'] = 'Second Transition'
 vertical_descent_data['segment'] = 'Vertical Descend'
 
@@ -67,7 +67,7 @@ mission_data = pd.concat([
     transition2_data,
     vertical_descent_data,
 ],
-    ignore_index=True)
+                         ignore_index=True)
 
 # smoothen power data
 mission_data['power'] = interpolate_nans(
@@ -99,17 +99,17 @@ mission_data = pd.concat([
         ],
         'x': [mission_data['x'].iloc[-1]],
         'altitude':
-            0,
+        0,
         'u': [0],
         'w': [0],
         'speed': [0],
         'thrust': [0],
         'power': [0],
         'segment':
-            'End'
+        'End'
     }),
 ],
-    ignore_index=True)
+                         ignore_index=True)
 mission_data.loc[1, 'time'] = (mission_data.loc[0, 'time'] +
                                mission_data.loc[2, 'time']) / 2
 
@@ -216,8 +216,8 @@ def plot_energy_distribution() -> (plt.Figure, plt.Axes):
     segments.remove('Descend')
     # calculate total energy per segment of the mission
     energy_per_segment = np.array([(
-                                           mission_data[mission_data['segment'] == segment]['power'] *
-                                           mission_data[mission_data['segment'] == segment]['time'].diff()).sum()
+        mission_data[mission_data['segment'] == segment]['power'] *
+        mission_data[mission_data['segment'] == segment]['time'].diff()).sum()
                                    for segment in segments])
     # make dictionary with segment names and energy values
     energy_dict = dict(zip(segments, energy_per_segment / 3600000))
