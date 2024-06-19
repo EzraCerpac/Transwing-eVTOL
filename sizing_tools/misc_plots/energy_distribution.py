@@ -24,7 +24,8 @@ def plot_energy_breakdown_per_phase(
     return plot_energy_breakdown_per_phase_generic(dict(zip(labels, energies)))
 
 
-def plot_energy_breakdown_per_phase_generic(energy_dict: dict) -> tuple[plt.Figure, plt.Axes]:
+def plot_energy_breakdown_per_phase_generic(
+        energy_dict: dict) -> tuple[plt.Figure, plt.Axes]:
     fig, ax = plt.subplots(figsize=(7, 7))
     labels, energies = zip(*energy_dict.items())
     # Create pie chart
