@@ -196,19 +196,23 @@ nacelle_offset = 0.2
 nacelle_initial_radius = 0.3
 nacelle_end_radius = 0.1
 nacelle_length = 1.3
-nacelles = [asb.Fuselage(
-    name=f"Nacelle {i + 1}",
-    xsecs=[
-        asb.FuselageXSec(
-            xyz_c=[0, 0, 0],
-            radius=nacelle_initial_radius,
-        ),
-        asb.FuselageXSec(
-            xyz_c=[nacelle_length, 0, 0],
-            radius=nacelle_end_radius,
-        ),
-    ],
-).translate(parametric.propulsors[i].xyz_c + np.array([nacelle_offset, 0, 0])) for i in range(ac.motor_prop_count)]
+nacelles = [
+    asb.Fuselage(
+        name=f"Nacelle {i + 1}",
+        xsecs=[
+            asb.FuselageXSec(
+                xyz_c=[0, 0, 0],
+                radius=nacelle_initial_radius,
+            ),
+            asb.FuselageXSec(
+                xyz_c=[nacelle_length, 0, 0],
+                radius=nacelle_end_radius,
+            ),
+        ],
+    ).translate(parametric.propulsors[i].xyz_c +
+                np.array([nacelle_offset, 0, 0]))
+    for i in range(ac.motor_prop_count)
+]
 parametric.fuselages += nacelles
 
 rot_wing = AC(
