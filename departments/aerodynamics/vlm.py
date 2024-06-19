@@ -15,9 +15,9 @@ def vlm(ac: AC, alpha: np.ndarray) -> dict[str, any]:
     ).run() for a in alpha]
     data = {output_val.value: np.array([a[output_val.value] for a in data])
             for output_val in OutputVal}
-    fuselage = ac.parametric.fuselages[0]
+    fuselages = ac.parametric.fuselages
     fus_data = asb.AeroBuildup(
-        airplane=asb.Airplane(fuselages=[fuselage]),
+        airplane=asb.Airplane(fuselages=fuselages),
         op_point=asb.OperatingPoint(
             velocity=ac.data.cruise_velocity,
             alpha=alpha,
@@ -44,4 +44,4 @@ def plot_vlm(parametric: asb.Airplane, alpha: float = 0, velocity: float = 50):
 if __name__ == '__main__':
     from aircraft_models import trans_wing
 
-    plot_vlm(trans_wing.parametric_fn(.4), alpha=0, velocity=50)
+    plot_vlm(trans_wing.parametric, alpha=0, velocity=55)

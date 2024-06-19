@@ -9,7 +9,7 @@ from departments.aerodynamics.aero import Aero
 from departments.aerodynamics.helper import OutputVal, label, AxisVal
 from departments.aerodynamics.vlm import vlm
 from sizing_tools.drag_model.class_II_drag import ClassIIDrag
-from utility.plotting import show
+from utility.plotting import show, save
 
 
 class AeroMethodComparison:
@@ -43,6 +43,7 @@ class AeroMethodComparison:
             self.results[method_name] = method()
 
     @show
+    @save
     def plot_results(self,
             output_val: list[OutputVal] = [OutputVal.CL, OutputVal.CD],
             show_CL_CD: bool = True
