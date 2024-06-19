@@ -13,7 +13,7 @@ DATA_DIR = Path(__file__).parent
 vertical_climb_data = pd.read_csv(DATA_DIR / 'VerticalClimb.csv')
 vertical_climb_data['x'] = np.zeros_like(vertical_climb_data['time'])
 transition_data = pd.read_csv(DATA_DIR / 'Transition.csv')
-cruise_data = pd.read_csv(DATA_DIR / 'CruiseOpt.csv')
+cruise_data = pd.read_csv(DATA_DIR / 'CruiseOptMaxRange.csv')
 vertical_descent_data = pd.read_csv(DATA_DIR / 'VerticalDescent.csv')
 vertical_descent_data['x'] = np.zeros_like(vertical_descent_data['time'])
 
@@ -24,6 +24,12 @@ transition2_data['speed'] = transition2_data.iloc[::-1]['speed'].values
 transition2_data['altitude'] = transition2_data.iloc[::-1]['altitude'].values
 transition2_data['u'] = transition2_data.iloc[::-1]['u'].values
 transition2_data['w'] = transition2_data.iloc[::-1]['w'].values
+
+# # extend cruise data
+# extra_distance = 120e3
+# extra_time = extra_distance / cruise_data['speed'].iloc[len(cruise_data) // 2]
+# cruise_data.loc[cruise_data['time'] > 1000, 'x'] += extra_distance
+# cruise_data.loc[cruise_data['time'] > 1000, 'time'] += extra_time
 
 transition_data[
     'time'] = transition_data['time'] + vertical_climb_data['time'].iloc[-1]
@@ -41,14 +47,16 @@ vertical_descent_data[
 
 vertical_climb_data['segment'] = 'Vertical Climb'
 transition_data['segment'] = 'First Transition'
-# for cruise data, 'Climb' until 495 m, 'Descent' from second half of cruise , 'Cruise' the rest
-cruise_data.loc[cruise_data['altitude'] > 499, 'segment'] = 'Cruise'
+
+cruise_alt = cruise_data['altitude'].max() - 1
+cruise_data.loc[cruise_data['altitude'] > cruise_alt, 'segment'] = 'Cruise'
+mid_time = cruise_data['time'].iloc[len(cruise_data) // 2]
 cruise_data.loc[np.all(
-    [cruise_data['time'] < 1000, cruise_data['altitude'] < 499], axis=0),
-                'segment'] = 'Climb'
+    [cruise_data['time'] < mid_time, cruise_data['altitude'] < cruise_alt], axis=0),
+'segment'] = 'Climb'
 cruise_data.loc[np.all(
-    [cruise_data['time'] > 1000, cruise_data['altitude'] < 499], axis=0),
-                'segment'] = 'Descend'
+    [cruise_data['time'] > mid_time, cruise_data['altitude'] < cruise_alt], axis=0),
+'segment'] = 'Descend'
 transition2_data['segment'] = 'Second Transition'
 vertical_descent_data['segment'] = 'Vertical Descend'
 
@@ -59,7 +67,7 @@ mission_data = pd.concat([
     transition2_data,
     vertical_descent_data,
 ],
-                         ignore_index=True)
+    ignore_index=True)
 
 # smoothen power data
 mission_data['power'] = interpolate_nans(
@@ -91,17 +99,17 @@ mission_data = pd.concat([
         ],
         'x': [mission_data['x'].iloc[-1]],
         'altitude':
-        0,
+            0,
         'u': [0],
         'w': [0],
         'speed': [0],
         'thrust': [0],
         'power': [0],
         'segment':
-        'End'
+            'End'
     }),
 ],
-                         ignore_index=True)
+    ignore_index=True)
 mission_data.loc[1, 'time'] = (mission_data.loc[0, 'time'] +
                                mission_data.loc[2, 'time']) / 2
 
@@ -109,7 +117,7 @@ mission_data.to_csv(DATA_DIR / 'mission_data.csv', index=False)
 
 
 @show
-# @save
+@save
 def plot_mission_profile_over_distance() -> (plt.Figure, plt.Axes):
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.plot(mission_data['x'] / 1000,
@@ -129,8 +137,11 @@ def plot_mission_profile_over_distance() -> (plt.Figure, plt.Axes):
     ax2.set_ylim(bottom=0)
     fig.legend(loc='upper center')
 
+    ax.set_xticks(np.append(ax.get_xticks(), 220))
+    ax.set_xlim(left=-5, right=225)
+
     # Get the unique segments
-    segments = mission_data['segment'].unique()[2:-1]
+    segments = mission_data['segment'].unique()[3:-2]
 
     # Loop over the segments
     for segment in segments:
@@ -154,7 +165,7 @@ def plot_mission_profile_over_distance() -> (plt.Figure, plt.Axes):
 
 
 @show
-# @save
+@save
 def plot_mission_profile_over_time() -> (plt.Figure, plt.Axes):
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.plot(mission_data['time'] / 60,
@@ -175,7 +186,7 @@ def plot_mission_profile_over_time() -> (plt.Figure, plt.Axes):
     fig.legend(loc='upper center')
 
     # Get the unique segments
-    segments = mission_data['segment'].unique()[1:-1]
+    segments = mission_data['segment'].unique()[3:-2]
 
     # Loop over the segments
     for segment in segments:
@@ -199,14 +210,14 @@ def plot_mission_profile_over_time() -> (plt.Figure, plt.Axes):
 
 
 @show
-# @save
+@save
 def plot_energy_distribution() -> (plt.Figure, plt.Axes):
     segments = mission_data['segment'].unique()[1:-1].tolist()
     segments.remove('Descend')
     # calculate total energy per segment of the mission
     energy_per_segment = np.array([(
-        mission_data[mission_data['segment'] == segment]['power'] *
-        mission_data[mission_data['segment'] == segment]['time'].diff()).sum()
+                                           mission_data[mission_data['segment'] == segment]['power'] *
+                                           mission_data[mission_data['segment'] == segment]['time'].diff()).sum()
                                    for segment in segments])
     # make dictionary with segment names and energy values
     energy_dict = dict(zip(segments, energy_per_segment / 3600000))

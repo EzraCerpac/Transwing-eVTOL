@@ -15,13 +15,13 @@ rho_E = 0.3 #kWh/Kg
 n_pack = 6 #justufy
 power = mission_data['power'].to_numpy()
 time = mission_data['time'].to_numpy()
-Total_Energy = rot_wing.data.mission_profile.energy #KWh
+# Total_Energy = rot_wing.data.mission_profile.energy #KWh
 W_tot = 400
 C_pack_init = (W_tot * rho_E * 10**3)/(System_Voltage * n_pack)
 print(C_pack_init)
 print("culo")
 SOC = np.zeros(time.shape[0])
-SOC [0] = SOC_start
+SOC[0] = SOC_start
 Battery_efficiency = np.zeros(time.shape[0])
 Battery_efficiency[0] = 1
 Voltages = np.zeros(time.shape[0])
