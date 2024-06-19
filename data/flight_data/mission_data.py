@@ -43,8 +43,12 @@ vertical_climb_data['segment'] = 'Vertical Climb'
 transition_data['segment'] = 'First Transition'
 # for cruise data, 'Climb' until 495 m, 'Descent' from second half of cruise , 'Cruise' the rest
 cruise_data.loc[cruise_data['altitude'] > 499, 'segment'] = 'Cruise'
-cruise_data.loc[np.all([cruise_data['time'] < 1000, cruise_data['altitude'] < 499], axis=0), 'segment'] = 'Climb'
-cruise_data.loc[np.all([cruise_data['time'] > 1000, cruise_data['altitude'] < 499], axis=0), 'segment'] = 'Descend'
+cruise_data.loc[np.all(
+    [cruise_data['time'] < 1000, cruise_data['altitude'] < 499], axis=0),
+                'segment'] = 'Climb'
+cruise_data.loc[np.all(
+    [cruise_data['time'] > 1000, cruise_data['altitude'] < 499], axis=0),
+                'segment'] = 'Descend'
 transition2_data['segment'] = 'Second Transition'
 vertical_descent_data['segment'] = 'Vertical Descend'
 
@@ -93,7 +97,8 @@ mission_data = pd.concat([
         'speed': [0],
         'thrust': [0],
         'power': [0],
-        'segment': 'End'
+        'segment':
+        'End'
     }),
 ],
                          ignore_index=True)
@@ -102,13 +107,21 @@ mission_data.loc[1, 'time'] = (mission_data.loc[0, 'time'] +
 
 mission_data.to_csv(DATA_DIR / 'mission_data.csv', index=False)
 
+
 @show
 @save
 def plot_mission_profile_over_distance() -> (plt.Figure, plt.Axes):
     fig, ax = plt.subplots(figsize=(10, 6))
-    ax.plot(mission_data['x'] / 1000, mission_data['altitude'], label='Altitude', color='tab:blue')
+    ax.plot(mission_data['x'] / 1000,
+            mission_data['altitude'],
+            label='Altitude',
+            color='tab:blue')
     ax2 = ax.twinx()
-    ax2.plot(mission_data['x'] / 1000, mission_data['power'] / 1000, 'r', label='Power' , color='tab:red')
+    ax2.plot(mission_data['x'] / 1000,
+             mission_data['power'] / 1000,
+             'r',
+             label='Power',
+             color='tab:red')
     ax.set_xlabel('Distance, $x$ [km]')
     ax.set_ylabel('Altitude, $h$ [m]')
     ax2.set_ylabel('Power, $P$ [kW]')
@@ -122,11 +135,16 @@ def plot_mission_profile_over_distance() -> (plt.Figure, plt.Axes):
     # Loop over the segments
     for segment in segments:
         # Get the last x-coordinate of the current segment
-        x_coord = mission_data[mission_data['segment'] == segment]['x'].values[0] / 1000
+        x_coord = mission_data[mission_data['segment'] ==
+                               segment]['x'].values[0] / 1000
         # Draw a vertical dashed line at the x-coordinate
         ax.axvline(x_coord, color='k', linestyle='--')
         # Add text with the segment name at the x-coordinate
-        ax.text(x=x_coord+ax.get_xlim()[1]/100, y=ax.get_ylim()[1]/2, s=segment, rotation=90, verticalalignment='center')
+        ax.text(x=x_coord + ax.get_xlim()[1] / 100,
+                y=ax.get_ylim()[1] / 2,
+                s=segment,
+                rotation=90,
+                verticalalignment='center')
 
     ax.tick_params(axis='y', labelcolor='tab:blue')
     ax2.tick_params(axis='y', labelcolor='tab:red')
@@ -134,13 +152,21 @@ def plot_mission_profile_over_distance() -> (plt.Figure, plt.Axes):
     ax2.grid(True, linestyle='--', alpha=0.9)
     return fig, (ax, ax2)
 
+
 @show
 @save
 def plot_mission_profile_over_time() -> (plt.Figure, plt.Axes):
     fig, ax = plt.subplots(figsize=(10, 6))
-    ax.plot(mission_data['time'] / 60, mission_data['altitude'], label='Altitude', color='tab:blue')
+    ax.plot(mission_data['time'] / 60,
+            mission_data['altitude'],
+            label='Altitude',
+            color='tab:blue')
     ax2 = ax.twinx()
-    ax2.plot(mission_data['time'] / 60, mission_data['power'] / 1000, 'r', label='Power' , color='tab:red')
+    ax2.plot(mission_data['time'] / 60,
+             mission_data['power'] / 1000,
+             'r',
+             label='Power',
+             color='tab:red')
     ax.set_xlabel('Time, $t$ [min]')
     ax.set_ylabel('Altitude, $h$ [m]')
     ax2.set_ylabel('Power, $P$ [kW]')
@@ -154,11 +180,16 @@ def plot_mission_profile_over_time() -> (plt.Figure, plt.Axes):
     # Loop over the segments
     for segment in segments:
         # Get the last x-coordinate of the current segment
-        x_coord = mission_data[mission_data['segment'] == segment]['time'].values[0] / 60
+        x_coord = mission_data[mission_data['segment'] ==
+                               segment]['time'].values[0] / 60
         # Draw a vertical dashed line at the x-coordinate
         ax.axvline(x_coord, color='k', linestyle='--')
         # Add text with the segment name at the x-coordinate
-        ax.text(x=x_coord+ax.get_xlim()[1]/200, y=ax.get_ylim()[1]/2, s=segment, rotation=90, verticalalignment='center')
+        ax.text(x=x_coord + ax.get_xlim()[1] / 200,
+                y=ax.get_ylim()[1] / 2,
+                s=segment,
+                rotation=90,
+                verticalalignment='center')
 
     ax.tick_params(axis='y', labelcolor='tab:blue')
     ax2.tick_params(axis='y', labelcolor='tab:red')
@@ -166,19 +197,21 @@ def plot_mission_profile_over_time() -> (plt.Figure, plt.Axes):
     ax2.grid(True, linestyle='--', alpha=0.9)
     return fig, (ax, ax2)
 
+
 @show
 @save
 def plot_energy_distribution() -> (plt.Figure, plt.Axes):
     segments = mission_data['segment'].unique()[1:-1].tolist()
     segments.remove('Descend')
     # calculate total energy per segment of the mission
-    energy_per_segment = np.array([
-        (mission_data[mission_data['segment'] == segment]['power'] * mission_data[mission_data['segment'] == segment]['time'].diff()).sum()
-        for segment in segments
-    ])
+    energy_per_segment = np.array([(
+        mission_data[mission_data['segment'] == segment]['power'] *
+        mission_data[mission_data['segment'] == segment]['time'].diff()).sum()
+                                   for segment in segments])
     # make dictionary with segment names and energy values
     energy_dict = dict(zip(segments, energy_per_segment / 3600000))
     return plot_energy_breakdown_per_phase_generic(energy_dict)
+
 
 if __name__ == '__main__':
     # plot_mission_profile_over_distance()
