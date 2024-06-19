@@ -8,8 +8,8 @@ import aerosandbox.numpy as np
 ac = rot_wing
 V = ac.data.cruise_velocity
 
-delta_e = np.array([0, 0.01])
-ac.parametric.wings[-1].set_control_surface_deflections({'Elevator': delta_e})
+delta_e = np.array([0, 0.0001])
+ac.parametric.wings[-1].set_control_surface_deflections({'Elevator': np.degrees(delta_e)})
 
 atmosphere = asb.Atmosphere(altitude=ac.data.cruise_altitude)
 op_point = asb.OperatingPoint(
@@ -24,7 +24,7 @@ op_point = asb.OperatingPoint(
 aero = asb.AeroBuildup(
     airplane=ac.parametric,
     op_point=op_point,
-).run_with_stability_derivatives()
+).run()
 
-aero = {k + '_delta_e': np.diff(v) for k, v in aero.items() if isinstance(v, np.ndarray)}
+aero = {k + '_delta_e': np.diff(v) / np.diff(delta_e) for k, v in aero.items() if isinstance(v, np.ndarray)}
 pprint(aero)

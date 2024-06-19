@@ -18,9 +18,6 @@ from sizing_tools.wing_planform import WingModel
 
 ac = Aircraft.load(version='1.6')
 wing_model = WingModel(ac, altitude=ac.cruise_altitude)
-ac.wing.span = 14
-hinge_location = 1.8  # m from root
-ac.hinge_location = hinge_location / (ac.wing.span / 2)
 
 wing_airfoil = Airfoil("E560")
 # wing_airfoil = Airfoil("E423")
@@ -35,14 +32,14 @@ tail_airfoil = Airfoil("naca0012")
 #         nose_fineness_ratio=1,  # Fineness ratio (length / diameter) of the nose section of the fuselage.
 #     )},
 # }
-cg_location = np.array([2.36 - 1.6, 0, 1.15 - 1.7])
+cg_location = np.array([2.37 - 1.6, 0, 1.15 - 1.7])
 mass_props = asb.MassProperties(mass=ac.total_mass,
                                 x_cg=cg_location[0],
                                 y_cg=cg_location[1],
                                 z_cg=cg_location[2],
-                                Ixx=9600,
-                                Iyy=19700,
-                                Izz=514,
+                                Ixx=10150,
+                                Iyy=20240,
+                                Izz=20417,
                                 Ixy=0,
                                 Ixz=0,
                                 Iyz=0)
@@ -103,7 +100,7 @@ horizontal_tail = asb.Wing(
     xsecs=[
         asb.WingXSec(  # root
             xyz_le=[0, 0, 0],
-            chord=1.896,
+            chord=2.255,
             twist=0,
             airfoil=tail_airfoil,
             control_surfaces=[
@@ -115,15 +112,16 @@ horizontal_tail = asb.Wing(
         ),
         asb.WingXSec(  # tip
             xyz_le=[
-                4.348 / 2 * np.tan(np.radians(36.86)),
-                4.348 / 2 * np.cos(np.radians(37.62)),
-                -4.348 / 2 * np.sin(np.radians(37.62))
+                2.255 - 0.90, 3.946 / 2, -3.946 / 2 * np.sin(np.radians(34.51))
             ],
-            chord=1.896 - 4.348 / 2 * np.tan(np.radians(36.86)),
+            chord=1.896 * 0.4,
             twist=0,
             airfoil=tail_airfoil)
     ],
-).translate([4.5, 0, fuselage.xsecs[-1].xyz_c[2]])
+).translate([
+    (fuselage.xsecs[-1].xyz_c[0] - fuselage.xsecs[0].xyz_c[0]) - 1.6 - 2.255,
+    0, fuselage.xsecs[-1].xyz_c[2]
+])
 
 parametric = Airplane(
     name=ac.full_name,

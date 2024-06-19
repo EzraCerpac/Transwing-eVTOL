@@ -187,14 +187,12 @@ class Aircraft(BaseModel):
 
 class AC:
 
-    def __init__(
-        self,
-        name: str,
-        data: Aircraft,
-        parametric: Airplane = None,
-        parametric_fn: Callable[[float], Airplane] = None,
-        mass_props: MassProperties = None,
-    ):
+    def __init__(self,
+                 name: str,
+                 data: Aircraft,
+                 parametric: Airplane = None,
+                 parametric_fn: Callable[[float], Airplane] = None,
+                 mass_props: MassProperties = None):
         self.name = name
         self.data = data
         self.parametric = parametric or parametric_fn(0)
@@ -216,7 +214,6 @@ Range: {self.data.range:.0f} m
 Payload mass: {self.data.payload_mass:.0f} kg
 Number of passengers: {self.data.n_pax}
 Maximum power: {max([phase.state.power for phase in self.data.mission_profile.list if phase.state.power]) / 1000:.0f} kW)
-{self.mass_props}
 """
         if show_energy_breakdown:
             from sizing_tools.misc_plots.energy_distribution import plot_energy_breakdown_per_phase
@@ -233,7 +230,5 @@ Maximum power: {max([phase.state.power for phase in self.data.mission_profile.li
 if __name__ == '__main__':
     from aircraft_models import trans_wing
 
-    trans_wing.display_data(
-        # show_energy_breakdown=True,
-        # show_mass_breakdown=True
-    )
+    trans_wing.display_data(show_energy_breakdown=True,
+                            show_mass_breakdown=True)
