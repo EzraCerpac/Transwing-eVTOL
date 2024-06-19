@@ -224,10 +224,15 @@ def cessna_SS(T=1):
     #             C_m_alpha_dot, \
     #             K_Y_squared, T=T)
 
-    SS_asymetric(C_L, C_Y_beta, C_Y_beta_dot, C_l_beta, C_l_beta_dot, C_n_beta, C_n_beta_dot, C_Y_p, C_l_p, C_n_p, C_Y_r,
-                 C_l_r, C_n_r, C_Y_delta_a, C_l_delta_a, C_n_delta_a, C_Y_delta_r, C_l_delta_r, C_n_delta_r, mu_b,
-                 b, V, K_X_squared, K_XZ, K_Z_squared, T=T,
-                 )
+    # SS_asymetric(C_L, C_Y_beta, C_Y_beta_dot, C_l_beta, C_l_beta_dot, C_n_beta, C_n_beta_dot, C_Y_p, C_l_p, C_n_p, C_Y_r,
+    #              C_l_r, C_n_r, C_Y_delta_a, C_l_delta_a, C_n_delta_a, C_Y_delta_r, C_l_delta_r, C_n_delta_r, mu_b,
+    #              b, V, K_X_squared, K_XZ, K_Z_squared, T=T,
+    #              )
+
+    for name in dir():
+        if name.startswith('C_'):
+            print(name, '=', eval(name))
+
 
 
 if __name__ == '__main__':
