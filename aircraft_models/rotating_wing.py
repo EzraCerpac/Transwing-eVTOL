@@ -3,10 +3,13 @@ import sys
 
 import aerosandbox as asb
 import aerosandbox.numpy as np
+import aerosandbox.tools.pretty_plots as p
 from aerosandbox import Airplane, Wing, WingXSec, Airfoil, ControlSurface
 from aerosandbox.numpy import tan, tand
+from matplotlib import pyplot as plt
 
 from aircraft_models.helper import xyz_le_func, xyz_direction_func, generate_fuselage
+from utility.plotting import show, save
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
@@ -166,12 +169,13 @@ parametric = Airplane(
 def propulsor_fn(airplane: Airplane = parametric) -> list[asb.Propulsor]:
     root_offset = cut
     tip_offset = 0.1
-    le_offset = np.array([-.2, 0, 0])
+    le_offset = np.array([-.55, 0, -.2])
     xyz_normal = np.array([-1, 0, 0])
     left_props = [
         asb.Propulsor(
             name=f"Left {i + 1}",
-            xyz_c=xyz_le_func(x, airplane, offset=le_offset),
+            xyz_c=xyz_le_func(x, airplane, offset=le_offset + parametric.wings[0].xsecs[
+                np.argmin(np.abs(np.array([x - xsec.xyz_le[0] for xsec in parametric.wings[0].xsecs])))].xyz_le[2]),
             xyz_normal=xyz_direction_func(x, airplane, xyz_n0=xyz_normal),
             radius=ac.propeller_radius,
         ) for i, x in enumerate(
@@ -216,7 +220,13 @@ rot_wing = AC(
     mass_props=mass_props,
 )
 
+
+def plot_parametric_three_view():
+    fig, ax = parametric.draw_three_view(show=False)
+    p.show_plot(tight_layout=False, savefig='rotating_wing_three_view.pdf')
+
+
 if __name__ == '__main__':
-    parametric.draw_three_view()
+    plot_parametric_three_view()
     # parametric.draw()
     # wing_airfoil.draw(draw_mcl=True, draw_markers=False, show=True)

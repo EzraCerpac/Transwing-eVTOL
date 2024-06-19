@@ -29,11 +29,11 @@ class AxisVal(Enum):
 Val = Union[OutputVal, AxisVal]
 
 label: dict[Val, str] = {
-    OutputVal.CL: r"Lift Coefficient $C_L$",
-    OutputVal.CD: r"Drag Coefficient $C_D$",
-    OutputVal.CM: r"Pitching Moment Coefficient $C_m$",
-    AxisVal.ALPHA: r"Angle of Attack $\alpha$ [deg]",
-    AxisVal.VELOCITY: r"Velocity [m/s]",
-    AxisVal.DELTA_E: r"Elevator Deflection $\delta_e$ [deg]",
+    OutputVal.CL: r"Lift Coefficient, $C_L$",
+    OutputVal.CD: r"Drag Coefficient, $C_D$",
+    OutputVal.CM: r"Pitching Moment Coefficient, $C_m$",
+    AxisVal.ALPHA: r"Angle of Attack, $\alpha$ [deg]",
+    AxisVal.VELOCITY: r"Velocity, $V$ [m/s]",
+    AxisVal.DELTA_E: r"Elevator Deflection, $\delta_e$ [deg]",
     AxisVal.TRANS_VAl: r"Transition Value",
 }

@@ -21,9 +21,9 @@ class AeroMethodComparison:
         self.alpha = alpha
         methods_map: dict[str, Callable[[], dict[str, any]]] = {
             'AeroBuildup':
-                Aero(ac=self.ac, alpha=self.alpha).get_aero_data,
-            'AeroBuildup (no wave drag)':
                 lambda: Aero(ac=self.ac, alpha=self.alpha).get_aero_data(include_wave_drag=False),
+            'AeroBuildup (with wave drag)':
+                Aero(ac=self.ac, alpha=self.alpha).get_aero_data,
             'AeroBuildup with cut':
                 Aero(ac=trans_wing, alpha=self.alpha).get_aero_data,
             'Class II':
@@ -63,6 +63,7 @@ class AeroMethodComparison:
         axs[i+1].set_xlabel(label[OutputVal.CD])
         axs[i+1].set_ylabel(label[OutputVal.CL])
         axs[i+1].set_xlim(left=0)
+        axs[1].set_ylim(bottom=0)
         for ax in axs:
             ax.grid()
         axs[0].legend(loc='upper left')
@@ -73,7 +74,7 @@ if __name__ == '__main__':
     aero_method_comparison = AeroMethodComparison(ac=rot_wing, methods=[
         'AeroBuildup',
         'Class II',
-        # 'AeroBuildup (no wave drag)',
+        # 'AeroBuildup (with wave drag)',
         # 'AeroBuildup with cut',
         # 'VLM'
     ])
