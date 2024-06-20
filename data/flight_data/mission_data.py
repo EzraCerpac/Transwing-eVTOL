@@ -109,9 +109,9 @@ mission_data.to_csv(DATA_DIR / 'mission_data.csv', index=False)
 
 
 @show
-# @save
+@save
 def plot_mission_profile_over_distance() -> (plt.Figure, plt.Axes):
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(9, 4))
     ax.plot(mission_data['x'] / 1000,
             mission_data['altitude'],
             label='Altitude',
@@ -130,7 +130,7 @@ def plot_mission_profile_over_distance() -> (plt.Figure, plt.Axes):
     fig.legend(loc='upper center')
 
     # Get the unique segments
-    segments = mission_data['segment'].unique()[2:-1]
+    segments = mission_data['segment'].unique()[2:-2]
 
     # Loop over the segments
     for segment in segments:
@@ -154,9 +154,9 @@ def plot_mission_profile_over_distance() -> (plt.Figure, plt.Axes):
 
 
 @show
-# @save
+@save
 def plot_mission_profile_over_time() -> (plt.Figure, plt.Axes):
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(9, 4))
     ax.plot(mission_data['time'] / 60,
             mission_data['altitude'],
             label='Altitude',
@@ -199,7 +199,7 @@ def plot_mission_profile_over_time() -> (plt.Figure, plt.Axes):
 
 
 @show
-# @save
+@save
 def plot_energy_distribution() -> (plt.Figure, plt.Axes):
     segments = mission_data['segment'].unique()[1:-1].tolist()
     segments.remove('Descend')

@@ -119,7 +119,7 @@ mission_data.to_csv(DATA_DIR / 'mission_data.csv', index=False)
 @show
 @save
 def plot_mission_profile_over_distance() -> (plt.Figure, plt.Axes):
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(9, 4))
     ax.plot(mission_data['x'] / 1000,
             mission_data['altitude'],
             label='Altitude',
@@ -165,7 +165,7 @@ def plot_mission_profile_over_distance() -> (plt.Figure, plt.Axes):
 
 
 @show
-@save
+# @save
 def plot_mission_profile_over_time() -> (plt.Figure, plt.Axes):
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.plot(mission_data['time'] / 60,
