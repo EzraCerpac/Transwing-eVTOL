@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from noiseEst import toimp_dist, toimp_speed
 
 from data.thrust_points.thrust_coefficient import thrust_coefficient
-
+from utility.plotting import show, save
 
 Vcruise = 200/3.6  # [m/s]
 D = 2.1
@@ -46,7 +46,7 @@ beta = np.linspace(20, 65, 10)  # [deg]
 
 maxvalue = [1, 1.25, 1.5, 1.84, 2.19, 2.6, 3.11, 3.8, 4.64, 5.76]
 
-plt.figure()
+# plt.figure()
 # w = 0
 # for b in beta:
 #     Jcurrent = Jtot[(Jtot >= 0.3) & (Jtot <= maxvalue[w])]
@@ -57,18 +57,18 @@ plt.figure()
 #     w += 1
 # plt.legend()
 # plt.show()
-w = 0
-for b in beta:
-    Jcurrent = Jtot[(Jtot >= 0.3) & (Jtot <= maxvalue[w])]
-    current = 'J'+str(int(b))
-    n = 1/(Jcurrent*D/Vcruise*0.02)
-    T = 1.225*thrust_coefficient(Jcurrent, b)*(n*0.02)**2*D**4
-    plt.plot(n, T, label=current)
-    w += 1
-plt.legend()
-plt.ylim(0, 6000)
-plt.xlim(125, 2000)
-plt.show()
+# w = 0
+# for b in beta:
+#     Jcurrent = Jtot[(Jtot >= 0.3) & (Jtot <= maxvalue[w])]
+#     current = 'J'+str(int(b))
+#     n = 1/(Jcurrent*D/Vcruise*0.02)
+#     T = 1.225*thrust_coefficient(Jcurrent, b)*(n*0.02)**2*D**4
+#     plt.plot(n, T, label=current)
+#     w += 1
+# plt.legend()
+# plt.ylim(0, 6000)
+# plt.xlim(125, 2000)
+# plt.show()
 # w = 0
 # for b in beta:
 #     Jcurrent = Jtot[(Jtot >= 0.3) & (Jtot <= maxvalue[w])]
@@ -81,3 +81,32 @@ plt.show()
 #
 # plt.legend()
 # plt.show()
+
+@show
+@save
+def plot_thrust_coefficient_over_beta() -> (plt.Figure, plt.Axes):
+    fig, ax = plt.subplots(figsize=(6, 4))
+    beta = np.linspace(20, 65, 101)
+    cts = thrust_coefficient(0.3, beta)
+    ax.plot(beta, cts)
+    ax.set_xlabel(r'Pitch angle, $\beta$ [deg]')
+    ax.set_ylabel(r'Thrust coefficient, $C_T$ [-]')
+
+    opt_beta = beta[np.argmax(cts)]
+    opt_cts = np.max(cts)
+    ax.plot(opt_beta, opt_cts, 'ro')
+    # add a textbox
+    ax.annotate(
+        r'$\beta_{\text{opt}} = %.1f\degree$' % opt_beta + '\n' + r'$C_{\text{T}_{\text{opt}}} = %.2f$' % opt_cts,
+        (opt_beta, opt_cts),
+        (opt_beta + 3, opt_cts - 0.15),
+        arrowprops=dict(arrowstyle='->'),
+        bbox=dict(boxstyle='round,pad=0.5', facecolor='white', edgecolor='black', alpha=0.8)
+    )
+
+    ax.set_ylim(bottom=0)
+    ax.grid()
+    return fig, ax
+
+if __name__ == '__main__':
+    plot_thrust_coefficient_over_beta()
