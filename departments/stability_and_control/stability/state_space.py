@@ -32,7 +32,7 @@ def SS_symetric(C_X_u, C_X_alpha, C_Z_0, C_X_q, C_Z_u, C_Z_alpha, C_X_0, C_Z_q, 
     ])
     A = np.linalg.inv(P) @ Q
     B = np.linalg.inv(P) @ R
-    C = np.diag([1, np.degrees(1), np.degrees(1), V / c * np.degrees(1)])
+    C = np.diag([1, np.degrees(1), np.degrees(1), np.degrees(1) * V /c])
     D = np.zeros_like(B)
 
     sys = ct.ss(A, B, C, D,

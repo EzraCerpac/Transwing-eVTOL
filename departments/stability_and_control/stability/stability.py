@@ -135,6 +135,23 @@ plt.show()
 #         print(roll)
 #         stop = True
 
+plt.plot(time_list, rollrate_list, color='red')
+plt.xlabel('Time [s]')
+plt.ylabel('Roll rate [deg/s]')
+plt.grid()
+plt.savefig('Roll_rate_Lat.pdf')
+plt.show()
+
+# roll = 0
+# stop = False
+# for i in range(len(rollrate_list)):
+#     if roll < 60:
+#         roll = roll + ((rollrate_list[i] + rollrate_list[i+1]) /2 * (time_list[i+1] - time_list[i]) )
+#     if roll >= 60 and stop == False:
+#         print(time_list[i])
+#         print(roll)
+#         stop = True
+
 
 
 
