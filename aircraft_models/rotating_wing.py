@@ -103,7 +103,7 @@ horizontal_tail = asb.Wing(
     xsecs=[
         asb.WingXSec(  # root
             xyz_le=[0, 0, 0],
-            chord=2.255,
+            chord=2.142,
             twist=0,
             airfoil=tail_airfoil,
             control_surfaces=[
@@ -115,14 +115,14 @@ horizontal_tail = asb.Wing(
         ),
         asb.WingXSec(  # tip
             xyz_le=[
-                2.255 - 0.90, 3.946 / 2, -3.946 / 2 * np.sin(np.radians(34.51))
+                2.142 - 0.857, 3.748 / 2, -3.748 / 2 * np.sin(np.radians(17.5))
             ],
-            chord=1.896 * 0.4,
+            chord=0.857,
             twist=0,
             airfoil=tail_airfoil)
     ],
 ).translate([
-    (fuselage.xsecs[-1].xyz_c[0] - fuselage.xsecs[0].xyz_c[0]) - 1.6 - 2.255,
+    (fuselage.xsecs[-1].xyz_c[0] - fuselage.xsecs[0].xyz_c[0]) - 1.6 - 2.142,
     0, fuselage.xsecs[-1].xyz_c[2]
 ])
 
