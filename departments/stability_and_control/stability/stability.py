@@ -106,11 +106,11 @@ K_X_squared = ac.mass_props.Ixx / (ac.mass_props.mass * ac.parametric.c_ref ** 2
 K_XZ = ac.mass_props.Ixz / (ac.mass_props.mass * ac.parametric.c_ref ** 2)
 K_Z_squared = ac.mass_props.Izz / (ac.mass_props.mass * ac.parametric.c_ref ** 2)
 
-# SS_symetric(C_X_u, C_X_alpha, C_Z_0, C_X_q, C_Z_u, C_Z_alpha, C_X_0, C_Z_q, \
+# eigen_values = SS_symetric(C_X_u, C_X_alpha, C_Z_0, C_X_q, C_Z_u, C_Z_alpha, C_X_0, C_Z_q, \
 #             mu_c, C_m_u, C_m_alpha, C_m_q, C_X_delta_e, C_Z_delta_e, C_m_delta_e, ac.parametric.c_ref, V, C_Z_alpha_dot,
-#             C_m_alpha_dot, K_Y_squared, T=10, u=np.radians(30), show_3D=False)
+#              C_m_alpha_dot, K_Y_squared, T=10, u=np.radians(5))
 
-SS_asymetric(C_L, C_Y_beta, C_Y_beta_dot, C_l_beta, C_l_beta_dot, C_n_beta, C_n_beta_dot, C_Y_p, C_l_p, C_n_p, C_Y_r,
+rollrate_list, time_list, eigen_values= SS_asymetric(C_L, C_Y_beta, C_Y_beta_dot, C_l_beta, C_l_beta_dot, C_n_beta, C_n_beta_dot, C_Y_p, C_l_p, C_n_p, C_Y_r,
              C_l_r, C_n_r, C_Y_delta_a, C_l_delta_a, C_n_delta_a, C_Y_delta_r, C_l_delta_r, C_n_delta_r, mu_b,
              ac.parametric.b_ref, V, K_X_squared, K_XZ, K_Z_squared, T=10, u=np.radians(-22.5), show_3D=True)
 
@@ -118,3 +118,54 @@ for name in dir():
     if name.startswith('C_'):
         print(name, '=', eval(name))
 
+plt.plot(time_list, rollrate_list, color='red')
+plt.xlabel('Time [s]')
+plt.ylabel('Roll rate [deg/s]')
+plt.grid()
+plt.savefig('Roll_rate_Lat.pdf')
+plt.show()
+
+# roll = 0
+# stop = False
+# for i in range(len(rollrate_list)):
+#     if roll < 60:
+#         roll = roll + ((rollrate_list[i] + rollrate_list[i+1]) /2 * (time_list[i+1] - time_list[i]) )
+#     if roll >= 60 and stop == False:
+#         print(time_list[i])
+#         print(roll)
+#         stop = True
+
+
+
+
+# plt.figure(figsize=(6,6))
+# plt.scatter(modes['phugoid']['eigenvalue_real'], modes['phugoid']['eigenvalue_imag'], label='Phugoid', color='blue')
+# plt.scatter(modes['phugoid']['eigenvalue_real'], -modes['phugoid']['eigenvalue_imag'], color='blue')
+# plt.scatter(modes['short_period']['eigenvalue_real'], modes['short_period']['eigenvalue_imag'], label='Short Period',color='red')
+# plt.scatter(modes['short_period']['eigenvalue_real'], -modes['short_period']['eigenvalue_imag'],color='red')
+# plt.xlabel(r'$\xi$')
+# plt.ylabel(r'$j \eta$')
+# plt.fill_between([-10,0], 10, -10, color='green', alpha=0.2, label='Stable')
+# plt.fill_between([0,10], 10, -10, color='red', alpha=0.2, label='Unstable')
+# plt.xlim([-0.3,0.05])
+# plt.ylim([-1.7,1.7])
+# plt.legend()
+# plt.grid()
+# plt.savefig('Eigen_Values_Long.pdf')
+# plt.show()
+#
+# plt.figure(figsize=(6,6))
+# plt.scatter(modes['roll_subsidence']['eigenvalue_real'], modes['roll_subsidence']['eigenvalue_imag'], label='Roll', color='blue')
+# plt.scatter(modes['spiral']['eigenvalue_real'], modes['spiral']['eigenvalue_imag'], label='Spiral', color='red')
+# plt.scatter(modes['dutch_roll']['eigenvalue_real'], modes['dutch_roll']['eigenvalue_imag'], label='Dutch Roll', color='green')
+# plt.scatter(modes['dutch_roll']['eigenvalue_real'], -modes['dutch_roll']['eigenvalue_imag'],color='green')
+# plt.xlabel(r'$\xi$')
+# plt.ylabel(r'$j \eta$')
+# plt.fill_between([-10,0], 10, -10, color='green', alpha=0.2, label='Stable')
+# plt.fill_between([0,10], 10, -10, color='red', alpha=0.2, label='Unstable')
+# plt.xlim([-3,1])
+# plt.ylim([-0.8,0.8])
+# plt.legend()
+# plt.grid()
+# plt.savefig('Eigen_Values_Lat.pdf')
+# plt.show()

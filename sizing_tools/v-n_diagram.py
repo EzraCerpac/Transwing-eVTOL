@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 import sys
 import os
 
+from aircraft_models import rot_wing
+from departments.aerodynamics.aero import Aero
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
 sys.path.append(parent_dir)
@@ -17,9 +20,10 @@ from sizing_tools.model import Model
 from aerosandbox import Atmosphere
 from scipy.constants import g
 
-CL_MAX = 1.7  #from airfoil data
+CL_MAX = Aero(rot_wing).CL_max
 NEG_CL_MAX = 1.18  # from airfoil data
-CLALPHA = 5.44  #rad^-1
+CLALPHA = Aero(rot_wing).get_aero_data()['CLa']
+CLALPHA = CLALPHA[len(CLALPHA)//2]
 
 
 class VNDiagram(Model):
@@ -32,10 +36,9 @@ class VNDiagram(Model):
         return []
 
     def stall_speed(self):  # this is not the stall speed!
-        raise NotImplementedError
-        # wing_loading = self.aircraft.total_mass * g / self.aircraft.wing.area
-        # stall_speed = np.sqrt(2 * wing_loading / (Atmosphere(self.aircraft.cruise_altitude).density() * 1.1 * CL_MAX )) #TODO CLmax
-        stall_speed = self.aircraft.v_stall
+        wing_loading = self.aircraft.total_mass * g / self.aircraft.wing.area
+        stall_speed = np.sqrt(2 * wing_loading / (Atmosphere(self.aircraft.cruise_altitude).density() *1.0855 * CL_MAX )) #TODO CLmax
+        #print(stall_speed)
         return stall_speed  #stall speed in m/s
 
     def design_cruise_speed(self):
@@ -57,6 +60,8 @@ class VNDiagram(Model):
     def N_lim_pos(self):
         N_lim_pos = min(
             2.1 + 24000 / (self.aircraft.total_mass * 2.20462262 + 10000), 3.8)
+        print(2.1 + 24000 / (self.aircraft.total_mass * 2.20462262 + 10000))
+        # N_lim_pos = 4.1
         return N_lim_pos
 
     def N_lim_neg(self):
@@ -71,7 +76,7 @@ class VNDiagram(Model):
         wing_loading = self.aircraft.total_mass * g / self.aircraft.wing.area
         neg_stall_speed = np.sqrt(
             2 * wing_loading /
-            (Atmosphere(self.aircraft.cruise_altitude).density() * 1.1 *
+            (Atmosphere(self.aircraft.cruise_altitude).density() * 1.0855 *
              NEG_CL_MAX))  #TODO negativeCLmax
         return neg_stall_speed  #stall speed in m/s
 
@@ -106,14 +111,14 @@ class VNDiagram(Model):
         V_top = np.arange(0, self.maneuvering_speed(), 0.1)
         wing_loading = self.aircraft.total_mass * g / self.aircraft.wing.area
         N_top = 0.5 * Atmosphere(self.aircraft.cruise_altitude).density(
-        ) * V_top**2 * 1.1 * CL_MAX / wing_loading
+        ) * V_top**2 * 1.0855 * CL_MAX / wing_loading
         V_bottom = np.arange(0, self.design_cruise_speed(), 0.1)
         N_bottom = 0.5 * Atmosphere(self.aircraft.cruise_altitude).density(
-        ) * V_bottom**2 * 1.1 * -NEG_CL_MAX / wing_loading
+        ) * V_bottom**2 * 1.0855 * -NEG_CL_MAX / wing_loading
         N_bottom = np.where(N_bottom < self.N_lim_neg(), self.N_lim_neg(),
                             N_bottom)
         N_bottom = 0.5 * Atmosphere(self.aircraft.cruise_altitude).density(
-        ) * V_bottom**2 * 1.1 * -NEG_CL_MAX / wing_loading
+        ) * V_bottom**2 * 1.0855 * -NEG_CL_MAX / wing_loading
         N_bottom = np.where(N_bottom < self.N_lim_neg(), self.N_lim_neg(),
                             N_bottom)
         #gust cruise speed
@@ -135,8 +140,8 @@ class VNDiagram(Model):
                              self.N_lim_neg())
         max_loadfactor = max(np.max(list_with_all_loadfactors),
                              self.N_lim_pos())
-
-        plt.plot(V_top, N_top, color='black', label='Maneuver')
+        plt.figure(figsize=(12,8))
+        plt.plot(V_top, N_top, color='black', label='Manoeuvre')
         plt.plot(V_bottom, N_bottom, color='black')
         plt.plot([self.maneuvering_speed(),
                   self.dive_speed()],
@@ -168,10 +173,10 @@ class VNDiagram(Model):
                    label='Dive speed',
                    linestyle='dashed',
                    color='red')
-        plt.vlines(self.maneuvering_speed(),
-                   min_loadfactor,
-                   max_loadfactor,
-                   label='Maneuver speed')
+        # plt.vlines(self.maneuvering_speed(),
+        #            min_loadfactor,
+        #            max_loadfactor,
+        #            label='Maneuver speed')
 
         plt.plot(V_vc, N_top_vc, linestyle='dashed', color='black')
         plt.plot(V_vc, N_bottom_vc, linestyle='dashed', color='black')
@@ -194,10 +199,11 @@ class VNDiagram(Model):
         plt.legend()
         plt.xlabel("Speed [m/s]")
         plt.ylabel("Load factor [-]")
+        plt.savefig("VN_diagram.pdf")
         plt.show()
 
 
 if __name__ == "__main__":
-    ac = Aircraft.load()
-    model = VNDiagram(ac)
+    ac = rot_wing
+    model = VNDiagram(ac.data)
     model.V_N_diagram()

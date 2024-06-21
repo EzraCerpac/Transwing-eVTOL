@@ -42,7 +42,7 @@ def save(plot_function: plotFunction,
 
         # Construct the file name
         file_path = Path(__file__).resolve(
-        ).parents[2] / 'figures' / get_caller_file_name(n_back=2, n_dirs=0)
+        ).parents[2] / 'figures' / get_caller_file_name(n_back=0, n_dirs=0)
         os.makedirs(file_path, exist_ok=True)
         if name_func is None:
             filename = f"{plot_function.__name__}.pdf"
