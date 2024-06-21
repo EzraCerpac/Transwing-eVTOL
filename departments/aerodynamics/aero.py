@@ -32,7 +32,7 @@ class Aero:
             ),
             include_wave_drag=include_wave_drag,
             model_size=model_size,
-        ).run()
+        ).run_with_stability_derivatives(beta=False, p=False, q=False, r=False)
         return self.aero_data
 
     def get_aero_over_trans_val(self, include_wave_drag: bool = True, model_size: str = 'small', trans_vals: np.ndarray = np.linspace(0, 1, 31)) -> dict:

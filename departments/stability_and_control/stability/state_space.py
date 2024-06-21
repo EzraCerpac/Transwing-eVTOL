@@ -30,7 +30,7 @@ def SS_symetric(C_X_u, C_X_alpha, C_Z_0, C_X_q, C_Z_u, C_Z_alpha, C_X_0, C_Z_q, 
     ])
     A = np.linalg.inv(P) @ Q
     B = np.linalg.inv(P) @ R
-    C = np.identity(4)
+    C = np.diag([1, np.degrees(1), np.degrees(1), np.degrees(1) * V /c])
     D = np.zeros_like(B)
     C[-1, -1] *= V / c
 
@@ -67,6 +67,7 @@ def SS_symetric(C_X_u, C_X_alpha, C_Z_0, C_X_q, C_Z_u, C_Z_alpha, C_X_0, C_Z_q, 
     #
     # ct.nyquist_plot(sys_pz)
     # plt.show()
+    return eigvals
 
 
 def SS_asymetric(
@@ -105,7 +106,7 @@ def SS_asymetric(
         [C_n_beta, 0, C_n_p, C_n_r],
     ])
     eigvals, eigvecs = np.linalg.eig(-Q)
-    print(eigvals)
+    #print(eigvals)
 
     R = np.array([
         [-C_Y_delta_a],
@@ -132,11 +133,11 @@ def SS_asymetric(
                 name='Lateral Dynamics'
                 )
 
-
-    T = np.linspace(0, T, 1000)
+    num = 1000
+    T = np.linspace(0, T, num)
     X0 = np.zeros(4)
     U = np.zeros(T.shape[0])
-    U[0] = u
+    U = u
 
     response = ct.forced_response(sys, X0=X0, T=T, U=U)
     fig, axs = plt.subplots(5, 1, figsize=(12, 12), sharex=True)
@@ -156,6 +157,7 @@ def SS_asymetric(
     #
     # ct.pole_zero_plot(sys_pz, grid=True)
     # plt.show()
+    return response.outputs[2], T, eigvals  #roll rate, time and eigenvalues
 
 
 

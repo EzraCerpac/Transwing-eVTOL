@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import sys
 import os
 
-from utility.plotting import show
+from utility.plotting import show, save
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
@@ -27,13 +27,16 @@ class Loading_diagram:
         self.parametric = ac.parametric
         self.aircraft = ac.data
 
-    @show
+    @save
     def diagram(self) -> tuple[plt.Figure, plt.Axes]:
         fig, ax = plt.subplots()
         oew_coordinate = 2.4098143 #TODO update
         Luggage_coordinate = 3
         back_seat_coordinate = 2.5
         front_seat_coordinate = 1.65
+        MAC = 1.06122449
+        LEMAC = 1.69165829
+
 
         mass = {
             'OEW': 1643.50 - self.aircraft.payload_mass,
@@ -42,14 +45,17 @@ class Loading_diagram:
             'OEW': oew_coordinate
         }
         oew, oew_x = self.mass_CG(mass, arms)
+        oew_x = (oew_x - LEMAC)/MAC
         print('oew', oew_x)
         mass.update([('luggage', 80)])
         arms.update([('luggage', Luggage_coordinate)]) 
         luggage, luggage_x = self.mass_CG(mass, arms)
+        luggage_x = (luggage_x -LEMAC)/MAC
         print('luggage', luggage_x)
         mass.update([('b_passenger', 160)])
         arms.update([('b_passenger', back_seat_coordinate)])
         b2f_passenger, b2f_passenger_x = self.mass_CG(mass, arms)
+        b2f_passenger_x = (b2f_passenger_x - LEMAC) / MAC
         print('b_passenger', b2f_passenger_x)
         mass.update([('f_passenger', 160)])
         arms.update([('f_passenger', front_seat_coordinate)])
@@ -61,11 +67,14 @@ class Loading_diagram:
         # arms['b2f_passenger'] = back_seat_coordinate
 
         passenger, passenger_x = self.mass_CG(mass, arms)
+        passenger_x = (passenger_x - LEMAC)/MAC
         print('passenger', passenger_x)
         print(max(oew_x,luggage_x,b2f_passenger_x,passenger_x ))
         plt.plot([oew_x, luggage_x], [oew, luggage], color = 'blue', label='Luggage')
         plt.plot([luggage_x, b2f_passenger_x], [luggage, b2f_passenger], color= 'green', label='b2f passengers')
         plt.plot([b2f_passenger_x, passenger_x], [b2f_passenger, passenger], color = 'green')
+        plt.xlabel('$X_{cg} [MAC]$')
+        plt.ylabel('Mass [kg]')
         plt.legend()
         plt.show()
         return fig, ax
