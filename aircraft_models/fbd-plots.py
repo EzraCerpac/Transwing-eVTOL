@@ -67,7 +67,7 @@ def plot_vertical(
             'Thrust', color='green'
         )
     if save:
-        fig, ax = save_plot('FBDs/vertical.svg', fig, ax)
+        fig, ax = save_plot('FBDs/vertical.png', fig, ax)
     return fig, ax
 
 
@@ -147,7 +147,7 @@ def plot_trans(
         )
 
     if save:
-        fig, ax = save_plot('FBDs/trans.svg', fig, ax)
+        fig, ax = save_plot('FBDs/trans.png', fig, ax)
     return fig, ax
 
 
@@ -161,7 +161,7 @@ def plot_horizontal(
 ) -> (plt.Figure, plt.Axes):
     fig, ax = plot_trans(airplane, add_cg_dot, add_gravity_vector, add_thrust_vector, add_aero_vector, save=False)
     if save:
-        fig, ax = save_plot('FBDs/horizontal.svg', fig, ax)
+        fig, ax = save_plot('FBDs/horizontal.png', fig, ax)
     return fig, ax
 
 
@@ -190,8 +190,8 @@ def animate_trans():
 
 
 if __name__ == '__main__':
-    # plot_vertical(trans_wing.parametric_fn(1))
-    # plot_trans(trans_wing.parametric_fn(0.7), indicate_angles=True)
-    # plot_horizontal(trans_wing.parametric_fn(0))
+    plot_vertical(trans_wing.parametric_fn(1))
+    plot_trans(trans_wing.parametric_fn(0.7), indicate_angles=True)
+    plot_horizontal(trans_wing.parametric_fn(0))
 
-    animate_trans()
+    # animate_trans()
