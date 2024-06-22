@@ -11,9 +11,7 @@ if __name__ == '__main__':
         # True,
     )
     aero = AeroBuildup(
-        airplane=Airplane(
-            wings=[rot_wing.parametric.wings[0]]
-        ),
+        airplane=Airplane(wings=[rot_wing.parametric.wings[0]]),
         op_point=OperatingPoint(
             atmosphere=Atmosphere(altitude=500),
             velocity=55,
