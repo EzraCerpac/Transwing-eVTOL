@@ -172,7 +172,7 @@ def plot_mission_profile_over_time() -> (plt.Figure, plt.Axes):
     ax2.set_ylabel('Power, $P$ [kW]')
     ax.set_ylim(bottom=0)
     ax2.set_ylim(bottom=0)
-    fig.legend(loc='upper center')
+    fig.legend(loc='upper center', bbox_to_anchor=(0.5, 0.85))
 
     # Get the unique segments
     segments = mission_data['segment'].unique()[1:-1]
@@ -214,7 +214,7 @@ def plot_energy_distribution() -> (plt.Figure, plt.Axes):
 
 
 if __name__ == '__main__':
-    plot_mission_profile_over_distance()
+    # plot_mission_profile_over_distance()
     plot_mission_profile_over_time()
     plot_energy_distribution()
 

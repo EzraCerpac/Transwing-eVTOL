@@ -20,7 +20,7 @@ for i in range(1, len(saved_delta_T)):
 @show
 @save
 def plot_transition_free_variables(time: np.ndarray, velocities: np.ndarray, thrust: np.ndarray, delta_T: np.ndarray, trans_vals: np.ndarray) -> (plt.Figure, plt.Axes):
-    fig, ax1 = plt.subplots(figsize=(8, 6))
+    fig, ax1 = plt.subplots(figsize=(10, 4))
 
     # Plot Velocity on the first y-axis
     ax1.plot(time, velocities, label="Velocity $V$", color='tab:blue')

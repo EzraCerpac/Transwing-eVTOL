@@ -31,7 +31,7 @@ def plot_power_over_velocity(
         induced_power = induced_power[:transition_index]
         parasite_power = parasite_power[:transition_index]
 
-    fig, ax = plt.subplots(figsize=(10, 8))
+    fig, ax = plt.subplots(figsize=(10, 5))
     ax.plot(velocities, total_power / 1000, label="Total power")
     ax.plot(velocities, acceleration_power / 1000, label="Acceleration power")
     ax.plot(velocities, power_required / 1000, label="Power required")
@@ -64,7 +64,7 @@ def plot_power_over_velocity(
     return fig, ax
 
 @show
-@save
+# @save
 def plot_power_over_velocity_and_time(
         velocities: np.ndarray,
         total_power: np.ndarray,
@@ -89,7 +89,7 @@ def plot_power_over_velocity_and_time(
         induced_power = induced_power[:transition_index]
         parasite_power = parasite_power[:transition_index]
 
-    fig, ax1 = plt.subplots(figsize=(10, 8))
+    fig, ax1 = plt.subplots(figsize=(10, 5))
     ax2 = ax1.twiny()  # create a twin axis that shares the y-axis
 
     ax1.plot(times, total_power / 1000, label="Total power")

@@ -167,7 +167,7 @@ def plot_mission_profile_over_distance() -> (plt.Figure, plt.Axes):
 @show
 # @save
 def plot_mission_profile_over_time() -> (plt.Figure, plt.Axes):
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(9, 4))
     ax.plot(mission_data['time'] / 60,
             mission_data['altitude'],
             label='Altitude',
@@ -183,7 +183,7 @@ def plot_mission_profile_over_time() -> (plt.Figure, plt.Axes):
     ax2.set_ylabel('Power, $P$ [kW]')
     ax.set_ylim(bottom=0)
     ax2.set_ylim(bottom=0)
-    fig.legend(loc='upper center')
+    fig.legend(loc='upper center', bbox_to_anchor=(0.5, 0.85))
 
     # Get the unique segments
     segments = mission_data['segment'].unique()[3:-2]

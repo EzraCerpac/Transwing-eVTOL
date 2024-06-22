@@ -5,7 +5,6 @@ import aerosandbox as asb
 import aerosandbox.numpy as np
 import aerosandbox.tools.pretty_plots as p
 import matplotlib.pyplot as plt
-from matplotlib import animation
 
 from aircraft_models import trans_wing
 
@@ -43,7 +42,7 @@ def plot_vertical(
             edgecolors='black',
             linewidths=1,
             s=100,
-            zorder=100,
+            zorder=200,
         )
     if add_gravity_vector:
         ax.quiver(
@@ -100,7 +99,7 @@ def plot_trans(
             edgecolors='black',
             linewidths=1,
             s=100,
-            zorder=100,
+            zorder=200,
         )
     if add_gravity_vector:
         ax.quiver(
@@ -172,23 +171,22 @@ def animate_trans():
         p.show_plot(
             savefig=f'FBDs/frame_{frame:03d}.jpeg',
             show=False,
-            dpi=500,
+            dpi=300,
         )
         plt.close(fig)
 
-    trans_vals = np.linspace(1, 0, 101)
+    trans_vals = np.linspace(1, 0, 301)
     for i, trans_val in enumerate(trans_vals):
         print(f"Animating frame {i + 1} of {len(trans_vals)}")
         update(i, trans_val)
 
     # Use ffmpeg to create a movie from the images
-    command = ['ffmpeg', '-i', 'FBDs/frame_%03d.jpeg', 'FBDs/trans_animation.mp4']
+    command = ['ffmpeg', '-i', 'FBDs/frame_%03d.jpeg', '-b:v', '30000k', 'FBDs/trans_animation.mp4']
     subprocess.run(command)
 
     # Optionally, delete the images after creating the movie
     for i in range(len(trans_vals)):
         os.remove(f'FBDs/frame_{i:03d}.jpeg')
-
 
 
 if __name__ == '__main__':
