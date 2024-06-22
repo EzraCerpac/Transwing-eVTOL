@@ -1,4 +1,7 @@
+import copy
+
 import aerosandbox.numpy as np
+import matplotlib.pyplot as plt
 from aerosandbox import Airplane, Wing, WingXSec
 
 from aircraft_models.rotating_wing import chord_cut, p_tip_le, p_tip_te, p_cut_le, p_cut_te, root_wing, horizontal_tail, \
@@ -65,7 +68,7 @@ wings = [total_wing, horizontal_tail
 
 base_airplane = Airplane(
     name=ac.full_name,
-    xyz_ref=cg_location,
+    xyz_ref=mass_props.xyz_cg,
     wings=wings,
     fuselages=[fuselage],
     s_ref=ac.wing.area,
@@ -157,7 +160,10 @@ def generate_airplane(trans_val: float) -> Airplane:
     :return: Airplane object
     """
     trans_val = trans_val or 1e-8
+    mass_props_trans = copy.deepcopy(mass_props)
+    mass_props_trans.x_cg = trans_val * (3.68 - 1.6 - mass_props.x_cg) + mass_props.x_cg
     airplane = base_airplane.copy()
+    airplane.xyz_ref = mass_props_trans.xyz_cg
     rotate_wing(trans_val, airplane)
     return airplane
 
@@ -172,7 +178,6 @@ trans_wing = AC(
 if __name__ == '__main__':
     airplane = trans_wing.parametric_fn(1)
     airplane.draw_three_view()
-    airplane.draw()
 
     print(airplane.wings[0].xsecs[-1].xyz_le[0] -
           airplane.fuselages[0].xsecs[0].xyz_c[0])
