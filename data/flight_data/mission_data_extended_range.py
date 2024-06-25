@@ -208,6 +208,54 @@ def plot_mission_profile_over_time_max_range() -> (plt.Figure, plt.Axes):
     ax2.grid(True, linestyle='--', alpha=0.9)
     return fig, (ax, ax2)
 
+@show
+@save
+def plot_mission_profile_over_time_and_distance_max_range() -> (plt.Figure, plt.Axes):
+    fig, ax1 = plt.subplots(figsize=(9, 5))
+    ax2 = ax1.twinx()
+
+    ax1.plot(mission_data['time'] / 60, mission_data['altitude'], label='Altitude', color='tab:blue')
+    ax2.plot(mission_data['time'] / 60, mission_data['power'] / 1000, label='Power', color='tab:red')
+
+    ax1.set_xlabel('Time, $t$ [min]')
+    ax1.set_ylabel('Altitude, $h$ [m]', color='tab:blue')
+    ax2.set_ylabel('Power, $P$ [kW]', color='tab:red')
+
+    # ax1.set_xlim(left=0, right=mission_data['time'].iloc[-1] / 60)
+
+    ax3 = ax1.twiny()
+    distance_at_time = lambda t: np.interp(t * 60, mission_data['time'].to_numpy(), mission_data['x'].to_numpy())
+    ax3.set_xlim(ax1.get_xlim())
+    # ax3.set_xticks(ax1.get_xticks())
+    ax3.set_xticklabels([f'{distance_at_time(t) / 1000:.1f}' for t in ax1.get_xticks()])
+    ax3.set_xlabel('Distance, $x$ [km]')
+
+    # ax1.legend(loc='upper left')
+    # ax2.legend(loc='upper right')
+
+    # Get the unique segments
+    segments = mission_data['segment'].unique()[2:-2]
+
+    # Loop over the segments
+    for segment in segments:
+        # Get the last x-coordinate of the current segment
+        x_coord = mission_data[mission_data['segment'] ==
+                               segment]['time'].values[0] / 60
+        # Draw a vertical dashed line at the x-coordinate
+        ax1.axvline(x_coord, color='k', linestyle='--')
+        # Add text with the segment name at the x-coordinate
+        ax1.text(x=x_coord + ax1.get_xlim()[1] / 200,
+                 y=ax1.get_ylim()[1] / 2,
+                 s=segment,
+                 rotation=90,
+                 verticalalignment='center')
+
+    ax1.tick_params(axis='y', labelcolor='tab:blue')
+    ax2.tick_params(axis='y', labelcolor='tab:red')
+    ax1.grid(True, alpha=0.6)
+    ax2.grid(True, linestyle='--', alpha=0.9)
+    return fig, (ax1, ax2, ax3)
+
 
 @show
 @save
@@ -225,9 +273,10 @@ def plot_energy_distribution_max_range() -> (plt.Figure, plt.Axes):
 
 
 if __name__ == '__main__':
-    plot_mission_profile_over_distance_max_range()
-    plot_mission_profile_over_time_max_range()
+    # plot_mission_profile_over_distance_max_range()
+    # plot_mission_profile_over_time_max_range()
     plot_energy_distribution_max_range()
+    plot_mission_profile_over_time_and_distance_max_range()
 
     print(f'Max power: {mission_data["power"].max() / 1000} kW')
     print(f'Max thrust: {mission_data["thrust"].max() / 1000} kN')
