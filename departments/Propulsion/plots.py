@@ -39,7 +39,7 @@ def plot_power_over_velocity(
     # ax.plot(velocities, induced_power / 1000, label="Induced power")
     # ax.plot(velocities, parasite_power / 1000, label="Parasite power")
     ax.set_xlabel(r"Velocity, $V$ [m/s]")
-    ax.set_ylabel(r"Power, $P$ [W]")
+    ax.set_ylabel(r"Power, $P$ [kW]")
 
     if n_timesteps is not None:  # check if n_timesteps is provided
         for i in range(n_timesteps):
