@@ -16,6 +16,7 @@ def save_plot(filename: str, fig: plt.Figure = None, ax: plt.Axes = None) -> (pl
         savefig_transparent=True,
         savefig=filename,
     )
+    print(f"Saved plot to: {filename}")
     return fig, ax
 
 
