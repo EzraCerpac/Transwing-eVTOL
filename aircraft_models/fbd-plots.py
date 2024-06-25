@@ -116,12 +116,12 @@ def plot_trans(
         ax.quiver(
             *airplane.xyz_ref,
             *airplane.propulsors[0].xyz_normal,
-            length=3,
+            length=2,
             color='green',
             zorder=100,
         )
         ax.text(
-            *(airplane.xyz_ref + 3 * airplane.propulsors[0].xyz_normal + TXT_OFFSET),
+            *(airplane.xyz_ref + 2 * airplane.propulsors[0].xyz_normal + TXT_OFFSET),
             'Thrust', color='green'
         )
         if indicate_angles:
@@ -137,12 +137,12 @@ def plot_trans(
     if add_aero_vector:
         ax.quiver(
             *airplane.xyz_ref,
-            1.5, 0, 2,
+            1, 0, 4,
             color='blue',
             zorder=100,
         )
         ax.text(
-            *(airplane.xyz_ref + np.array([1.5, 0, 2]) + TXT_OFFSET),
+            *(airplane.xyz_ref + np.array([1, 0, 4]) + TXT_OFFSET),
             'Aero', color='blue',
         )
 
@@ -190,8 +190,8 @@ def animate_trans():
 
 
 if __name__ == '__main__':
-    plot_vertical(trans_wing.parametric_fn(1))
-    plot_trans(trans_wing.parametric_fn(0.7), indicate_angles=True)
+    # plot_vertical(trans_wing.parametric_fn(1))
+    # plot_trans(trans_wing.parametric_fn(0.7), indicate_angles=True)
     plot_horizontal(trans_wing.parametric_fn(0))
 
     # animate_trans()

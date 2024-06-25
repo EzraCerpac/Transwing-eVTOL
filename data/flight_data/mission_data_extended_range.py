@@ -227,7 +227,7 @@ def plot_mission_profile_over_time_and_distance_max_range() -> (plt.Figure, plt.
     distance_at_time = lambda t: np.interp(t * 60, mission_data['time'].to_numpy(), mission_data['x'].to_numpy())
     ax3.set_xlim(ax1.get_xlim())
     # ax3.set_xticks(ax1.get_xticks())
-    ax3.set_xticklabels([f'{distance_at_time(t) / 1000:.1f}' for t in ax1.get_xticks()])
+    ax3.set_xticklabels([f'{distance_at_time(t) / 1000:.0f}' for t in ax1.get_xticks()])
     ax3.set_xlabel('Distance, $x$ [km]')
 
     # ax1.legend(loc='upper left')
