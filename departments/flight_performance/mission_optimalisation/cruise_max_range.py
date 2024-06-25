@@ -78,13 +78,13 @@ class CruiseOptMaxRange(Optimalisation):
         # self.a_z = a * np.sin(self.dyn.gamma[:-1])
         self.opti.subject_to([
             self.dyn.x_e[1] == 0,
-            self.dyn.x_e[-1] == self.aircraft.range - 8000 + 120e3,
+            self.dyn.x_e[-1] == self.aircraft.range - 8000 + 150e3,
             np.diff(self.dyn.x_e) > 0,
             self.dyn.altitude[0] == 100,
             self.dyn.altitude >= 100,
             self.dyn.altitude[-1] == 100,
             self.dyn.speed[0] == 45,
-            self.dyn.speed[:self.n_timesteps//2] >= self.dyn.speed[0],
+            self.dyn.speed[:self.n_timesteps//2] >= 50,
             self.dyn.speed[self.n_timesteps//2:] >= 45,
             self.dyn.speed[-1] == 45,
             # self.dyn.speed[-1] >= 40,

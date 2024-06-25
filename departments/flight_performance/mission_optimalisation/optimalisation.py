@@ -263,7 +263,7 @@ class Optimalisation(Model, ABC):
         return fig, (ax1, ax2)
 
     @show
-    @save
+    @save_with_name(lambda self: f"{self.__class__.__name__}_over_distance")
     def plot_alt_hor_ver_vel_power_over_distance(self) -> tuple[plt.Figure, plt.Axes]:
         fig, axs = plt.subplots(2, 2, figsize=(15, 10), sharex=True)
         df = self.to_dataframe()
