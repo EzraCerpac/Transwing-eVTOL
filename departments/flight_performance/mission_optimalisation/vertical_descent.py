@@ -37,6 +37,7 @@ class VerticalDescent(Optimalisation):
         self.opti.subject_to([
             # self.max_power < self.aircraft.mission_profile.TAKEOFF.power,
             self.max_power > 100000,
+            self.max_power < 300000,
         ])
         self.power = self.thrust_level * self.max_power
         disk_area = rotor_disk_area(
@@ -137,7 +138,7 @@ class VerticalDescent(Optimalisation):
 if __name__ == '__main__':
     ac = trans_wing
     mission_profile_optimization = VerticalDescent(ac,
-                                               opt_param=OptParam.MAX_POWER,
+                                               opt_param=OptParam.ENERGY,
                                                n_timesteps=501,
                                                max_iter=1000,
                                                n_logs=100)
