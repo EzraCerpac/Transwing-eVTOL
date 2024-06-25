@@ -143,7 +143,7 @@ def SS_asymetric(
     T = np.linspace(0, T, num)
     X0 = np.zeros(4)
     U = np.zeros(T.shape[0])
-    U[0] = u
+    U = u
 
     response = ct.forced_response(sys, X0=X0, T=T, U=U)
     fig, axs = plt.subplots(5, 1, figsize=(12, 12), sharex=True)

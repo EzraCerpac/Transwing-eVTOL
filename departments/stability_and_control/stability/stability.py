@@ -112,7 +112,7 @@ K_Z_squared = ac.mass_props.Izz / (ac.mass_props.mass * ac.parametric.c_ref ** 2
 
 rollrate_list, time_list, eigen_values = SS_asymetric(C_L, C_Y_beta, C_Y_beta_dot, C_l_beta, C_l_beta_dot, C_n_beta, C_n_beta_dot, C_Y_p, C_l_p, C_n_p, C_Y_r,
              C_l_r, C_n_r, C_Y_delta_a, C_l_delta_a, C_n_delta_a, C_Y_delta_r, C_l_delta_r, C_n_delta_r, mu_b,
-             ac.parametric.b_ref, V, K_X_squared, K_XZ, K_Z_squared, T=100, u=np.radians(-22.5), show_3D=True)
+             ac.parametric.b_ref, V, K_X_squared, K_XZ, K_Z_squared, T=6, u=np.radians(-22.5), show_3D=True)
 
 for name in dir():
     if name.startswith('C_'):
