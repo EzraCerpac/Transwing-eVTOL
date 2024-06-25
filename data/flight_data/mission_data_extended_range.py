@@ -73,11 +73,11 @@ mission_data = pd.concat([
 mission_data['power'] = interpolate_nans(
     np.where(
         np.abs(mission_data['power'].diff() / mission_data['time'].diff())
-        > 1000, np.NAN, mission_data['power']))
+        > 500, np.NAN, mission_data['power']))
 mission_data['thrust'] = interpolate_nans(
     np.where(
         np.abs(mission_data['thrust'].diff() / mission_data['time'].diff())
-        > 1000, np.NAN, mission_data['thrust']))
+        > 500, np.NAN, mission_data['thrust']))
 
 mission_data = pd.concat([
     pd.DataFrame({
@@ -118,7 +118,7 @@ mission_data.to_csv(DATA_DIR / 'mission_data.csv', index=False)
 
 @show
 @save
-def plot_mission_profile_over_distance() -> (plt.Figure, plt.Axes):
+def plot_mission_profile_over_distance_max_range() -> (plt.Figure, plt.Axes):
     fig, ax = plt.subplots(figsize=(9, 4))
     ax.plot(mission_data['x'] / 1000,
             mission_data['altitude'],
@@ -165,8 +165,8 @@ def plot_mission_profile_over_distance() -> (plt.Figure, plt.Axes):
 
 
 @show
-# @save
-def plot_mission_profile_over_time() -> (plt.Figure, plt.Axes):
+@save
+def plot_mission_profile_over_time_max_range() -> (plt.Figure, plt.Axes):
     fig, ax = plt.subplots(figsize=(9, 4))
     ax.plot(mission_data['time'] / 60,
             mission_data['altitude'],
@@ -211,7 +211,7 @@ def plot_mission_profile_over_time() -> (plt.Figure, plt.Axes):
 
 @show
 @save
-def plot_energy_distribution() -> (plt.Figure, plt.Axes):
+def plot_energy_distribution_max_range() -> (plt.Figure, plt.Axes):
     segments = mission_data['segment'].unique()[1:-1].tolist()
     segments.remove('Descend')
     # calculate total energy per segment of the mission
@@ -225,9 +225,9 @@ def plot_energy_distribution() -> (plt.Figure, plt.Axes):
 
 
 if __name__ == '__main__':
-    plot_mission_profile_over_distance()
-    plot_mission_profile_over_time()
-    plot_energy_distribution()
+    plot_mission_profile_over_distance_max_range()
+    plot_mission_profile_over_time_max_range()
+    plot_energy_distribution_max_range()
 
     print(f'Max power: {mission_data["power"].max() / 1000} kW')
     print(f'Max thrust: {mission_data["thrust"].max() / 1000} kN')

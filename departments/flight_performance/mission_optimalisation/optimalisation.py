@@ -6,7 +6,7 @@ import aerosandbox as asb
 import aerosandbox.numpy as np
 import pandas as pd
 from aerosandbox.dynamics.point_mass.common_point_mass import _DynamicsPointMassBaseClass
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt, ticker
 
 from data.concept_parameters.aircraft import AC
 from sizing_tools.model import Model
@@ -237,18 +237,27 @@ class Optimalisation(Model, ABC):
     @show
     @save_with_name(lambda self: f"{self.__class__.__name__}_over_time")
     def plot_alt_and_thrust_over_time(self) -> tuple[plt.Figure, plt.Axes]:
-        fig, ax1 = plt.subplots(figsize=(10, 6))
+        fig, ax1 = plt.subplots(figsize=(7, 5))
         df = self.to_dataframe()
         ax2 = ax1.twinx()
         ax1.plot(df['time'], df['altitude'], label='Altitude', color='b')
         ax2.plot(df['time'], df['thrust'] / 1000, label='Thrust', color='r')
-        ax1.set_xlabel('Time [s]')
+        ax1.set_xlabel('Time, $t$ [s]')
         ax1.set_ylabel('Altitude, $h$ [m]', color='b')
         ax2.set_ylabel('Thrust, $T$ [kN]', color='r')
-        fig.legend(loc='center left', bbox_to_anchor=(.1, .7), ncol=1)
+        fig.legend(loc='center left', bbox_to_anchor=(.2, .6), ncol=1)
         # ax2.set_yticks(ax1.get_yticks())
-        ax1.set_ylim(bottom=0)
-        ax2.set_ylim(bottom=15.7)
+        ax1.set_ylim(bottom=0)#, top=100)
+        ax2.set_ylim(bottom=0, top=21)
+        ax1.set_xlim(right=20)
+
+        ax1.xaxis.set_major_locator(ticker.MultipleLocator(4))
+        ax1.xaxis.set_minor_locator(ticker.AutoMinorLocator())
+        ax1.yaxis.set_major_locator(ticker.MultipleLocator(25))
+        ax1.yaxis.set_minor_locator(ticker.AutoMinorLocator())
+        ax2.yaxis.set_major_locator(ticker.MultipleLocator(5))
+        ax2.yaxis.set_minor_locator(ticker.AutoMinorLocator())
+
         ax1.grid(True)
         plt.tight_layout()
         return fig, (ax1, ax2)

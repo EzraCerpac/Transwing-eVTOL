@@ -33,6 +33,7 @@ class VerticalClimb(Optimalisation):
         self.opti.subject_to([
             # self.max_power < self.aircraft.mission_profile.TAKEOFF.power,
             self.max_power > 100000,
+            self.max_power < 300000,
         ])
         self.power = self.thrust_level * self.max_power
         disk_area = rotor_disk_area(
@@ -81,7 +82,7 @@ class VerticalClimb(Optimalisation):
             self.dyn.altitude >= 0,
             self.dyn.w_e[0] == 0,
             self.dyn.w_e <= 0,
-            # self.dyn.w_e[-1] >= -2,
+            self.dyn.w_e[-1] >= -1,
             self.end_time < 60,
             # self.thrust_level[0] == 1e-8,
             self.thrust_level < 1,
@@ -132,7 +133,7 @@ class VerticalClimb(Optimalisation):
 if __name__ == '__main__':
     ac = trans_wing
     mission_profile_optimization = VerticalClimb(ac,
-                                                 opt_param=OptParam.MAX_POWER,
+                                                 opt_param=OptParam.ENERGY,
                                                  n_timesteps=501,
                                                  max_iter=1000,
                                                  n_logs=100)

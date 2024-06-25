@@ -65,11 +65,11 @@ mission_data = pd.concat([
 mission_data['power'] = interpolate_nans(
     np.where(
         np.abs(mission_data['power'].diff() / mission_data['time'].diff())
-        > 1000, np.NAN, mission_data['power']))
+        > 500, np.NAN, mission_data['power']))
 mission_data['thrust'] = interpolate_nans(
     np.where(
         np.abs(mission_data['thrust'].diff() / mission_data['time'].diff())
-        > 1000, np.NAN, mission_data['thrust']))
+        > 500, np.NAN, mission_data['thrust']))
 
 mission_data = pd.concat([
     pd.DataFrame({
@@ -175,7 +175,7 @@ def plot_mission_profile_over_time() -> (plt.Figure, plt.Axes):
     fig.legend(loc='upper center', bbox_to_anchor=(0.5, 0.85))
 
     # Get the unique segments
-    segments = mission_data['segment'].unique()[1:-1]
+    segments = mission_data['segment'].unique()[2:-2]
 
     # Loop over the segments
     for segment in segments:
@@ -214,7 +214,7 @@ def plot_energy_distribution() -> (plt.Figure, plt.Axes):
 
 
 if __name__ == '__main__':
-    # plot_mission_profile_over_distance()
+    plot_mission_profile_over_distance()
     plot_mission_profile_over_time()
     plot_energy_distribution()
 
