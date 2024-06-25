@@ -234,7 +234,7 @@ def plot_mission_profile_over_time_and_distance_max_range() -> (plt.Figure, plt.
     # ax2.legend(loc='upper right')
 
     # Get the unique segments
-    segments = mission_data['segment'].unique()[2:-2]
+    segments = mission_data['segment'].unique()[3:-2]
 
     # Loop over the segments
     for segment in segments:

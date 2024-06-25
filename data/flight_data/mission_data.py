@@ -213,6 +213,9 @@ def plot_mission_profile_over_time_and_distance() -> (plt.Figure, plt.Axes):
     ax2.set_ylabel('Power, $P$ [kW]', color='tab:red')
 
     # ax1.set_xlim(left=0, right=mission_data['time'].iloc[-1] / 60)
+    # include 35 min on the x-axis
+    # ax1.set_xticks(ax1.get_xticks() + [35])
+    # ax1.set_xlim(right=35)
 
     ax3 = ax1.twiny()
     distance_at_time = lambda t: np.interp(t * 60, mission_data['time'].to_numpy(), mission_data['x'].to_numpy())
@@ -225,7 +228,7 @@ def plot_mission_profile_over_time_and_distance() -> (plt.Figure, plt.Axes):
     # ax2.legend(loc='upper right')
 
     # Get the unique segments
-    segments = mission_data['segment'].unique()[2:-2]
+    segments = mission_data['segment'].unique()[3:-2]
 
     # Loop over the segments
     for segment in segments:
