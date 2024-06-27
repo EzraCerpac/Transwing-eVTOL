@@ -1,7 +1,9 @@
 import concurrent.futures
 import os
+import subprocess
 from pathlib import Path
 
+import cv2
 import imageio
 from PIL import Image
 from rembg import remove
@@ -9,21 +11,32 @@ from rembg import remove
 
 def remove_background(input_path, output_path) -> bool:
     try:
-        # Open the image and remove its background
-        original_image = Image.open(input_path)
+        # Open the image with OpenCV and remove its background
+        original_image = cv2.imread(input_path)
         image_without_bg = remove(original_image)
 
         # Save the new image with a.png extension
-        image_without_bg.save(output_path)
+        cv2.imwrite(output_path, image_without_bg)
         print(f"Background removed successfully for {os.path.basename(input_path)}")
     except Exception as e:
         print(f"An error occurred processing {os.path.basename(input_path)}: {e}")
         return False
     return True
 
+def remove_background_with_imagemagick(input_path: str, output_path: str, fuzz: str = '30%') -> bool:
+    try:
+        # Run the ImageMagick command
+        command = ['convert', input_path, '-fuzz', fuzz, '-fill', 'magenta', '-draw', 'color 0,0 floodfill', '-transparent', 'magenta', output_path]
+        subprocess.run(command, check=True)
+        print(f"Background removed successfully for {os.path.basename(input_path)}")
+    except subprocess.CalledProcessError as e:
+        print(f"An error occurred processing {os.path.basename(input_path)}: {e}")
+        return False
+    return True
 
 def process_image(paths) -> bool:
-    return remove_background(*paths)
+    # return remove_background(*paths)
+    return remove_background_with_imagemagick(*paths)
 
 
 def remove_background_from_images(input_dir, output_dir):
@@ -40,21 +53,10 @@ def remove_background_from_images(input_dir, output_dir):
 
     # Check if all images were processed successfully
     if all(results):
-        print("All images were processed successfully.")
+        print(f"All images were processed successfully, and saved in {output_dir}")
     else:
         print("Some images were not processed successfully.")
 
-
-def create_gif(input_dir, output_file, duration):
-    # Get all image files in the input directory
-    images = sorted(
-        [os.path.join(input_dir, file) for file in os.listdir(input_dir) if file.endswith(('.png', '.jpg', '.jpeg'))])
-
-    # Read images into memory
-    images_data = [imageio.imread(image) for image in images]
-
-    # Write images to gif
-    imageio.mimsave(output_file, images_data, duration=duration)
 
 
 if __name__ == '__main__':
