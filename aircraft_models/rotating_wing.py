@@ -227,6 +227,11 @@ def plot_parametric_three_view():
 
 
 if __name__ == '__main__':
-    plot_parametric_three_view()
-    # parametric.draw()
+    # plot_parametric_three_view()
+    parametric.draw(
+        backend='matplotlib',
+        use_preset_view_angle='top',
+        set_axis_visibility=False,
+        # thin_wings=True,
+    )
     # wing_airfoil.draw(draw_mcl=True, draw_markers=False, show=True)

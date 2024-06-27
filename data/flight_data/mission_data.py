@@ -17,6 +17,11 @@ cruise_data = pd.read_csv(DATA_DIR / 'CruiseOpt.csv')
 vertical_descent_data = pd.read_csv(DATA_DIR / 'VerticalDescent.csv')
 vertical_descent_data['x'] = np.zeros_like(vertical_descent_data['time'])
 
+vertical_climb_data['trans val'] = 1
+transition_data['trans val'] = np.load(DATA_DIR / 'trans_vals.npy')
+cruise_data['trans val'] = 0
+vertical_descent_data['trans val'] = 1
+
 transition2_data = transition_data.copy()
 transition2_data['thrust'] = transition2_data.iloc[::-1]['thrust'].values * 0.7
 transition2_data['power'] = transition2_data.iloc[::-1]['power'].values * 0.7
@@ -24,6 +29,7 @@ transition2_data['speed'] = transition2_data.iloc[::-1]['speed'].values
 transition2_data['altitude'] = transition2_data.iloc[::-1]['altitude'].values
 transition2_data['u'] = transition2_data.iloc[::-1]['u'].values
 transition2_data['w'] = transition2_data.iloc[::-1]['w'].values
+transition2_data['trans val'] = transition2_data.iloc[::-1]['trans val'].values
 
 transition_data[
     'time'] = transition_data['time'] + vertical_climb_data['time'].iloc[-1]
@@ -268,8 +274,8 @@ def plot_energy_distribution() -> (plt.Figure, plt.Axes):
 if __name__ == '__main__':
     # plot_mission_profile_over_distance()
     # plot_mission_profile_over_time()
-    # plot_energy_distribution()
-    plot_mission_profile_over_time_and_distance()
+    plot_energy_distribution()
+    # plot_mission_profile_over_time_and_distance()
 
     print(f'Max power: {mission_data["power"].max() / 1000} kW')
     print(f'Max thrust: {mission_data["thrust"].max() / 1000} kN')
