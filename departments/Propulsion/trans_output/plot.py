@@ -27,7 +27,7 @@ for i in range(1, len(saved_delta_T)):
     saved_delta_T[i] = saved_delta_T[i-1] + 0.1 * (saved_delta_T[i] - saved_delta_T[i-1])
 
 @show
-@save
+# @save
 def plot_transition_free_variables(time: np.ndarray, velocities: np.ndarray, thrust: np.ndarray, delta_T: np.ndarray, trans_vals: np.ndarray) -> (plt.Figure, plt.Axes):
     fig, ax1 = plt.subplots(figsize=(10, 4))
 
@@ -91,16 +91,16 @@ def plot_transition_variable_with_power(time: np.ndarray, velocities: np.ndarray
     # Plot Extra thrust on the second y-axis
     ax2.plot(time, total_power / 1000, label=r"Total power $P_\text{tot}$", color='tab:red')
     ax2.plot(time, power_required / 1000, label=r"Power required $P_\text{req}$", color='tab:red', linestyle='--')
-    ax2.plot(time, acceleration_power / 1000, label=r"Extra power $\Delta P$", color='tab:red', linestyle='-.')
+    # ax2.plot(time, acceleration_power / 1000, label=r"Extra power $\Delta P$", color='tab:red', linestyle='-.')
     ax2.set_ylabel(r"Power, $P$ [kW]", color='tab:red')
     ax2.tick_params(axis='y', labelcolor='tab:red')
 
-    y = ax1.get_ylim()[1]
-    ax1.plot(time, trans_vals * y, label="Transition", color='tab:green')
-    ax1.hlines(y, 0, time[-1] / 10, color='tab:green', linestyle='--')
-    ax1.text(time[-1] / 10, y-.2, "Vertical configuration", color='tab:green', verticalalignment='top')
-    ax1.hlines(0, time[-1] * 9 / 10, time[-1], color='tab:green', linestyle='--')
-    ax1.text(time[-1] * 9 / 10, .1, "Horizontal configuration", color='tab:green', verticalalignment='bottom', horizontalalignment='right')
+    # y = ax1.get_ylim()[1]
+    # ax1.plot(time, trans_vals * y, label="Transition", color='tab:green')
+    # ax1.hlines(y, 0, time[-1] / 10, color='tab:green', linestyle='--')
+    # ax1.text(time[-1] / 10, y-.2, "Vertical configuration", color='tab:green', verticalalignment='top')
+    # ax1.hlines(0, time[-1] * 9 / 10, time[-1], color='tab:green', linestyle='--')
+    # ax1.text(time[-1] * 9 / 10, .1, "Horizontal configuration", color='tab:green', verticalalignment='bottom', horizontalalignment='right')
 
     ax1.xaxis.set_minor_locator(ticker.AutoMinorLocator())
     # ax2.set_yticks([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50])
@@ -114,11 +114,11 @@ def plot_transition_variable_with_power(time: np.ndarray, velocities: np.ndarray
 
 
     # Add a grid to ax1
-    ax1.grid(True, alpha=0.6)
+    # ax1.grid(True, alpha=0.6)
 
     # Get y-ticks from ax1 and create a custom grid for ax2
     # ax2.set_yticks(ax1.get_yticks())
-    ax2.grid(True, linestyle='--', alpha=0.9)
+    # ax2.grid(True, linestyle='--', alpha=0.9)
 
     # ax1.set_ylim(bottom=0)
     # ax2.set_ylim(bottom=0)

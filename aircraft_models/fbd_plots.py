@@ -262,13 +262,13 @@ def animate_trans(blacked_out: bool = False, keep_images: bool = False):
     def update(frame, trans):
         fig, ax = plot_trans(trans_wing, trans, save=False,
                              blacked_out=blacked_out,
-                             add_cg_dot=True,
-                             add_cg_line=True,
-                             add_battery=True,
+                             # add_cg_dot=True,
+                             # add_cg_line=True,
+                             # add_battery=True,
                              add_gravity_vector=False,
                              add_thrust_vector=False,
                              add_engine_thrust=False,
-                             add_engine_lines=True,
+                             # add_engine_lines=True,
                              add_aero_vector=False,
                              add_legend=False,
                              )
