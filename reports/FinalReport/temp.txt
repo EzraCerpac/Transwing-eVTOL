@@ -1,0 +1,25 @@
+ frontmatter/00_Executive_Overview.tex              |  35 ++++---
+ frontmatter/title-report.tex                       |   2 +-
+ mainmatter/01_Introduction.tex                     |   2 +-
+ mainmatter/02_Market_Analysis.tex                  |  14 +--
+ mainmatter/03_Functional_Analysis.tex              |   2 +-
+ mainmatter/04_Technical_Risk_Assessment.tex        |   6 +-
+ mainmatter/05_Design_Configuration.tex             |  10 +-
+ mainmatter/07.1_Aerodynamic_Analysis.tex           |   8 +-
+ mainmatter/07_Aerodynamic_Design.tex               |  12 +--
+ mainmatter/08.1_Propulsion.tex                     |   6 +-
+ mainmatter/09_Stability and Control.tex            |  71 +++++++------
+ mainmatter/100_Conclusion.tex                      |  44 ++++++--
+ mainmatter/10_Autononous_Software.tex              |  12 +--
+ mainmatter/11_Electric_Power_System.tex            |  31 +++---
+ mainmatter/12_Structures and Materials.tex         |  49 +++++----
+ ...13_Resource_allocation_and_Budget_Breakdown.tex |  14 ++-
+ mainmatter/14_Interfaces.tex                       |   8 +-
+ mainmatter/15_Operations_and_Logistics.tex         |  80 ++++++++-------
+ mainmatter/16_Sustainability_Approach.tex          | 114 +++++++++++----------
+ mainmatter/17_Financial_Analysis.tex               |  54 +++++-----
+ mainmatter/18_Production_Plan.tex                  |  16 +--
+ mainmatter/19_Future_Development_Of_Project.tex    |  18 +++-
+ mainmatter/20_Requirements_Compliance.tex          |  67 ++++++------
+ report.bib                                         |   6 +-
+ 24 files changed, 383 insertions(+), 298 deletions(-)

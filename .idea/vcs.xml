@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/reports/BaselineReport" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/reports/FinalReport" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/reports/MidtermReport" vcs="Git" />
+  </component>
+</project>

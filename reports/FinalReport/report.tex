@@ -1,0 +1,234 @@
+\documentclass{tudelft-report}
+
+%% Set up the bibliography
+\usepackage[sorting=none, citestyle=ieee, backend=biber]{biblatex}
+\addbibresource{report.bib}
+\usepackage[titles]{tocloft}
+\setlength{\cftbeforechapskip}{3pt}
+\usepackage{hyperref}
+\usepackage{gensymb}
+\usepackage{tabulary}
+\usepackage{listings}
+\usepackage{minted}
+\usepackage{tablefootnote}
+\usemintedstyle{pastie}
+\usepackage{bm}
+\usepackage{lipsum}  
+\usepackage{xargs}              
+\usepackage[disable]{todonotes}
+\usepackage{lscape}
+\usepackage{graphicx}
+\usepackage{svg}
+\usepackage{picins}
+\usepackage[british]{babel}
+\usepackage{csquotes}
+\usepackage{graphics}
+\usepackage{diagbox}
+\usepackage{multicol}
+\usepackage{parskip}
+\usepackage{adjustbox}
+\usepackage{longtable}
+%\usepackage{pgfplotstable}
+\usepackage{lipsum}% this is dummy code
+%\usepackage{pgfgantt}
+\usepackage{wrapfig}
+\usepackage{graphicx}
+\usepackage{afterpage}
+\usepackage{multirow}
+\usepackage{colortbl}
+\usepackage{sidecap}
+\usepackage{hhline}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+\usepackage{pdflscape}
+\usepackage[paper=A4,pagesize]{typearea}
+\newcommand{\tabitem}{~~\llap{\textbullet}~~}
+\KOMAoptions{DIV=15}
+\geometry{a4paper,total={170mm,257mm},left=20mm,top=20mm}
+
+\sisetup{
+     detect-all,
+    exponent-mode = threshold,
+    exponent-thresholds = -3:5,
+    per-mode = symbol,
+    round-mode = none,  % maybe change to "figures"
+    round-precision = 3,
+    round-pad = false, % whether their are extra trailing 0s
+    output-decimal-marker = {.},
+    group-digits = integer,
+%    output-exponent-marker = e,
+    tight-spacing = true,
+    list-units = single,
+    product-units = single,
+    range-units = single,
+    print-unity-mantissa=false,
+}
+\usepackage{collcell}
+
+ \makeatletter
+\newcommand\newref[1]{#1\def\@currentlabel{#1}}
+\newcommand\newtag[1]{#1\def\@currentlabel{#1}\label{#1}}
+
+ \makeatother
+
+
+%% Additional packages and commands
+\usepackage{parskip}
+\setlist{itemsep=-2pt} % Reducing white space in lists slightly
+\renewcommand{\deg}{\si{\degree}\xspace} % Use \deg easily, everywhere
+\newcommand{\bfemph}[1]{\textbf{\emph{#1}}} % Bold and italic
+
+%colorpackages
+\usepackage[table]{xcolor}
+\usepackage{colortbl}
+\usepackage{float}
+\usepackage{booktabs}
+
+%Reduce whitespace
+% Reduce space between entries
+\usepackage{setspace}
+\setlength{\bibitemsep}{0pt} % Adjust this value to the desired space between entries
+
+% Apply the spacing settings at the beginning of the bibliography
+\AtBeginBibliography{\setlength{\itemsep}{\bibitemsep}}
+
+
+
+%% ----------------------------------------------------------------------
+%%    Begin of document + Frontmatter (Roman page numbering)
+%% ----------------------------------------------------------------------
+
+\begin{document}
+
+%packages for risk cells
+\definecolor{low}{RGB}{198,239,206}
+\definecolor{medium-low}{RGB}{255,235,156}
+\definecolor{medium}{RGB}{255,193,92}
+\definecolor{medium-high}{RGB}{255,105,97}
+\definecolor{high}{RGB}{255,0,0}
+
+% Define command to color the risk cells
+\newcommand{\riskcolor}[1]{
+    \ifdim #1 pt = 0 pt \cellcolor{low}\else
+    \ifdim #1 pt > 0 pt \ifdim #1 pt < 1 pt \cellcolor{low!70!yellow}\else
+    \ifdim #1 pt = 1 pt \cellcolor{low!50!yellow}\else
+    \ifdim #1 pt > 1 pt \ifdim #1 pt < 2 pt \cellcolor{medium-low}\else
+    \ifdim #1 pt = 2 pt \cellcolor{medium-low!70!orange}\else
+    \ifdim #1 pt > 2 pt \ifdim #1 pt < 3 pt \cellcolor{medium}\else
+    \ifdim #1 pt = 3 pt \cellcolor{medium!50!orange}\else
+    \ifdim #1 pt > 3 pt \ifdim #1 pt < 4 pt \cellcolor{medium-high}\else
+    \ifdim #1 pt = 4 pt \cellcolor{medium-high!70!red}\else
+    \ifdim #1 pt > 4 pt \ifdim #1 pt < 5 pt \cellcolor{high!50!red}\else
+    \ifdim #1 pt = 5 pt \cellcolor{high}\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi
+    #1
+}
+
+
+\frontmatter
+
+%% Define the main parameters
+\title{Swing eVTOL}
+%\subtitle{A Catchy Optional Subtitle \\ that Grabs the Attention}
+\subtitle{Final Report}
+\author{Group 1}
+
+\subject{AE3200: Design Synthesis Exercise} % Cover only
+\affiliation{Delft University of Technology} % Cover only
+\coverimage{figures/front.png} % Aspect ratio of 2:3 (portrait) recommended
+\definecolor{title}{HTML}{ffffff} % Color for cover title
+%ec7e03
+\makecover
+
+\newpage
+\thispagestyle{empty}
+\vspace*{\fill}
+\begin{center}
+    This page has intentionally been left blank.
+\end{center}
+\vspace*{\fill}
+\newpage
+
+\input{frontmatter/title-report}
+
+
+
+
+%\input{frontmatter/preface}
+%\input{frontmatter/summary}
+\input{frontmatter/00_Executive_Overview}
+
+
+\setcounter{tocdepth}{1} % todo: remove for next report
+ \renewcommand{\baselinestretch}{0.9}\normalsize
+\tableofcontents
+
+ \renewcommand{\baselinestretch}{1.0}\normalsize
+%\listoffigures
+%\listoftables
+
+
+%\input{frontmatter/nomenclature}
+
+%% ----------------------------------------------------------------------
+%%    Mainmatter (Arabic page numbering)
+%% ----------------------------------------------------------------------
+
+\mainmatter
+
+% \input{mainmatter/introduction}
+
+% \let\oldcleardoublepage\cleardoublepage
+% \let\oldclearpage\clearpage
+% \renewcommand{\cleardoublepage}{}
+% \renewcommand{\clearpage}{}
+
+
+
+\input{mainmatter/01_Introduction}
+\input{mainmatter/02_Market_Analysis}
+\input{mainmatter/03_Functional_Analysis}
+\input{mainmatter/04_Technical_Risk_Assessment}
+\input{mainmatter/05_Design_Configuration}
+\input{mainmatter/06_Mission_Profile}
+
+\input{mainmatter/07_Aerodynamic_Design}
+\input{mainmatter/07.1_Aerodynamic_Analysis}
+\input{mainmatter/08_Power}
+\input{mainmatter/08.1_Propulsion}
+\input{mainmatter/09_Stability and Control}
+\input{mainmatter/10_Autononous_Software}
+\input{mainmatter/11_Electric_Power_System}
+\input{mainmatter/12_Structures and Materials}
+
+\input{mainmatter/13_Resource_allocation_and_Budget_Breakdown}
+\input{mainmatter/14_Interfaces}
+\input{mainmatter/15_Operations_and_Logistics}
+\input{mainmatter/16_Sustainability_Approach}
+\input{mainmatter/17_Financial_Analysis}
+\input{mainmatter/18_Production_Plan}
+\input{mainmatter/19_Future_Development_Of_Project}
+\input{mainmatter/20_Requirements_Compliance}
+\input{mainmatter/100_Conclusion}
+
+
+
+
+%\renewcommand{\cleardoublepage}{\oldcleardoublepage}
+%\renewcommand{\clearpage}{\oldclearpage}
+
+
+%% Prevent urls running into margins in bibliography
+\setcounter{biburlnumpenalty}{7000}
+\setcounter{biburllcpenalty}{7000}
+\setcounter{biburlucpenalty}{7000}
+
+%% Add bibliography
+\printbibliography[heading=bibintoc,title=References]
+%%% ADD APPENDICES HERE %%%
+
+\appendix
+
+\input{appendix/A3s}
+ \addcontentsline{toc}{chapter}{Appendix}
+\end{document}

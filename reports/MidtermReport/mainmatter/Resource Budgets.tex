@@ -1,0 +1,151 @@
+\chapter{Technical Resource Budgets}
+\label{chap:TechnicalResourceBudgets}
+Technical resource budgeting is a process where the available resources are allocated to the components and subsystems of the eVTOL systems.
+This can be used as a tool for the designers because it gives an indication and allowance of the resources available to their departments or subsystems.
+Moreover, it is essential for risk management, because setting aside the contingency reserves can mitigate the impact of unforeseen events.
+This budgeting is further explained in \Cref{sec:techbudget}.
+In \Cref{sec:contingengy_mngmt}, margins are applied to the budget based on the uncertainty and novelty of the design in the estimates.
+
+
+
+\section{Technical Budgets}
+\label{sec:techbudget}
+%Budgets: Time schedule, mass, volume, power cost
+%methodology for budgets, mainly cost
+The budget allocation can be separated into different components: time, mass, power, and cost.
+These components heavily influence and constrain the design process.
+In \Cref{tab:techbudget} the distribution in percentage of each budget is reported.
+
+%One of the most important aspects of the development of a new product is the time budget. This sets important constraints not only on the research and development costs but also on the quality of the final design. In order to remain within the set time constraints by the relative stakeholders, it is necessary to establish a time budget and distribute the total time in the different design departments appropriately. This means that certain sub-systems need more resources than others. For example, landing gears have been on the market for decades and their design requires little innovation, thus less time and resources. On the other hand, a novel wing folding mechanism concept would require more resources to be allocated, which includes more dedicated time.
+
+%Another important aspect to be evaluated is the predicted mass for the designed vehicle. Having an estimate of this gives an understanding of the feasibility of the project and the subsystems to be chosen. For example, depending on the range requirements the size and mass of the battery will change, thus for bigger range requirements, the battery mass will be too high, resulting in a plane that is not able to fly. Apart from the weight of the subsystems, a first-order approximation of the maximum take-off weight (MTOW) could also be performed. This will make it possible to estimate several other parameters such as the payload that could be carried or whether the weight of the eVTOL is low enough to land in an urban environment without damaging the ground or not. In the context of this project, where an eVTOL is designed, the mass budget closely relates to the power budget. The aircraft will be powered only by electrical energy with no fuel needed. The energy distribution will instead be regulated by the batteries. It is important to have a rough estimate of the power requirement of each subsystem so as to have a more accurate sizing of the energy-storing devices and their masses. Most of the energy would be used by the propulsive system, but it is important to also consider the other several subsystems that need continuous power at different specifications. Examples are all the onboard electronics, including flight computers, navigation systems, displays, actuators and many more. Failing to include these elements would lead to overestimating the range capabilities, thus not fulfilling the final requirement.
+
+%Finally, the cost budget is also a fundamental element of the project development. Having an initial estimate of the total costs of the project can give an indication about whether the development and production are possible under certain economic constraints or not. In order to perform this estimation, competition costs could be looked at for market prices of the various sub-systems. However, in the case of novel technology such as the eVTOL, where very few companies are present on the market and little literature is present, the cost estimation becomes less accurate and subjected to big margins. In \Cref{tab:techbudget} the distribution in percentage of each budget is reported and will then be justified.
+
+
+\begin{table}[H]
+\centering
+\caption{Technical Resource Budget}
+\begin{tabular}{lrrrr}
+\hline
+\textbf{Subsystem}                & \textbf{Time} & \textbf{Mass} & \textbf{Power} & \textbf{Cost} \\ \hline
+Structures and Materials          & 35\% \cite{ProjectPlan}           & 25\% \cite{boeingMass}           & 0\%              & 45\%  \cite{purdue_cesun}          \\ 
+Propulsion                        & 30\% \cite{ProjectPlan}              & 15\%  \cite{boeingMass}          & 80\%             & 15\% \cite{purdue_cesun}            \\ 
+Battery                           & 25\%  \cite{ProjectPlan}            & 25\%  \cite{boeingMass}          & 10\%             &          20\% \cite{purdue_cesun}     \\ 
+Payload                           & 0\%             & 25\%            & 0\%              & 0\%             \\ 
+Other (Wiring,   Hydraulics, etc.) & 10\% \cite{ProjectPlan}              & 10\%            & 10\%             &          20\%     \\
+Total                             & 100\%           & 100\%           & 100\%            & 100\%           \\ \hline
+\end{tabular}
+\label{tab:techbudget}
+\end{table}
+
+\vspace{-5mm}
+\paragraph{Time} The time percentages have been derived by the work breakdown structure.
+This allocation is based on the initial precision of the area of focus of the design, it is however possible for it to be changed, with the accordance of the systems engineer.
+\vspace{-5mm}
+\paragraph{Mass} The mass distribution was derived by the statistical analysis formed by Boeing~\cite{boeingMass} The paper analyses the weight distributions per sub-systems for different types of eVTOLS. Since the configurations presented are similar to this study case and the values are given as the percentage of the MTOW, an initial estimate for the subsystems of the eVTOL presented in this report can be drawn.
+  Furthermore, a simple linear regression performed on the MTOW of existing eVTOLs in relation to the range resulted in MTOW $\approx$ \qty{1800}{kg} for a range of \qty{100}{km} as per requirement.
+\vspace{-5mm}
+  \paragraph{Power} The power used by each sub-system has been estimated.
+  It is clear that being the propulsive system is completely electric most of the power will be utilized by it.
+  On the other side, some smaller sub-systems will also need some power, for example, to use actuators or to run onboard electronics.
+\vspace{-5mm}
+  \paragraph{Cost} The cost has been estimated based on the paper by Purdue~\cite{purdue_cesun}.
+  Here a breakdown of the costs for several sub-systems for different commercial eVTOLs is present.
+  From these values, it is possible to make a preliminary cost division.
+  In the paper, there are vehicles with similar mission requirements as the one needed for this project, enabling a cost comparison.
+  It has to be taken into account that there are few competitors with a transwing, therefore the costs will be higher than the conventional eVTOLS. It is important to notice that since eVTOLs are still not a widespread technology, a complete cost breakdown is hard to execute because several technologies are new, and thus it is not trivial to know their possible costs.
+  Lastly, the research and development costs are not considered.
+% \vspace{-5mm}
+
+
+%The final technical budget can be found in \Cref{tab:techbudget}. The mass budget is derived from a statistical analysis done by Boeing. The article analyses the weight distributions for different types of eVTOLS and from this, a mass estimation can be made for our design. This estimation is the percentage since the exact MTOW is not yet determined.
+
+%Performing a cost analysis for eVTOL was challenging due to its new concept and relatively fresh market. Many companies and research papers do not share estimated subsystem costs, but a paper by Keio University provided some insights on the Lilium and Volocopter vehicles~\cite{purdue_cesun}. Based on this analysis, were able to estimate a preliminary cost budget.
+
+
+
+
+
+
+
+
+%Structures & materials
+%Power & propulsion
+%Control & stability
+%Aerodynamics
+%Flight Performance
+
+
+
+
+\section{Contingency Management}
+\label{sec:contingengy_mngmt}
+%Contigency Management
+%Use of margins
+The budgets are not fixed due to the risks and uncertainties associated with the project.
+The fact that there is no broad design market yet, means that the budget will change during the design phase.
+Therefore, contingencies are estimated for the budgets.
+The contingencies are a guideline and indicate whether a design needs to be revised whenever it crosses the margin.
+On the other hand, when reducing the budget is deemed impossible, it can also indicate to investors that more cash flow is needed to finish the design.
+
+The economy is very flexible and a big factor in budgeting regarding costs will be inflation.
+The proposed inflation for the following 3 years is decreasing and aimed to be around 2$\%$ \cite{ecb}.
+This means that the production and part costs will increase and therefore there has to be budgeted for.
+
+
+It is important to consider the potential risks associated with the development of new technology, such as eVTOLs. While there are some prototypes on the market, there is still limited information available about them, and many details are kept confidential.
+Additionally, there is a lack of scientific literature on this topic, which makes it difficult to estimate the costs associated with preliminary budgeting.
+For instance, the design team is considering implementing a wing folding mechanism, which has not been used in any passenger-certified air vehicles before.
+This makes the development process more challenging, as it is unclear how much time and money will be required for research and development, as well as production.
+Moreover, it is uncertain whether this idea is feasible and whether the aircraft will be able to withstand the loads during flight.
+All of these factors impact the technical budgets, which means that large margins need to be established.
+
+
+On the other hand, there are some sub-systems in the project that have been developed for several years already and are very mature.
+Therefore, less margin is required.
+For instance, the landing retraction mechanism has extensive literature available, which reduces the risk of exceeding the cost or time budget.
+The following table will provide an overview of the contingency management plan, including margins for each budget.
+
+\begin{table}[H]
+    \centering
+    \caption{Contingency management plan, each cell representing the margin}
+    \label{tab:my_label}
+    \begin{tabular}{crrrr}
+    \hline
+        Design Phase & Time & Mass & Power & Cost \\ \hline
+        Preliminary & 60\% & 25\% & 30\%  & 40\%\\
+        Midterm &40\% & 15\%  & 15\% & 20\%\\
+        Detailed & 10\% & 5\% & 5\% & 10\%\\ \hline
+    \end{tabular}
+\end{table}
+
+In each cell of the table, the percentage margin is given.
+It can be seen how with time the margins decrease as the designs become more detailed.
+The values given have been estimated by the design team and some indications have been taken from the paper of the General Accounting Office~\cite{contingency}.
+
+A study performed by the California Institute of Technology estimates the margins needed for the conceptual design phase.
+It provides an example of a space system, however, the estimations can be implemented for aircraft.
+It uses the Monte Carlo method, which is a probabilistic model that includes uncertainty or randomness.
+The results from this analysis state that for mass, schedule and costs, a contingency margin of 30, 25 and 10 percent respectively is used during the conceptual design phase~\cite{thunnissen2004method}.
+ These margins are used to generate a contingency table which can be seen in \Cref{tab:techcontingengcy}.
+The percentages stem from~\cite{thunnissen2004method}.
+
+
+\begin{table}[H]
+\centering
+\caption{Contingency subsystem margins}
+\begin{tabular}{lrrrr}
+\hline
+\textbf{Subsystem}                & \textbf{Margins Time} & \textbf{Margins Mass} & \textbf{Margins Power} & \textbf{Margins Cost} \\ \hline
+Structures and Materials          & 25\%            & 30\%            & 0\%              & 10\%            \\ 
+Propulsion                        & 25\%            & 30\%            & 10\%             & 10\%             \\ 
+Battery                           & 25\%            & 30\%            & 10\%             & 10\%     \\ 
+Payload                           & 0\%             & 0\%            & 0\%               & 0\%             \\ 
+Other (Wiring,   Hydraulics, etc.) & 25\%             & 30\%            & 10\%           & 10\%     \\\hline
+\end{tabular}
+\label{tab:techcontingengcy}
+\end{table}
+
+%Use of Commercial Off-the-Shelf (COTS) Components
+

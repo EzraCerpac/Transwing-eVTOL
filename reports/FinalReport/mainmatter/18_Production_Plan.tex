@@ -1,0 +1,91 @@
+\chapter{Production Plan}
+\label{ch:Production_Plan}
+This chapter outlines the proposed production strategy for the \textit{Swing eVTOL}.
+Specifically, in \Cref{sec:vert_hori_integration}, it compares in-house production with outsourcing for each subsystem, highlighting the chosen production method in \Cref{sec:prodmeth_subsys}.
+The production line and timeline are also detailed in \Cref{sec:assem_line}.
+
+\section{Vertical or Horizontal Integration}
+\label{sec:vert_hori_integration}
+There is a clear need for customised and high-quality parts in the manufacturing process of complex systems such as eVTOLs.
+These parts can either be produced in-house, through vertical integration, or produced by specialised contractors through horizontal integration. 
+In the Competition Analysis (\Cref{sec:Competition_Analysis}), the main competitors were established in the Joby S4 and Archer Midnight; hence, those are interesting to compare with.
+Most notably, Joby follows a vertical integration model, arguing that it leads to a more optimised product designed specifically for its application. 
+While Archer chose the more classical way of production in a horizontal integration model, outsourcing over 80\% of its components \cite{integrationjobyvarcher}.
+According to Archer, this approach results in lower initial investments and a smoother market entry, as many subsystems from suppliers are already fully certified.
+
+In-house production offers several advantages, and more so in serial production contexts. 
+Intellectual property and innovation are critical in the aerospace industry, making it safer to shield competitors from accessing technical details and innovations.
+For instance, the novel hinge mechanism used in the \textit{Swing}, to realise the transformative wing concept, benefits from in-house production by reducing the risk of leaks.
+Quality control is another significant reason for choosing self-production; it is easier to perform it in-house than outsourced, which adds another layer of quality control to the production process.
+An incident in January 2024 involving a Boeing 737-MAX, where a door blew out mid-flight, highlighted quality issues with a subcontractor-produced door handle. 
+Although subcontracted components can undergo quality assurance, in-house production provides greater control over product quality. 
+This may be less relevant in the initial production stages due to the small team size, but it becomes crucial as production scales up.
+Moreover, supply-chain risks are also to be considered, as outsourcing can introduce delays if any contractor fails to deliver on time, potentially disrupting the entire production line and causing significant economic losses.
+However, the Technical Risk Analysis (\Cref{ch:Technical_Risk_Assessment}) accounts for these risks posed with horizontal integration; thus the team is readily prepared for such situations.
+
+Despite the earlier stated disadvantages, outsourcing also has its benefits.
+For components requiring highly specialised machinery, starting new in-house production lines can severely increase the production costs, thus higher startup cost, which will increase the price of the \textit{Swing}.
+Subcontractors often specialise in specific technological areas, providing high-quality products that meet the requirements while already having the highly needed equipment available.
+For instance, the outsourcing of electric motors, as described in \Cref{sec:engineschoice}, is more cost-effective and time-efficient than investing heavily in R\&D and production facilities. 
+Outsourcing can also account for the scalability of this project, allowing specialised companies to produce larger batches of components or reduce production during slowdowns without the need to shut down factories.
+
+\section{Production Method by Subsystem}
+\label{sec:prodmeth_subsys}
+Understanding the main criteria for choosing between in-house production and outsourcing, allows drawing some conclusions for each subsystem, as well as the fact that more subsystems have already been defined in their respective chapters.
+The criteria considered are outlined in \Cref{tab:prodcriteria}.
+In each chapter, the subsystem was evaluated against these criteria to determine the most advantageous production method, as well as concluding if in-house production is even possible.
+For the sake of clarity, the results are summarised in \Cref{prod2}.
+
+
+\begin{table}[ht]
+\centering
+\caption{Evaluation criteria production method}
+\label{tab:prodcriteria}
+\begin{tabular}{lll}
+\toprule
+\textbf{ID} & \textbf{Criterion} & \textbf{Description}                                                                            \\ \midrule
+\textit{PR-01} & Costs & \begin{tabular}[c]{@{}l@{}}Costs related to the production\end{tabular} \\ 
+\textit{PR-02} & Expertise required & \begin{tabular}[c]{@{}l@{}}Specific knowledge and expertise needed\end{tabular} \\ 
+\textit{PR-03} & Quality control & \begin{tabular}[c]{@{}l@{}}Expected production quality of the product\end{tabular} \\ 
+\textit{PR-04} & Confidential technology & \begin{tabular}[c]{@{}l@{}}Need to protect novel technology from competitors\end{tabular} \\ 
+\textit{PR-05} & Supply chain & \begin{tabular}[c]{@{}l@{}}Dependency and availability of the supply chain\end{tabular} \\ 
+\textit{PR-06} & Scalability & \begin{tabular}[c]{@{}l@{}}Flexibility of scaling production up or down\end{tabular} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\caption{Subsystem production methods}
+\label{prod2}
+\begin{tabular}{p{3.2cm}cp{6.5cm}l}
+\toprule
+\textbf{Subsystem} & \textbf{Method} & \textbf{Reasoning} & \textbf{Supplier} \\ \midrule
+Electric motor & Outsource & High development costs and specialised knowledge needed & Emrax \\ \hline
+Landing Gear & Outsource & Common component produced by multiple companies & Liebherr \\ \hline
+Fuselage & Outsource & High-quality control and supply chain stability & N/A \\ \hline
+Hinge Mechanism & In-house & Protect intellectual property of novel technology & N/A \\ \hline
+Battery cells & Outsource & High-performance product produced by few companies & Melasta \\ \hline
+Electronics and Wiring & Outsource & Numerous suppliers offer off-the-shelf products & Collins Aerospace \\ \hline
+Autonomous System & Outsource & Market has several specialised companies & Collins Aerospace \\ \hline
+Wings and Control Surfaces & In-house & High-quality control and supply chain stability & N/A \\ \hline
+Bolts, Fasteners & Outsource & Numerous suppliers offer off-the-shelf products & TriMas Aerospace \\ \hline 
+Glass windows & Outsource & Common component produced by multiple companies & Swift Glass\\ \hline
+Sensors & Outsource & Market has several specialised companies & Honeywell \\ \hline
+Structural elements & Outsource & Common components produced by several companies & Magellan Aerospace \\\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Assembly Line}
+\label{sec:assem_line}
+Once the necessary in-house and outsourced components are produced and delivered respectively, the \textit{Swing eVTOL} can be assembled. 
+Most notably, the production philosophy is based on outsourcing as much as possible, which is favourable for this project.
+Although, the main assembly will be performed in-house, to account for specific design customisation.
+Each subsystem is first assembled in its own subassembly line, which then progresses through the production line until the final assembly station.
+For example, the wing comprises several subassemblies that are individually assembled before being combined in the final wing assembly line.
+
+The final aircraft assembly begins after the fuselage parts are joined. 
+Subsequently, all subsystems are mounted onto the vehicle, making up for the completed product. 
+The optimisation and coordination between different departments are important to ensure a time- and cost-effective production.
+Furthermore, quality control is crucial throughout the manufacturing and assembly process.
+Guaranteeing quality at each station, and thus subassembly, helps identify and correct flaws early in production.
+It shows the chronological order of the total process, however, specific time spans per phase have not yet been established.

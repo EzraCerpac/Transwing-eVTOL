@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Midterm Report" pattern="file[Transwing-eVTOL]:reports/MidtermReport//*" />
+</component>
