@@ -1,0 +1,116 @@
+\chapter{Requirements Compliance}
+\label{ch:Requirements_Compliance}
+An important step to be considered, when analysing the progress of the \textit{Swing} design, is determining the requirement compliance.
+This can be done based on the requirements compliance matrix, which contains information with regard to the completion of a given criteria, justification for the status of the requirement, as well as steps necessary to be taken to ensure compliance in the future.
+First and foremost, a list of all the key requirements and constraints is provided in this section.
+Afterwards, based on the key requirements, the compliance matrix shall be detailed.
+Hence, the first thing that shall be presented in this section is a list of all the key requirements and constraints, as defined in the Baseline Report \cite{baselinerepo}.
+The key requirements for the design are to be found \Cref{tab:constraint}.
+
+\begin{table}[H]
+\centering
+\caption{Key requirements}
+\begin{tabular}{l|c}
+\toprule
+\multicolumn{2}{c}{\textbf{Air Taxi Operators} (STK 03)}                                                   \\ \midrule
+TE-1-STK03-1-1 & The vehicle shall be able to charge at a minimum power of 250{[}KW{]}             \\
+TE-1-STK03-3   & The vehicle shall be able to carry at least 400 [kg] of payload               \\
+TE-1-STK03-4-1 & The vehicle shall be able to fly autonomously.                                   \\ \midrule
+\multicolumn{2}{c}{\textbf{Maintenance Contractors} (STK 06)}                                              \\ \midrule
+TE-1-STK06-3-1 & The vehicle components requiring regular maintenance shall be easily accessible. \\ \midrule
+\multicolumn{2}{c}{\textbf{Passengers} (STK 07)}                                                           \\ \midrule
+TE-2-STK07-3-2 & The vehicle shall have a cruise speed of 200 {[}km/h{]}                          \\
+TE-2-STK07-5-2 & The vehicle shall be able to withstand winds of up to 7 Beaufort.               \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+Another important aspect to consider in the compliance matrix is the constraints that have been imposed on the design phase, in order to reach a successful design as well as satisfy the different stakeholders.
+The constraints on the design are given in \Cref{tab:constraint} and have been determined based on the Baseline report \cite{baselinerepo}.
+
+\begin{table}[H]
+\centering
+\caption{Key constraints}
+\label{tab:constraint}
+\resizebox{\textwidth}{!}{\begin{tabular}{l|c}
+\toprule
+\multicolumn{2}{c}{\textbf{Private Customers} (STK 05)}                                                                                                                                                   \\ \midrule
+CO-1-STK05-1                       & The vehicle cost of production per unit shall be less than 2000k{[}€{]}.                                                                                    \\ \midrule
+\multicolumn{2}{c}{\textbf{Passengers} (STK 07)}                                                                                                                                                          \\ \midrule
+CO-3-STK07-1                       &  \begin{tabular}[c]{@{}c@{}}The vehicle predicted reliability shall be of maximum one failure \\ per million flight hours ($\text{10}^{-6}$ reliability) \cite{106safety}. \end{tabular}\\ 
+CO-3-STK07-2 & Cabin noise shall never exceed 60dBA \\ \midrule
+
+\multicolumn{2}{c}{\textbf{Air Taxi Operators} (STK 03)}                                                                                                                                                  \\ \midrule
+CO-3-STK03-1                        & The vehicle shall be able to fly with only 75\% of the propulsion system working.                 \\ 
+CO-3-STK03-2 & The disk loading shall be kept below \qty{400}{kg/m^2} at all times, during nominal flight. \\
+CO-3-STK03-3 & The vehicle shall have a design thrust to weight ratio of 2.
+
+
+                \\ \midrule
+\multicolumn{2}{c}{\textbf{Environmental Organisations} (STK 13)}                                                                                                                                         \\ \midrule
+CO-4-STK13-1-1                     & The vehicle shall be fully electric                                                                                                                         \\
+CO-4-STK13-1-4                     & The vehicle shall have maximum dimensions of 8x4x2 \unit{m^3} on the ground.                                                                      \\
+CO-4-STK13-1-5                     & The vehicle shall have a lifetime greater than 10 years                                                                                                     \\
+\multicolumn{1}{l}{CO-4-STK13-1-6} & The vehicle structure shall be reusable for at least 10 years after its life.                                                                               \\ \midrule
+\multicolumn{2}{c}{\textbf{Affected Public} (STK 14)}                                                                                                                                                     \\ \midrule
+CO-5-STK14-1-1                     & The noise level at 500{[}m{]} from the vehicle shall not exceed 45.2{[}dB{]}.                                                                                \\ \midrule
+\multicolumn{2}{c}{\textbf{National Government} (STK 16)}                                                                                                                                                 \\ \midrule
+CO-5-STK16-1-1                     & The vehicle shall have an electric power autonomy of \qty{100}{km} plus reserve.    
+ \\ \midrule
+\multicolumn{2}{c}{\textbf{Aircraft Regulators} (STK 21)}                                                                                                                                                 \\ \midrule
+CO-5-STK21-1-1 & The vehicle shall comply with CS23 Roll Requirements \\
+CO-5-STK21-1-2 & The vehicle shall comply with CS23 lateral control engine inoperative requirement\\\bottomrule
+\end{tabular}}
+\end{table}
+
+Now that the key requirements and constraints have been listed, the compliance matrix can be realised.
+Thus, it will be assessed whether each requirement has been complied with, and a justification for the conclusion is provided.
+Additionally, further steps will be mentioned wherever necessary. As it shall be, most of the main requirements are complied with. The only aspects that are not compliant are the roll requirement and the wind gust requirement.
+The compliance matrix is provided in \Cref{tab:Comp_Matrix}
+
+\begin{table}[h]
+    \centering
+    \caption{Compliance matrix}
+    \label{tab:Comp_Matrix}
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{l|c|p{8cm}|p{4cm}}
+        \toprule
+        \textbf{Requirement Code} & \textbf{Status} & \textbf{Justification} & \textbf{Further Steps} \\ \midrule
+        TE-1-STK03-1-1 & Complaint & The value was discussed in \Cref{ch:eps} & \\ \hline
+        TE-1-STK03-3 & Compliant & Sizing was performed with payload weight in mind. Value was assumed in CG computations in \Cref{subsec:Class_I_CG_determination} & - \\ \hline
+        TE-1-STK-04-1 & Compliant & Autonomous Control designed in \Cref{ch:Autonomous_System} & Tune PID controller algorithm \\ \hline
+        TE-1-STK-06-3-1 & To be complied & No analysis of accessibility of components has been considered yet & Perform maintenance accessibility analysis \\ \hline
+        TE-2-STK07-3-2 & Compliant & Mission Profile Sized taking requirement into account & - \\ \hline
+        TE-2-STK07-5-2 & To be Complied & No Wind Gust sizing performed as of this moment & Perform hover dynamic analysis and check wind gust requirement \\ \hline
+        Co-1-STK05-1 & Compliant & Explained in Cost analysis in \Cref{ch:Financial_Analysis} & - \\ \hline
+        Co-3-STK07-1 & To be Complied & No analysis was performed on reliability yet & Determine components reliability and whether the requirement is respected \\ \hline
+        Co-3-STK03-1 & Compliant & Vertical Tail sizing takes into account 3 engine failure, hover controllability accounts for two engine failure. Power is also sized to ensure enough thrust in 75\% power scenario & - \\ \hline
+        Co-3-STK03-2 & Compliant & Engine selection allows to keep the disk loading below \qty{400}{kg/m^2} & - \\ \hline
+        Co-3-STK03-3 & Compliant & Propulsion sized for a $T/W$ of 2 & - \\ \hline
+        Co-3-STK07-2 & Compliant & Appropriate fuselage soundproofing was designed, following from near-field noise estimations & - \\ \hline
+        Co-4-STK13-1-1 & Compliant & Showcased in \Cref{ch:eps} & - \\ \hline
+        Co-4-STK13-1-4 & Compliant & Showcased in Fuselage Design, empennage sized for requirement & - \\ \hline
+        Co-4-STK13-1-5 & Compliant & The batteries in the nacelles are easily replaced without the disassembling of the rest of the aircraft and the rest of the structure is predicted to last longer than 10 years. & - \\ \hline
+        Co-4-STK13-1-6 & Compliant & The \enquote*{Cradle-to-Cradle} concept allows a long-term reusability of the aircraft components & - \\ \hline
+        Co-5-STK14-1-1 & Compliant & Justified in \Cref{subsec:propnoiseanalysis} & - \\ \hline
+        Co-5-STK16-1-1 & Compliant & Justified in \Cref{sec:mission_profile_max_range} & - \\ \hline
+        CO-5-STK21-1-1 & Discarded & Roll requirement is not achieved due to Battery placement as shown in \Cref{sec:Dynamic_Stability_during_Cruise} & Adapt Battery placement and iterate \\ \hline
+        CO-5-STK21-1-2 & Compliant & Taken into account in the sizing of the vertical tail & - \\
+        \bottomrule
+    \end{tabular}
+    }
+\end{table}
+After all the requirements have been verified, it is important to understand the impact that each of the non-compliant requirements may have on the design of the \textit{Swing}. A small explanation of the impact caused by the lack of compliance shall be given in \Cref{tab:non-comp}.
+\begin{table}[h]
+\caption{Impact of non-compliant requirements on design}
+\label{tab:non-comp}
+\centering
+\begin{tabular}{l|p{12cm}}
+\toprule
+\textbf{Requirement Code}   & \textbf{Impact on Design}  \\ \midrule
+TE-1-STK06-3-1 & Reduced accessibility of the design can lead to a negative public perception of the design as well as reduced passenger numbers. \\ \midrule
+TE-2-STK07-5-2 & Reduced wing gust resistance may lead to the impossibility of operating the design for long periods of time. A reduced dependability on the design leading to the reduced number of vehicles sold will be the impact on the design. \\ \midrule
+CO-3-STK07-1   & Poor reliability can lead to long periods of time where the vehicle is unusable, leading to losses for the operator and therefore reducing the number of sold vehicles.  \\ \midrule
+CO-5-STK21-1-1 & Roll requirement not reached can lead to difficulty in certifying the design, as well as difficulty in controllability of the aircraft and obstacle avoidance.  \\ \bottomrule
+\end{tabular}
+\end{table}

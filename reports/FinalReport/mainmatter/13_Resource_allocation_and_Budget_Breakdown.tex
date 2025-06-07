@@ -1,0 +1,98 @@
+\chapter{Resource Allocation and Budget Breakdown}
+\label{ch:Resource_Allocation_and_Budget_Breakdown}
+Due to the novelty of the UAM eVTOL market, it sustains a highly competitive nature, where companies share little to no data on their vehicles.
+Therefore, it is hard to predict and analyse a breakdown of the conceptual design stage’s mass, cost and power.
+Moreover, there were no requirements on the power and mass budget, only on costs, which created some freedom in the mass and power budget to create the optimum design.
+Although the cost budget was set at 2000 k€.
+
+\subsubsection{Mass Budget}
+The preliminary mass of the vehicle is \qty{1643}{kg}, subdivided into the subsystem masses, which can be seen in \Cref{tab:mass_budget}.
+This mass is based on a class II tool used to calculate and iterate the mass, which, in the end, always converges to a certain value. Therefore, the mass of the propellers or the fuselage were computed based on literature, using sizing methods such as Roskam\cite{Roskam_Part_2}.
+
+Additionally, some values, like the payload and motor masses,
+are fixed based on requirements or the final chosen design configuration.
+For example, the mass of one Emrax 228 motor is known to be 13.5 kilograms as shown in \Cref{tab:motor_trade-off}.
+Therefore, the total motor mass is 81 kg since there are six motors.
+The class II tool resulted in the following accurate budget after the detailed design phase.
+However, no margins are applied, and some values still need to be adjusted.
+For instance, the hinge mass needs to be updated since the initial mass of \qty{20}{kg} is an estimate.
+No constraint was set on the MTOW, hence contingency was not considered.
+
+\begin{table}[H]
+    \centering
+    \caption{Mass budget of the \textit{Swing eVTOL}}
+    \label{tab:mass_budget}
+    \begin{tabular}{lS[table-format=4]S[table-format=2]|lS[table-format=2.1]S[table-format=1]}
+    \toprule
+         \textbf{Subsystem} & \textbf{Mass [\unit{kg}]} & \textbf{[\unit{\%}]} & \textbf{Subsystem} & \textbf{Mass [\unit{kg}]} & \textbf{[\unit{\%}]} \\ \midrule
+         Payload & 400 & 24 & Furnishings & 50.3& 3\\
+         Battery & 400 & 24 & Tail & 26.5 & 2 \\
+         Wing & 329 & 21 & Hinge & 20 & 1 \\
+         Fuselage & 213 & 13 & Landing gear & 11.3 & 1 \\
+         Motors & 81 & 5 &  Oxygen system & 8.4 & 1 \\
+         Propellers & 84 & 5 & & &\\ \midrule 
+    \textbf{Total} &           \textbf{1624} \\ \bottomrule    
+    \end{tabular}
+    
+\end{table}
+
+
+\subsubsection{Power Budget}
+The power budget of the vehicle is important for battery sizing, as it gives an overview of the required power for the different subsystem elements that use power. The vehicle has electric propulsion, so the power budget is mainly influenced by this subsystem since the required power is significantly higher than any other subsystem. Therefore, this is omitted from the final table. The total maximum power for the vertical take-off is \qty{340}{kW}; during cruise, the average power level will be \qty{50}{kW}, as explained in \Cref{sec:mission_optimisation}.
+The power usages for other subsystems are based on \textcite{pranoto2016electrical},
+which estimates the power values for UAV with a MTOW smaller than \qty{2700}{kg}.
+The estimation for total power needed for air conditioning inside the vehicle is estimated to be less than \qty{3}{kW},
+as analysed by \textcite{farrington2000impact}.
+The final power budget can be seen in \Cref{tab:power_budgets}.
+
+
+\begin{table}[h]
+    \caption{Power budget of the \textit{Swing eVTOL}}
+    \label{tab:power_budgets}
+    \centering
+    \begin{tabular}{l|S[table-format=6]S[table-format=2.2]}
+    \toprule
+    \textbf{Element} & \textbf{Required Power [\unit{\W}]} & \textbf{[\unit{\%}]} \\ \midrule
+    Avionics  & 252 &  6\\
+    Lighting  & 117  & 3\\
+    Air-conditioning  & 3000 & 75 \\
+    Autopilot  & 151 & 4\\
+    Hinge  &  458 & 12 \\ \midrule
+    \textbf{Total} & \textbf{3978} \\
+    \bottomrule
+    \end{tabular}
+    
+\end{table}
+
+\subsubsection{Cost Budget}
+A production cost analysis is performed in \Cref{ch:Financial_Analysis}, in which the DAPCA-IV method is used to estimate the fixed and variable costs for aircraft production.
+These production costs are estimated for a production rate of 200 aircraft per five years.
+The requirement CO-1-STK05-1 stated that the total production cost must be less than 2000 k€,
+which means that there is a surplus of almost 600 k€.
+This is only $30\%$ of the budget, which can be seen in \Cref{tab:prod_cost_budg}.
+It is important to note that there might still be extra costs due to inflation or underestimation of the costs, due to the novelty of the design. 
+Contingency must be added; however, due to the surplus of 30$\%$, this will not induce problems.
+
+\begin{table}[H]
+\centering
+\caption{Cost budget for N = 200 aircraft}
+\label{tab:prod_cost_budg}
+\begin{tabular}{
+    l|
+    S[table-format=3.1,table-auto-round,table-space-text-pre=k\$]
+    S[table-format=2.0,table-auto-round,table-space-text-post=\%]|
+    l|
+    S[table-format=3.1,table-auto-round,table-space-text-pre=k\$]
+    S[table-format=2.0,table-auto-round,table-space-text-post=\%]
+}
+\toprule
+\multicolumn{3}{c|}{\textbf{Variable Costs [k\$/Unit]}} & \multicolumn{3}{c}{\textbf{Variable Costs [k\$/Unit]}}  \\ \midrule
+Manufacturing   & \$ 568.64641 & 37\% & Power Plant            & \$ 27.90000 & 2\% \\
+Quality Control & \$ 103.49365 & 7\% & Propeller blades       & \$ 157.37580 & 10\% \\
+Raw Materials   & \$ 44.71646  & 3\% & Battery                & \$ 13.20000 & 1\% \\
+Avionics        & \$ 159.85000 & 10\% & Hinge                  & \$ 100.00000 & 7\% \\
+Product Liability & \$ 254.60868 & 17\% & Power Management System & \$ 97.86109 & 6\% \\ \midrule
+\multicolumn{3}{c|}{\textbf{Production Costs}} & \multicolumn{3}{c}{\textbf{Production Costs}} \\ 
+\multicolumn{3}{c|}{\textbf{1.53 million \$}} & \multicolumn{3}{c}{\textbf{1.42 million €}} \\ \bottomrule
+\end{tabular}
+\end{table}

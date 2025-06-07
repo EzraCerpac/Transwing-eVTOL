@@ -1,0 +1,296 @@
+\chapter{Financial Analysis}
+\label{ch:Financial_Analysis}
+
+This chapter discusses the financial analysis of the \textit{Swing eVTOL}.
+In \Cref{sec:Cost_Breakdown_Structure}, a cost breakdown of the eVTOL is performed,
+and in \Cref{sec:operational_Costs}, the direct operational costs of the \textit{Swing} are estimated.
+Finally, \Cref{sec:Return_On_Investment} estimates the return on investment of the \textit{Swing}.
+
+\section{Cost Breakdown Structure}
+\label{sec:Cost_Breakdown_Structure}
+
+The cost breakdown aims to analyse the production costs of the eVTOL, requirement \textbf{Co-1-STK05-1} states that: \enquote*{The vehicle cost of production per unit shall be less than 2000k€}.
+The method used to perform the cost breakdown is the method from Gudmundsson\cite{gudmundsson2013general}(2012). The method is generated to estimate the cost of a small general aviation aircraft therefore, the assumption is that the size and characteristics of an VTOL is similar to a small GA aircraft.
+To incorporate the electric propulsion of the eVTOL in the cost analysis, the analysis from Finger et al.\cite{finger2019cost_Hybrid_GA_aircraft} is used.
+The analysis from Finger et al.
+is a modified version of the analysis of Gudmundsson to analyse the cost of a hybrid electric aircraft GA aircraft.
+
+Gudmundsson starts by calculating the man-hours needed for the project. The engineering, tooling and manufacturing man-hours can be calculated.
+
+\begin{equation}
+    \label{eq:cost:ManHours_Engineering}
+    H_{\text{ENG}}=  0.0396 \cdot W_{\text{airframe }}^{0.791} \cdot V_H^{1.526} \cdot N^{0.183} \cdot F_{\text{CERT}} \cdot F_{\text{CF}} \cdot F_{\text{COMP}} \cdot F_{\text{PRESS}}
+\end{equation}
+
+Where $w_{\text{airframe}}$ is the weight of the bare structural skeleton in \unit{lbs}, this weight does not include the engines and controls. $V_H$ is the maximum airspeed in \unit{KTAS}, $N$ is the number of planned eVTOLs to be produced over a five-year period, $N$ is assumed to be 200.
+Finally, $F_{\text{CERT}}$, $ F_{\text{CF}}$, $F_{\text{COMP}}$ and $F_{\text{PRESS}}$ are judgement factors based on the certification, the flap system, the composites in the aircraft and the pressurisation.
+For these estimates, it is assumed that the carbon fibre material fraction of the \textit{Swing} is 0.8.
+
+\begin{equation}
+    \label{eq:cost:ManHours_Tooling}
+    H_{\text{TOOL}}=  1.0032 \cdot W_{\text{airframe}}^{0.764} \cdot V_H^{0.899} \cdot N^{0.178} \cdot Q_m^{0.066} \cdot F_{\text{TAPER}} \cdot F_{\text{CF}} \cdot F_{\text{COMP}} \cdot F_{\text{PRESS}}
+\end{equation}
+
+Where $Q_m$ is the estimated production rate in the number of aircraft per month, $F_{\text{TAPER}}$ is a judgement factor based on the wing's taper.
+
+\begin{equation}
+    \label{eq:cost:ManHours_Manufacturing}
+    H_{\text{MFG}}=  9.6613 \cdot W_{\text{airframe}}^{0.74} \cdot V_H^{0.543} \cdot N^{0.524} \cdot F_{\text{CERT}} \cdot F_{C F} \cdot F_{\text{COMP}}
+\end{equation}
+
+Once the number of hours has been determined, the costs can be calculated by multiplying these with the hourly rates. 
+
+\begin{equation}
+    \label{eq:cost:Manhour_cost}
+    C_{i} = 2.0969 \cdot CPI_{2012} \cdot H_{i} \cdot R_{i} 
+\end{equation}
+
+Where $CPI_{2012}$ is the consumer price index relative to the year 2012,
+which, according to the U.S. Bureau of Labor Statistics,
+is 1.39\footnote{https://www.bls.gov/data/inflation$\_$calculator.htm [Accessed on 17/06/24]}.
+$H_i$ is the number of man-hours of $i$, $R_i$ is the hourly labour rate of $i$.
+The summation is multiplied by a factor of $2.0969$, this factor is the $CPI$ from 1986 to 2012.
+As suggested by Gudmundsson, the hourly rates are taken as $\$92$, $\$61$ and $\$53$ for engineering, tooling and manufacturing.
+The development costs can be calculated with \Cref{eq:cost:DEVcost}, and the cost of the flight tests can be calculated with \Cref{eq:cost:FTcost}.
+Together with the engineering and tooling costs, the costs to certify can be calculated.
+Where $N_P$ is the number of prototypes built to perform flight testing, this has been assumed to be eight prototypes.
+Furthermore, for simplicity, it is assumed that the prototypes will not be sold.
+
+\begin{equation}
+    \label{eq:cost:DEVcost}
+    C_{\text{DEV}}=0.06458 \cdot W_{\text{airframe }}^{0.873} \cdot V_H^{1.89} \cdot N_P^{0.346} \cdot C P I_{2012} \cdot F_{\text{CERT}} \cdot F_{\text{CF}} \cdot F_{\text{COMP}} \cdot F_{\text{PRESS}}
+\end{equation}
+
+\begin{equation}
+    \label{eq:cost:FTcost}
+    C_{\text{FT}}=0.009646 \cdot W_{\text{airframe }}^{1.16} \cdot V_H^{1.3718} \cdot N_P^{1.281} \cdot CPI_{2012} \cdot F_{\text{CERT}}
+\end{equation}
+
+% \begin{equation}
+%     \label{eq:cost:CERTcost}
+%     C_{\text{CERT}} = C_{\text{ENG}} + C_{\text{DEV}} + C_{\text{FT}} + C_{\text{TOOL}}
+% \end{equation}
+
+The costs that are associated with the quality control are calculated with \Cref{eq:cost:QCcost} where, $C_{\text{MFG}}$ is the cost of the manufacturing.
+The costs of the raw materials that are used to manufacture the eVTOL are calculated with \Cref{eq:cost:MATcost}.
+
+\begin{equation}
+    \label{eq:cost:QCcost}
+    C_{\text{QC}} = 0.13 \cdot C_{\text{MFG}} \cdot F_{\text{CERT}} \cdot F_{\text{COMP}}
+\end{equation}
+
+\begin{equation}
+    \label{eq:cost:MATcost}
+    C_{\text{MAT}}=24.896 \cdot W_{\text{airframe }}^{0.689} \cdot V_H^{0.624} \cdot N^{0.792} \cdot CPI_{2012} \cdot F_{\text{CERT}} \cdot F_{\text{CF}} \cdot F_{\text{PRESS}}
+\end{equation}
+
+All costs that are calculated up till now depend on the number of planned eVTOLs to be produced over a five-year period ($N$). However, there are also costs which are not dependent on the planned amount.
+The costs of the Avionics and the propellers are based on the method of Gudmundsson; these can be found in \Cref{eq:cost:AVcost,eq:cost:Propcost}.
+
+\begin{minipage}{0.45\linewidth}
+    \begin{equation}
+    \label{eq:cost:AVcost}
+    C_{\text{AV}} = 15000 \cdot CPI_{2012} + 100000
+\end{equation}
+\end{minipage}
+~
+\begin{minipage}{0.45\linewidth}
+    \begin{equation}
+    \label{eq:cost:Propcost}
+    C_{\text{FIXPROP}} = 3145 \cdot N_{\text{PP}} \cdot N_{\text{motor}} \cdot CPI_{2012}
+    \end{equation}
+\end{minipage}
+
+Where $\$15000$ is the typical cost for the avionics of a general aircraft certified to FAR 23 regulations.
+However, since the \textit{Swing eVTOL} is autonomous \$15000 for the avionics will not be sufficient to incorporate the costs of the autonomous autopilot system \$100000 is added to the avionics costs. $N_{\text{PP}}$ is the number of propeller blades per motor and $N_{\text{motor}}$ is the number of motors.
+The $\$3145$ is the typical cost for a fixed pitch propeller blade in 2012.
+In contrast, the costs of the power management system and the battery are based on Finger et al., these can be found in \Cref{eq:cost:PMScost,eq:cost:BATcost}.
+The cost of the electric motors is the actual price of the selected motor. $\$4650$ is the costs of one electric engine\footnote{https://emrax.com/get-a-quote [Accessed on 17/06/24]}.
+
+\begin{minipage}{0.45\textwidth}
+\begin{equation}
+    \label{eq:cost:PMScost}
+    C_{\text{PMS}} = 150 \cdot P_{\text{EM,total}} \cdot CPI_{2012}
+\end{equation}
+\end{minipage}
+~
+\begin{minipage}{0.45\textwidth}
+    \begin{equation}
+    \label{eq:cost:BATcost}
+    C_{\text{BAT}} = 110 \cdot E_{\text{BAT}} \cdot CPI_{2012}
+\end{equation}
+\end{minipage}
+
+Where $P_{\text{EM,total}}$ is the total power of the engines in hp, and $\$150$ is the costs per hp in 2012.
+The additional costs of cables and further miscellaneous electronic devices are neglected\cite{Hoelzen2018}.
+
+
+
+Where $E_{\text{BAT}}$ is the energy of the battery and $\$110$ is the cost per kWh~\cite{Batery_Density}.
+The costs of the hinges used in the \textit{Swing eVTOL} are assumed to be \$50000 per hinge.
+Finally, costs associated with the product liability are accounted for by Finger et al.
+suggest to add 20\% of the production costs.
+Now the production costs can be calculated with \Cref{eq:cost:prod_costs}.
+
+\begin{equation}
+    \label{eq:cost:prod_costs}
+    C_{\text{PROD}} = \left(\frac{C_{\text{MAN}} + C_{\text{QC}} + C_{\text{MAT}}}{N} + C_{\text{AV}} + C_{\text{FIXPROP}} + C_{\text{EM}} + C_{\text{PMS}} + C_{\text{BAT}}\right) \cdot 1.2
+\end{equation}
+
+\begin{equation}
+    \label{eq:cost:Nbreakeven}
+    N_{\text{Break-even}} = \frac{C_{\text{CERT}}}{\text{Unit sell price} - C_{\text{PROD}} }
+\end{equation}
+
+Finally, in \Cref{tab:cost_breakdown} the cost breakdown of the \textit{Swing eVTOL} can be found, and it can be seen that the production costs are €1,42 million.
+This means that the requirement for the production costs of \textit{Swing} has been met.
+Using \Cref{eq:cost:Nbreakeven} the break-even number eVTOLs can be calculated, using a unit price of €2.2 million the break-even number eVTOLs is 66.
+This cost analysis is largely based on statistical relations and empirical formulas; therefore, the cost analysis should be reiterated in a later stage of the design process.
+For instance, \Cref{subsec:fuselagesoundproofing} mentions that double glass will be used to lover the noise levels inside the fuselage, these double glass windows will increase the production costs of the \textit{Swing eVTOL}.
+
+\begin{table}[h]
+\centering
+\caption{Cost breakdown for $N = 200$ eVTOL's}
+\label{tab:cost_breakdown}
+\begin{tabular}{l|l|l|l}
+\toprule
+\multicolumn{4}{c}{Cost to certify (Fixed Costs){[}\${]}}                                                     \\ \midrule
+Engineering     & \$  29,516,934.74       & Development            & \$     1,569,374.63     \\
+Tooling         & \$  22,513,628.27       & Flight Test Operations & \$         958,110.62   \\ \midrule
+\textbf{Total:} & \textbf{\$  54,558,048.26}   & \textbf{Total:} & \textbf{€  50,738,984.89}   \\ \toprule
+\multicolumn{4}{c}{Production Costs (Variable Costs) {[}\$/Unit{]}}                                             \\ \midrule
+Manufacturing   & \$         568,646.41   & Power Plant            & \$            27,900.00 \\
+Quality Control & \$         103,493.65   & Propeller blades       & \$         157,375.80   \\
+Raw Materials   & \$            44,716.46 & Battery                & \$            13,200.00 \\
+Avionics        & \$         159,850.00   & Hinge                  & \$         100,000.00   \\
+Product Liability         & \$         254,608.68        & Power Management System   & \$            97,861.09     \\ \midrule
+\textbf{Total:} & \textbf{\$     1,527,652.09} & \textbf{Total:} & \textbf{€     1,420,716.44} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+
+\section{Operational Costs}
+\label{sec:operational_Costs}
+To calculate the operational costs, Gudmundsson~\cite{gudmundsson2013general} and Kreimeier~\cite{Kreimeier2018} are used.
+Only the direct operational costs are analysed because different air taxi operators might have different options for funding the eVTOL. The Maintenance, storage, inspection, insurance and engine overhaul costs are estimated with Gudmundsson (\Cref{eq:cost:oper:Maintenance,eq:cost:oper:insurance,eq:cost:oper:Engine_overhaul_fund}). The storage costs are estimated to be \$3000 per year, while the inspection costs are \$500 per year. $F_{\text{MF}}$ is the ratio of flight hours to maintenance hours, $0.38$ is used. $R_{\text{AP}}$ is the hourly wage of a certified mechanic, $\$60$ per hour is used~\cite{gudmundsson2013general}. $Q_{\text{FLGT}}$ is the number of flight hours per year; for this, it is assumed that the \textit{Swing}, on average, can fly 12 flights of 40 minutes per day.
+Finally, $C_{\text{AC}}$ is the insured value, this is taken as the unit sell price of €2.2 million.
+
+\begin{minipage}{0.45\linewidth}
+    \begin{equation}
+    \label{eq:cost:oper:Maintenance}
+    C_{\text{AP}} = F_{\text{MF}} \cdot R_{\text{AP}} \cdot Q_{\text{FLGT}}
+\end{equation}
+\end{minipage}
+~
+\begin{minipage}{0.45\linewidth}
+    \begin{equation}
+    \label{eq:cost:oper:insurance}
+    C_{\text{INS}} = 500 + 0.015 \cdot C_{\text{AC}}
+\end{equation}
+\end{minipage}
+
+\begin{minipage}{0.45\linewidth}
+    \begin{equation}
+    \label{eq:cost:oper:Engine_overhaul_fund}
+    C_{\text{OVER}} = 5 \cdot N_{\text{PP}} \cdot Q_{\text{FLGT}}
+\end{equation}
+\end{minipage}
+~
+\begin{minipage}{0.45\linewidth}
+    \begin{equation}
+    \label{eq:cost:oper:crew}
+    C_{\text{C}} = R_{\text{Pilot}} \cdot \frac{t_{\text{block}}}{f_{\text{gp-acft}}}
+\end{equation}
+\end{minipage}
+
+
+
+Even though the \textit{Swing} is autonomous, there are crew costs.
+According to Kreimeier \enquote*{If the aircraft itself can fly without a pilot, a ground pilot is required for safety reasons}~\cite{Kreimeier2018}. \Cref{eq:cost:oper:crew} is used to calculate these costs, $t_{\text{block}}$ is the block time of the flight, this is found as 40 minutes from the mission profile. $f_{\text{gp-acft}}$ is the number of aircraft a ground pilot can manage simultaneously, Kreimeier proposes this to be 5. $R_{\text{Pilot}}$ is the hourly wage of the ground pilot, Finger et al.
+proposes this to be \$60 per hour\cite{finger2019cost_Hybrid_GA_aircraft}.
+
+\begin{equation}
+    \label{eq:cost:oper:vertiport}
+    C_{\text{VERTIPORT}} = 0.01 \cdot\left(m_{\text {MTOW}}-1100 \right) \cdot F_{\text{Noise}} \cdot N_{\text{Landing}}
+\end{equation}
+
+To estimate the cost of the vertiports, apart from the energy costs, \Cref{eq:cost:oper:vertiport} is used~\cite{Kreimeier2018}.
+The equation is used to estimate the costs at regional airports, and it is assumed that these costs are comparable to those at vertiports.
+
+\begin{minipage}{0.45\linewidth}
+\begin{equation}
+    \label{eq:cost:oper:battery_replacement}
+    C_{\text{BATD}}=C_{\text{BAT}} \cdot E_{\text{BAT}} \cdot \frac{N_{\text{flight}} \cdot C}{N_{\text{cycle}}}
+\end{equation}
+\end{minipage}
+~
+\begin{minipage}{0.45\linewidth}
+\begin{equation}
+    \label{eq:cost:oper:energy}
+    C_E=\frac{\tau_E \cdot E_{\text {flight }}}{\eta_{\text {charge }}}
+\end{equation}
+\end{minipage}
+
+Where $N_{\text{cycle}}$ is the number of cycles per flight, this has been assumed to be $0.667$ (1.5 flights per cycle). $N_{\text{cycle}}$ is the number of cycles of the battery.
+The energy costs used during the flight are estimated with \Cref{eq:cost:oper:energy}. $\tau_E$ is the price per kWh of energy and $\eta_{\text {charge }}$ is the charging efficiency, this is taken as $0.85$\cite{Kreimeier2018}.
+Kreimeier also proposes ground handling fees of €7 per passenger per flight.
+
+
+\begin{table}[h]
+\centering
+\caption{Operational costs of the \textit{Swing}}
+\label{tab:cost:operational:costs}
+\begin{tabular}{l|l|l|l}
+\toprule
+\multicolumn{4}{c}{Operational Costs {[}\$/year{]}}                         \\ \midrule
+Maintenance & \$    92,540.64      & Vertiport            & \$    50,085.30 \\
+Storage     & \$       3,000.00    & Crew                 & \$    29,200.00 \\
+Insurance   & \$    33,500.00      & Battery Depreciation & \$    48,180.00 \\
+Energy      & \$ 103,058.82        & Engine Overhaul      & \$    87,600.00 \\
+Inspection  & \$            500.00 & Ground handling      & \$ 122,640.00   \\ \midrule
+\textbf{Total costs per year} & \textbf{\$ 570,304.76}   & \textbf{Total costs per year} & \textbf{€ 530,383.43}   \\ \toprule
+\multicolumn{4}{c}{Costs per flight}                                        \\ \midrule
+Costs per flight hour         & \$            195.31     & Costs per flight hour         & €            181.64     \\
+Costs per flight              & \$            130.21     & Costs per flight              & €            121.09     \\
+ \bottomrule
+\end{tabular}
+\end{table}
+
+The operational costs of the \textit{Swing} can be found in \Cref{tab:cost:operational:costs}.
+It should be noted again that these are only the direct costs.
+Air-taxi operators will have to charge a higher price per flight due to other costs related to eVTOL operations. Those costs include but are not limited to depreciation costs, cost of financing, taxes, marketing costs, and costs related to office facilities.
+
+\section{Return on Investment}
+\label{sec:Return_On_Investment}
+Based on the Gantt chart from \Cref{sec:PostDSE_Gantt_Chart} a timeline has been created. This timeline can be found in \Cref{tab:cost:Cashflow:timeline}. It can be seen that the first delivery of the \textit{Swing} is expected in 2033. Using a discount rate of 5\%, the timeline, the net present value, the internal rate of return and return on investment can be calculated. The net present value (NPV) is 47.8 million $\$$, the internal rate of return is 15\%, and the return on investment is 10\%.
+
+\begin{table}[h]
+\centering
+\caption{Cash flow timeline}
+\label{tab:cost:Cashflow:timeline}
+\begin{tabular}{l|llllllll}
+\multicolumn{9}{c}{Timeline {[}M\${]}}                                                            \\ \toprule
+Year                        & 2024  & 2025   & 2026   & 2027   & 2028   & 2029   & 2030   & 2031  \\ \midrule
+Units Sold                  &       &        &        &        &        &        &        &       \\
+Unit sale price             &       &        &        &        &        &        &        &       \\
+Revenue                     &       &        &        &        &        &        &        &       \\
+Engineering Costs           & -4.03 & -8.05  & -8.05  & -8.05  & -1.34  &        &        &       \\
+Tooling Costs               &       &        &        &        & -4.09  & -4.09  & -4.09  & -4.09 \\
+Development Costs           & -0.09 & -0.17  & -0.17  & -0.17  & -0.17  & -0.17  & -0.17  & -0.17 \\
+Flight Test Operation Costs &       &        &        &        &        &        &        &       \\
+Production Cost             &       &        &        &        &        &        &        &       \\ \midrule
+\textbf{Cash flow} & \textbf{-4.11} & \textbf{-8.22} & \textbf{-8.22} & \textbf{-8.22} & \textbf{-5.61} & \textbf{-4.27} & \textbf{-4.27} & \textbf{-4.27} \\ \midrule \midrule
+Year                        & 2032  & 2033   & 2034   & 2035   & 2036   & 2037   & 2038   & -     \\ \midrule
+Units Sold                  &       & 20     & 40     & 40     & 40     & 40     & 20     &       \\
+Unit sale price             &       & 2.37   & 2.37   & 2.37   & 2.37   & 2.37   & 2.37   &       \\
+Revenue                     &       & 47.31  & 94.62  & 94.62  & 94.62  & 94.62  & 47.31  &       \\
+Engineering Costs           &       &        &        &        &        &        &        &       \\
+Tooling Costs               & -4.09 & -2.05  &        &        &        &        &        &       \\
+Development Costs           & -0.17 & -0.09  &        &        &        &        &        &       \\
+Flight Test Operation Costs &       &        &        &        &        &        &        &       \\
+Production Cost             &       & -30.55 & -61.11 & -61.11 & -61.11 & -61.11 & -30.55 &       \\ \midrule
+\textbf{Cash flow} & \textbf{-4.27} & \textbf{14.62} & \textbf{33.52} & \textbf{33.52} & \textbf{33.52} & \textbf{33.52} & \textbf{16.76} & \textbf{-} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+

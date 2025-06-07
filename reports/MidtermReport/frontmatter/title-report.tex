@@ -1,0 +1,165 @@
+% \begin{titlepage}
+
+% \begin{center}
+
+% %% Print the title
+% {\makeatletter
+% \largetitlestyle\fontsize{45}{45}\selectfont\@title
+% \makeatother}
+
+% %% Print the subtitle
+% {\makeatletter
+% \ifdefvoid{\@subtitle}{}{\bigskip\titlestyle\fontsize{20}{20}\selectfont\@subtitle}
+% \makeatother}
+
+% \bigskip
+% \bigskip
+
+% by
+
+% \bigskip
+% \bigskip
+
+% %% Print the name of the author
+% {\makeatletter
+% \largetitlestyle\fontsize{25}{25}\selectfont\@author
+% \makeatother}
+
+% \bigskip
+% \bigskip
+
+% %% Print table with names and student numbers
+% \setlength\extrarowheight{2pt}
+% \begin{tabular}{lc}
+%     Student Name & Student Number \\\midrule
+%     First Surname & 1234567 \\
+% \end{tabular}
+
+% \vfill
+
+% %% Print some more information at the bottom
+% \begin{tabular}{ll}
+%     Tutors: &  I. Surname\\
+%     Coaches: & I. Surname \\
+%     Teaching Assistant: & I. Surname \\
+%     Project Duration: & April, 2024 - June, 2024 \\
+%     Faculty: & Faculty of Aerospace Engineering, Delft
+% \end{tabular}
+
+% \bigskip
+% \bigskip
+
+% %% Add a source and description for the cover and optional attribution for the template
+% \begin{tabular}{p{15mm}p{10cm}}
+%     Cover: & Canadarm 2 Robotic Arm Grapples SpaceX Dragon by NASA under CC BY-NC 2.0 (Modified) \\
+%     % Feel free to remove the following attribution, it is not required - still appreciated :-)
+%     Style: & TU Delft Report Style
+% \end{tabular}
+
+% \end{center}
+
+% %% Insert the TU Delft logo at the bottom of the page
+% \begin{tikzpicture}[remember picture, overlay]
+%     \node[above=10mm] at (current page.south) {%
+%         \includegraphics{figures/logo-black}
+%     };
+% \end{tikzpicture}
+
+% \end{titlepage}
+\begin{titlepage}
+
+\begin{center}
+
+%% Print the title
+{\makeatletter
+\largetitlestyle\fontsize{45}{45}\selectfont\@title
+\makeatother}
+
+%% Print the subtitle
+{\makeatletter
+\ifdefvoid{\@subtitle}{}{\bigskip\titlestyle\fontsize{35}{35}\selectfont\@subtitle}
+\makeatother}
+
+\bigskip
+\bigskip
+
+by
+
+\bigskip
+\bigskip
+
+%% Print the name of the author
+{\makeatletter
+\largetitlestyle\fontsize{25}{25}\selectfont\@author
+\makeatother}
+
+\bigskip
+\bigskip
+
+%% Print table with names and student numbers
+\setlength\extrarowheight{2pt}
+\begin{tabular}{lcc}
+    Student Name              &Initials& Student Number \\\midrule
+    Alessandro Tesse          &AT& 5471990 \\
+    Brădut-Constantin Stanciu &BS& 5534682 \\
+    Ezra Cerpac               &EC& 5259347 \\
+    Gregorio Boccaccini       &GB& 5484650 \\
+    Koen Pijnacker            &KP& 5559138 \\
+    Philip Groenemeijer       &PG& 5335574 \\
+    Salman Mughal             &SM& 5478847 \\
+    Stefano Kok               &SK& 4656091 \\
+    Tim Guezen                &TG& 5565448 \\
+    Zoli Túri                 &ZT& 5213762 \\
+\end{tabular}
+
+\vfill
+
+\begin{table}[ht]
+    \centering
+    \label{tab:verscontr}
+    \begin{tabular}{ccc}
+%        \toprule
+        Version &  Amendment             & Date       \\ \midrule
+        1.0     & Draft                  & 22/05/24   \\
+        1.1     &  Review implementation & 28/05/24   \\
+        2.0     &  Final & 29/05/24   \\
+        
+    \end{tabular}
+\end{table}
+
+\vfill
+
+%% Print some more information at the bottom
+\begin{tabular}{ll}
+    Tutors: &  Prof.
+    dr.
+    F. Scarano, Dr.
+    ir.
+    F. F. J. Schrijer \\
+    Coaches: & Ir. M. Moradi, Ir. T.M.L. De Ponti \\
+    Teaching Assistant: & Ing.
+    A. F. Khalil \\
+    Project Duration: & April - June, 2024 \\
+    Faculty: & Faculty of Aerospace Engineering, Delft
+\end{tabular}
+
+\bigskip
+\bigskip
+
+%% Add a source and description for the cover and optional attribution for the template
+\begin{tabular}{p{15mm}p{10cm}}
+    Cover: &  Pterodynamics xp 4 by Pterodynamics (Modified) \\
+%    % Feel free to remove the following attribution, it is not required - still appreciated :-)
+%%    Style: & TU Delft Report Style
+\end{tabular}
+
+\end{center}
+
+%% Insert the TU Delft logo at the bottom of the page
+\begin{tikzpicture}[remember picture, overlay]
+    \node[above=10mm] at (current page.south) {%
+        \includegraphics{figures/logo-black}
+    };
+\end{tikzpicture}
+
+\end{titlepage}

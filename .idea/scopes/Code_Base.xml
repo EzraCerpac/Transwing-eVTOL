@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Code Base" pattern="file[Transwing-eVTOL]:*/&amp;&amp;!file[Transwing-eVTOL]:reports//*" />
+</component>
