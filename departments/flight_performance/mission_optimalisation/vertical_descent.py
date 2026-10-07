@@ -31,9 +31,10 @@ class VerticalDescent(Optimalisation):
         self.constraints()
 
         self.max_power = self.opti.variable(
-            init_guess=self.aircraft.mission_profile.vertical_climb.state.power,
+            init_guess=self.aircraft.mission_profile.vertical_climb.state.
+            power,
             log_transform=True,
-)
+        )
         self.opti.subject_to([
             # self.max_power < self.aircraft.mission_profile.TAKEOFF.power,
             self.max_power > 100000,
@@ -50,8 +51,7 @@ class VerticalDescent(Optimalisation):
         self.dyn.add_gravity_force()
         self.dyn.constrain_derivatives(self.opti, self.time)
 
-        self.total_energy = np.sum(
-            np.trapz(self.power) * np.diff(self.time))
+        self.total_energy = np.sum(np.trapz(self.power) * np.diff(self.time))
         # self.opti.subject_to(
         #     self.total_energy <= self.aircraft.mission_profile.energy)
 
@@ -70,8 +70,8 @@ class VerticalDescent(Optimalisation):
                 -self.trans_altitude, 0, self.n_timesteps),
                                    upper_bound=0),
             w_e=self.opti.variable(init_guess=np.concatenate([
-                np.linspace(0, self.aircraft.rate_of_climb,
-                            self.n_timesteps // 2),
+                np.linspace(0, self.aircraft.rate_of_climb, self.n_timesteps //
+                            2),
                 np.linspace(self.aircraft.rate_of_climb, 0, self.n_timesteps -
                             self.n_timesteps // 2)
             ])),
@@ -138,10 +138,10 @@ class VerticalDescent(Optimalisation):
 if __name__ == '__main__':
     ac = trans_wing
     mission_profile_optimization = VerticalDescent(ac,
-                                               opt_param=OptParam.ENERGY,
-                                               n_timesteps=501,
-                                               max_iter=1000,
-                                               n_logs=100)
+                                                   opt_param=OptParam.ENERGY,
+                                                   n_timesteps=501,
+                                                   max_iter=1000,
+                                                   n_logs=100)
     mission_profile_optimization.run()
 
     df = mission_profile_optimization.to_dataframe()

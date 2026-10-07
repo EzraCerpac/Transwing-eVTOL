@@ -39,11 +39,11 @@ class CruiseOptMaxRange(Optimalisation):
                                           Izz=500),
             x_e=self.opti.variable(init_guess=np.cosspace(
                 0, self.aircraft.range, self.n_timesteps),
-                lower_bound=0,
-                upper_bound=self.aircraft.range),
+                                   lower_bound=0,
+                                   upper_bound=self.aircraft.range),
             z_e=self.opti.variable(init_guess=np.linspace(
                 0, -self.aircraft.cruise_altitude, self.n_timesteps),
-                upper_bound=0),
+                                   upper_bound=0),
             speed=self.opti.variable(init_guess=self.aircraft.cruise_velocity,
                                      n_vars=self.n_timesteps,
                                      log_transform=True),
@@ -58,7 +58,9 @@ class CruiseOptMaxRange(Optimalisation):
         )
 
         self.max_power = self.opti.parameter(80_000)
-        self.thrust = self.opti.variable(init_guess=1000, n_vars=self.n_timesteps, log_transform=True)
+        self.thrust = self.opti.variable(init_guess=1000,
+                                         n_vars=self.n_timesteps,
+                                         log_transform=True)
         self.power = power_from_thrust(self.thrust, self.dyn.speed)
         self.thrust_level = self.max_power / self.power
 
@@ -84,8 +86,8 @@ class CruiseOptMaxRange(Optimalisation):
             self.dyn.altitude >= 100,
             self.dyn.altitude[-1] == 100,
             self.dyn.speed[0] == 45,
-            self.dyn.speed[:self.n_timesteps//2] >= 50,
-            self.dyn.speed[self.n_timesteps//2:] >= 45,
+            self.dyn.speed[:self.n_timesteps // 2] >= 50,
+            self.dyn.speed[self.n_timesteps // 2:] >= 45,
             self.dyn.speed[-1] == 45,
             # self.dyn.speed[-1] >= 40,
             self.dyn.gamma[0] == 0,
@@ -117,7 +119,6 @@ class CruiseOptMaxRange(Optimalisation):
             acceleration > -.1,
             vertical_acceleration < .1,
             vertical_acceleration > -.1,
-
             self.dyn.w_e >= -2,
         ])
         self.opti.subject_to([
@@ -151,7 +152,9 @@ class CruiseOptMaxRange(Optimalisation):
         cruise_altitude = self.opti.variable(
             init_guess=self.aircraft.cruise_altitude, log_transform=True)
         # self.opti.parameter(self.aircraft.cruise_altitude) #
-        cruise_speed = self.opti.parameter(self.aircraft.cruise_velocity)  # enforced because power-curve is probably not correct
+        cruise_speed = self.opti.parameter(
+            self.aircraft.cruise_velocity
+        )  # enforced because power-curve is probably not correct
         self.opti.subject_to([
             cruise_altitude >= self.aircraft.cruise_altitude,
             # cruise_altitude < 1000,
@@ -179,7 +182,7 @@ class CruiseOptMaxRange(Optimalisation):
             np.diff(self.dyn.speed[:start_cruise_index]) > 0,
             np.diff(self.dyn.speed[end_cruise_index:]) < 0,
             np.diff(self.power[end_cruise_index:]) <= 0,
-            self.power[end_cruise_index+self.n_timesteps//10:] == 0,
+            self.power[end_cruise_index + self.n_timesteps // 10:] == 0,
         ])
 
     def dynamics(self, use_aero: bool = False):
@@ -223,9 +226,9 @@ if __name__ == '__main__':
     ac = rot_wing
     # ac.data.v_stall = 20.
     mission_profile_optimization = CruiseOptMaxRange(ac,
-                                             opt_param=OptParam.ENERGY,
-                                             n_timesteps=80,
-                                             max_iter=1000)
+                                                     opt_param=OptParam.ENERGY,
+                                                     n_timesteps=80,
+                                                     max_iter=1000)
     mission_profile_optimization.run()
 
     # df = mission_profile_optimization.to_dataframe()
@@ -239,6 +242,6 @@ if __name__ == '__main__':
     mission_profile_optimization.plot_alt_hor_ver_vel_power_over_distance()
 
     # aero = CLCDPolar(ac.parametric,
-         #             velocity=ac.data.cruise_velocity,
+    #             velocity=ac.data.cruise_velocity,
     #             altitude=ac.data.cruise_altitude)
     # aero.plot_cl_cd_polars()

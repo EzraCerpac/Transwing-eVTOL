@@ -42,7 +42,8 @@ def operating_cost_per_pax_mile(aircraft: Aircraft,
                                 production_cost_single_ac: float) -> float:
     op_costs = electric_aircraft_direct_operating_cost_analysis(
         production_cost_per_airframe=production_cost_single_ac,
-        nominal_cruise_airspeed=aircraft.mission_profile.cruise.state.horizontal_speed,
+        nominal_cruise_airspeed=aircraft.mission_profile.cruise.state.
+        horizontal_speed,
         nominal_mission_range=aircraft.range,
         battery_capacity=aircraft.mission_profile.energy,
         num_passengers_nominal=3,
@@ -53,8 +54,10 @@ def operating_cost_per_pax_mile(aircraft: Aircraft,
         airframe_lifetime_years=10,
         airframe_eol_resale_value_fraction=0.6,
         electricity_cost_per_kWh=0.41,
-        ascent_time=aircraft.mission_profile.transition1.duration + aircraft.mission_profile.climb.duration,
-        descent_time=aircraft.mission_profile.transition2.duration + aircraft.mission_profile.vertical_descent.duration,
+        ascent_time=aircraft.mission_profile.transition1.duration +
+        aircraft.mission_profile.climb.duration,
+        descent_time=aircraft.mission_profile.transition2.duration +
+        aircraft.mission_profile.vertical_descent.duration,
     )
     return op_costs['total']
 

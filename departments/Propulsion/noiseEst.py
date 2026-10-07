@@ -66,13 +66,14 @@ class Sixengs:
         self.Mt = self.Vt / c
         self.ZD = Z / toimp_dist(self.D)
         self.fn = self.B * self.rpm / 60
-        self.CT = Mto * 9.81 / (rho * pi * self.R**2 *(self.omega * self.R)**2)
+        self.CT = Mto * 9.81 / (rho * pi * self.R**2 *
+                                (self.omega * self.R)**2)
         self.c = 0.0108 * (Mto * 9.81)**0.539 / (self.Neng * self.B)**0.714
         self.sigma = self.B * self.c / (pi * self.R)  # rotor solidity
         self.CLbar = 6.6 * self.CT / self.sigma
-        self.vih = np.sqrt(Mto * 9.81 / (6 * 2 * rho * pi * self.R ** 2))
+        self.vih = np.sqrt(Mto * 9.81 / (6 * 2 * rho * pi * self.R**2))
         self.Vbar = V / self.vih
-        self.BPF = self.B*self.rpm/60
+        self.BPF = self.B * self.rpm / 60
         self.vi = self.vih * self.vibar
 
 
@@ -113,15 +114,15 @@ def AFactor(freq):
 
 six = {
     "L1": 110,
-    "B3": -7.7, #-18 if cruise, -8 if vertical
+    "B3": -7.7,  #-18 if cruise, -8 if vertical
     "B8": 4,
 }
 
 eight = {"L1": 113, "B3": -4, "B8": 4}
 
-def correction(x):
-    return -(3.2743*np.log(x)+15.373)
 
+def correction(x):
+    return -(3.2743 * np.log(x) + 15.373)
 
 
 # type="six" or "eight" or "ten"
@@ -143,9 +144,9 @@ def harmonicNoise(choice, B):
         overallNoise = (configuration["L1"] + 20 * np.log10(4 / B) +
                         40 * np.log10(15.5 / toimp_dist(config.D)) +
                         configuration["B3"] + configuration["B8"] -
-                        20 * np.log10((np.sqrt(r ** 2 + 1)) - 1))
+                        20 * np.log10((np.sqrt(r**2 + 1)) - 1))
     harmonicNoise.append(overallNoise - 2)
-    for i in range(1, int(20000/config.fn)):
+    for i in range(1, int(20000 / config.fn)):
         harmonicNoise.append(overallNoise + correction(i))
     return harmonicNoise
 
@@ -182,14 +183,17 @@ def plot_harm(choice):
     else:
         config = eightengs()
     freqArray = []
-    for i in range(0, int(20000/config.fn)):
+    for i in range(0, int(20000 / config.fn)):
         freqArray.append(config.fn * (i + 1))
     B = config.B
     plt.figure(figsize=(10, 8))
     print("Total harmonic noise:", len(frequencies), total_noise("sei", B))
     print("\n A-weighted harmonic noise:", total_noiseA("sei", B))
     plt.plot(freqArray, total_noise("sei", B), label='SPL [dB]', color='blue')
-    plt.plot(freqArray, total_noiseA("sei", B), label='A-Weighted SPL [dBA]', color='red')
+    plt.plot(freqArray,
+             total_noiseA("sei", B),
+             label='A-Weighted SPL [dBA]',
+             color='red')
     plt.title('Sound Pressure Level Spectrum')
     plt.xlabel('Frequency [Hz]')
     plt.ylabel('SPL')
@@ -213,9 +217,9 @@ def overalldBA(AnoiseArray):
     BPF = Sixengs().BPF
     overallNoise = 0
     for i in AnoiseArray:
-        L = 10**(i/10)
-        overallNoise += L*Sixengs().fn/BPF
-    return 10*np.log10(overallNoise)
+        L = 10**(i / 10)
+        overallNoise += L * Sixengs().fn / BPF
+    return 10 * np.log10(overallNoise)
 
 
 if __name__ == '__main__':
@@ -230,9 +234,12 @@ if __name__ == '__main__':
     plt.figure(figsize=(10, 8))
     #plt.subplot2grid((2, 2), (0, 0))
     plt.plot(freqArray, total_noise("sei", B), label='SPL [dB]', color='blue')
-    plt.plot(freqArray, total_noiseA("sei", B), label='A-Weighted SPL [dBA]', color='red')
+    plt.plot(freqArray,
+             total_noiseA("sei", B),
+             label='A-Weighted SPL [dBA]',
+             color='red')
     tot = str(int(overalldBA(total_noiseA("sei", Sixengs().B))))
-    plt.annotate(f'OASPL: {67.6}dBA', xy=(10500,57), xytext=(10500, 57))
+    plt.annotate(f'OASPL: {67.6}dBA', xy=(10500, 57), xytext=(10500, 57))
     plt.title('SPL spectrum during vertical flight (r=330ft, RPM=1300)')
     plt.xlabel('Frequency [Hz]')
     plt.ylabel('SPL')

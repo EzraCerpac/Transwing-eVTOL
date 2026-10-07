@@ -41,7 +41,6 @@ class MissionPhase(BaseModel):
         # if self.state.power is not None:
         #     self.energy = self.state.power * self.duration
 
-
     def set_end_values(self):
         self.end_position = self.start_position + self.state.horizontal_speed * self.duration
         self.end_altitude = self.start_altitude + self.state.vertical_speed * self.duration
@@ -107,7 +106,8 @@ class MissionProfile(BaseModel):
 
     @property
     def energy(self):
-        return self._energy or sum([phase.energy for phase in self.list if phase.energy is not None])
+        return self._energy or sum(
+            [phase.energy for phase in self.list if phase.energy is not None])
 
     @energy.setter
     def energy(self, value):
@@ -127,11 +127,13 @@ class MissionProfile(BaseModel):
 
     @property
     def list(self):
-        return [phase for phase in [
-            self.startup, self.takeoff, self.vertical_climb, self.transition1,
-            self.climb, self.cruise, self.descent, self.transition2, self.hover,
-            self.vertical_descent, self.landing
-        ] if phase is not None]
+        return [
+            phase for phase in [
+                self.startup, self.takeoff, self.vertical_climb,
+                self.transition1, self.climb, self.cruise, self.descent, self.
+                transition2, self.hover, self.vertical_descent, self.landing
+            ] if phase is not None
+        ]
 
     @property
     def duration(self):
@@ -215,16 +217,16 @@ def plot_alt_over_distance(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
         for key, value in state.__dict__.items():
             if value is None:
                 state.__dict__[key] = 0
-        vels.append(np.sqrt(state.horizontal_speed**2 + state.vertical_speed**2))
+        vels.append(
+            np.sqrt(state.horizontal_speed**2 + state.vertical_speed**2))
 
-    p.plot_color_by_value(
-        df['start_position'],
-        df['start_altitude'],
-        c=vels,
-        colorbar=True,
-        cmap='viridis',
-        clim=(0, 56),
-        colorbar_label='Airspeed, $V$ [m/s]')
+    p.plot_color_by_value(df['start_position'],
+                          df['start_altitude'],
+                          c=vels,
+                          colorbar=True,
+                          cmap='viridis',
+                          clim=(0, 56),
+                          colorbar_label='Airspeed, $V$ [m/s]')
     p.show_plot(
         'Altitude over distance',
         'Distance, $x$ [m]',
@@ -232,6 +234,7 @@ def plot_alt_over_distance(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
         rotate_axis_labels=False,
         pretty_grids=True,
     )
+
 
 @show
 def plot_alt_over_time(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
@@ -241,6 +244,7 @@ def plot_alt_over_time(df: pd.DataFrame) -> (plt.Figure, plt.Axes):
     ax.set_ylabel('Altitude, $h$ [m]')
     ax.grid()
     return fig, ax
+
 
 if __name__ == '__main__':
     default_mission = MissionProfile.from_json('mission_profile_V1.json')

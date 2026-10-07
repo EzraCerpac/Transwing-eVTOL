@@ -6,23 +6,23 @@ from departments.aerodynamics.helper import OutputVal
 
 
 def vlm(ac: AC, alpha: np.ndarray) -> dict[str, any]:
-    data = [asb.VortexLatticeMethod(
-        airplane=ac.parametric,
-        op_point=asb.OperatingPoint(
-            velocity=ac.data.cruise_velocity,
-            alpha=a,
-        )
-    ).run() for a in alpha]
-    data = {output_val.value: np.array([a[output_val.value] for a in data])
-            for output_val in OutputVal}
+    data = [
+        asb.VortexLatticeMethod(airplane=ac.parametric,
+                                op_point=asb.OperatingPoint(
+                                    velocity=ac.data.cruise_velocity,
+                                    alpha=a,
+                                )).run() for a in alpha
+    ]
+    data = {
+        output_val.value: np.array([a[output_val.value] for a in data])
+        for output_val in OutputVal
+    }
     fuselages = ac.parametric.fuselages
-    fus_data = asb.AeroBuildup(
-        airplane=asb.Airplane(fuselages=fuselages),
-        op_point=asb.OperatingPoint(
-            velocity=ac.data.cruise_velocity,
-            alpha=alpha,
-        )
-    ).run()
+    fus_data = asb.AeroBuildup(airplane=asb.Airplane(fuselages=fuselages),
+                               op_point=asb.OperatingPoint(
+                                   velocity=ac.data.cruise_velocity,
+                                   alpha=alpha,
+                               )).run()
     for k in data.keys():
         data[k] += fus_data[k]
     return data

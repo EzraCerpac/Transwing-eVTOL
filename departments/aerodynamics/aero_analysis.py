@@ -40,8 +40,8 @@ class AeroAnalyser:
                  beta: np.ndarray = DEFAULT_DEGREE_RANGE,
                  velocity: np.ndarray = np.linspace(1, 60, RESOLUTION),
                  delta_e: np.ndarray = DEFAULT_DEGREE_RANGE,
-                 trans_val: np.ndarray | float = np.linspace(0, 1, RESOLUTION)
-                 ):
+                 trans_val: np.ndarray | float = np.linspace(0, 1,
+                                                             RESOLUTION)):
         self.ac = ac
         self.atmosphere = asb.Atmosphere(altitude=self.ac.data.cruise_altitude)
 
@@ -80,7 +80,10 @@ class AeroAnalyser:
             (AxisVal.ALPHA, AxisVal.TRANS_VAl): self.calc_aero_alpha_trans,
         }
 
-    def run(self, x_val: AxisVal, y_val: AxisVal, output_val: list[OutputVal] = None):
+    def run(self,
+            x_val: AxisVal,
+            y_val: AxisVal,
+            output_val: list[OutputVal] = None):
         self.calc_func_map[(x_val, y_val)]()
         if output_val is None:
             output_val = list(OutputVal)
@@ -90,7 +93,9 @@ class AeroAnalyser:
     def calc_aero_alpha_velocity(self):
         alpha, velocity = np.meshgrid(self.alpha, self.velocity)
         self.aero = asb.AeroBuildup(
-            airplane=self.ac.parametric_fn(self.trans_val if isinstance(self.trans_val, int | float) else 0),
+            airplane=self.ac.parametric_fn(
+                self.trans_val if isinstance(self.trans_val, int
+                                             | float) else 0),
             op_point=asb.OperatingPoint(
                 atmosphere=self.atmosphere,
                 velocity=velocity.flatten(),
@@ -101,7 +106,9 @@ class AeroAnalyser:
     def calc_aero_alpha_beta(self):
         alpha, beta = np.meshgrid(self.alpha, self.beta)
         self.aero = asb.AeroBuildup(
-            airplane=self.ac.parametric_fn(self.trans_val if isinstance(self.trans_val, int | float) else 0),
+            airplane=self.ac.parametric_fn(
+                self.trans_val if isinstance(self.trans_val, int
+                                             | float) else 0),
             op_point=asb.OperatingPoint(
                 atmosphere=self.atmosphere,
                 velocity=self.ac.data.cruise_velocity,
@@ -114,9 +121,10 @@ class AeroAnalyser:
         alpha, delta_e = np.meshgrid(self.alpha, self.delta_e)
         self.aero = asb.AeroBuildup(
             airplane=airplane_with_control_surface_deflection(
-                self.ac.parametric_fn(self.trans_val if isinstance(self.trans_val, int | float) else 0),
-                delta_e.flatten()
-            ),
+                self.ac.parametric_fn(
+                    self.trans_val if isinstance(self.trans_val, int
+                                                 | float) else 0),
+                delta_e.flatten()),
             op_point=asb.OperatingPoint(
                 atmosphere=self.atmosphere,
                 velocity=self.ac.data.cruise_velocity,
@@ -125,38 +133,39 @@ class AeroAnalyser:
         ).run()
 
     def calc_aero_alpha_trans(self):
-        aero = [asb.AeroBuildup(
-            airplane=ac.parametric_fn(trans_val),
-            op_point=asb.OperatingPoint(
-                atmosphere=self.atmosphere,
-                velocity=self.ac.data.v_stall,
-                alpha=self.alpha,
-            ),
-        ).run() for trans_val in self.trans_val]
-        self.aero = {output_val.value: np.concatenate([a[output_val.value] for a in aero])
-                     for output_val in OutputVal}
+        aero = [
+            asb.AeroBuildup(
+                airplane=ac.parametric_fn(trans_val),
+                op_point=asb.OperatingPoint(
+                    atmosphere=self.atmosphere,
+                    velocity=self.ac.data.v_stall,
+                    alpha=self.alpha,
+                ),
+            ).run() for trans_val in self.trans_val
+        ]
+        self.aero = {
+            output_val.value:
+            np.concatenate([a[output_val.value] for a in aero])
+            for output_val in OutputVal
+        }
 
     @show
     def plot_gradient(
-            self,
-            ouput_val: OutputVal,
-            x_val: AxisVal,
-            y_val: AxisVal,
+        self,
+        ouput_val: OutputVal,
+        x_val: AxisVal,
+        y_val: AxisVal,
     ) -> tuple[plt.Figure, plt.Axes]:
         yy, xx = np.meshgrid(
             self.param_map[y_val]['values'],
             self.param_map[x_val]['values'],
         )
         fig, ax = plt.subplots(figsize=(10, 8))
-        p.contour(
-            xx,
-            yy,
-            self.aero[ouput_val.value].reshape(xx.shape).T,
-            **contour_params[ouput_val]
-        )
+        p.contour(xx, yy, self.aero[ouput_val.value].reshape(xx.shape).T,
+                  **contour_params[ouput_val])
         if not contour_params[ouput_val]['z_log_scale']:
             plt.clim(*np.array([-1, 1]) *
-                      np.max(np.abs(self.aero[ouput_val.value])))
+                     np.max(np.abs(self.aero[ouput_val.value])))
         plt.xlabel(self.param_map[x_val]['label'])
         plt.ylabel(self.param_map[y_val]['label'])
         return fig, ax

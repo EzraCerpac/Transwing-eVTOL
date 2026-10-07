@@ -35,20 +35,27 @@ cl_horizontal = np.minimum(cl_horizontal, cl_max)
 cl = trans_vals * cl_max + (1 - trans_vals) * cl_horizontal
 cd = aero.CD_at_trans_val(trans_vals, CL=cl)
 drag = cd * operating_points_0_alpha.dynamic_pressure() * surfaces
-weight_minus_lift = np.maximum(0, weight - cl * surfaces * operating_points_0_alpha.dynamic_pressure())
-thrust = (weight_minus_lift / np.maximum(np.sin(trans_vals * np.pi / 2), 1e-10)
-          + drag / np.cos(trans_vals * np.pi / 2))
+weight_minus_lift = np.maximum(
+    0, weight - cl * surfaces * operating_points_0_alpha.dynamic_pressure())
+thrust = (
+    weight_minus_lift / np.maximum(np.sin(trans_vals * np.pi / 2), 1e-10) +
+    drag / np.cos(trans_vals * np.pi / 2))
 
 
 def vi_func(x, velocity=0):
-    return x ** 4 + (velocity / six_engine_data.vih) ** 2 * x ** 2 - 1
+    return x**4 + (velocity / six_engine_data.vih)**2 * x**2 - 1
 
 
-vi = np.array([brentq(vi_func, 0, 5, args=velocity) * six_engine_data.vih for velocity in velocities])
-profile_power = (six_engine_data.sigma * six_engine_data.CDpbar / 8
-                 * atmosphere.density() * (six_engine_data.omega * six_engine_data.R) ** 3
-                 * np.pi * six_engine_data.R ** 2
-                 * (1 + 4.65 * velocities ** 2 / (six_engine_data.omega * six_engine_data.R) ** 2))
+vi = np.array([
+    brentq(vi_func, 0, 5, args=velocity) * six_engine_data.vih
+    for velocity in velocities
+])
+profile_power = (six_engine_data.sigma * six_engine_data.CDpbar / 8 *
+                 atmosphere.density() *
+                 (six_engine_data.omega * six_engine_data.R)**3 * np.pi *
+                 six_engine_data.R**2 *
+                 (1 + 4.65 * velocities**2 /
+                  (six_engine_data.omega * six_engine_data.R)**2))
 induced_power = k * thrust * vi
 parasite_power = drag * velocities / np.cos(trans_vals * np.pi / 2)
 total_power = profile_power + induced_power + parasite_power
@@ -76,7 +83,6 @@ p.show_plot(
 #
 # p.plt.plot(velocities, cd, label="CD")
 # p.plt.show()
-
 
 # p.plt.plot(velocities, cd);p.plt.show()
 # p.plt.plot(velocities, drag);p.plt.show()

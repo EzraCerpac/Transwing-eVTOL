@@ -63,40 +63,40 @@ class Optimalisation(Model, ABC):
             for k, v in {
                 # 'end time': self.end_time,
                 'time':
-                    self.time,
+                self.time,
                 'x':
-                    self.dyn.x_e,
+                self.dyn.x_e,
                 # 'z': self.dyn.z_e,
                 'altitude':
-                    self.dyn.altitude,
+                self.dyn.altitude,
                 'u':
-                    self.dyn.u_b if hasattr(self.dyn, 'u_b') else self.dyn.u_e,
+                self.dyn.u_b if hasattr(self.dyn, 'u_b') else self.dyn.u_e,
                 'w':
-                    self.dyn.w_b if hasattr(self.dyn, 'w_b') else self.dyn.w_e,
+                self.dyn.w_b if hasattr(self.dyn, 'w_b') else self.dyn.w_e,
                 'gamma':
-                    self.dyn.theta -
-                    self.dyn.alpha if hasattr(self.dyn, 'theta') else None,
+                self.dyn.theta -
+                self.dyn.alpha if hasattr(self.dyn, 'theta') else None,
                 'alpha':
-                    self.dyn.alpha,
+                self.dyn.alpha,
                 'theta':
-                    self.dyn.theta if hasattr(self.dyn, 'theta') else None,
+                self.dyn.theta if hasattr(self.dyn, 'theta') else None,
                 'q':
-                    self.dyn.q if hasattr(self.dyn, 'q') else None,
+                self.dyn.q if hasattr(self.dyn, 'q') else None,
                 'speed':
-                    self.dyn.speed,
+                self.dyn.speed,
                 'elevator deflection':
-                    self.elevator_deflection,
+                self.elevator_deflection,
                 'CL':
-                    self.CL,
+                self.CL,
                 # 'thrust level': self.thrust_level,
                 'thrust':
-                    self.thrust,
+                self.thrust,
                 'max power':
-                    np.max(self.power),
+                np.max(self.power),
                 'power':
-                    self.power,
+                self.power,
                 'total energy':
-                    self.total_energy,
+                self.total_energy,
             }.items() if v is not None
         }
 
@@ -132,15 +132,20 @@ class Optimalisation(Model, ABC):
 
     def run(self, verbose: bool = True):
         opt_param = {
-            OptParam.MIN_TIME: self.time[-1],
-            OptParam.MIN_DISTANCE: self.dyn.x_e[-1] if not np.isscalar(
-                self.dyn.x_e) else 0,
-            OptParam.MAX_TIME: -self.time[-1],
-            OptParam.MAX_DISTANCE: -self.dyn.x_e[-1] if not np.isscalar(
-                self.dyn.x_e) else 0,
-            OptParam.ENERGY: self.total_energy,
-            OptParam.MAX_POWER: self.max_power,
-            OptParam.TRADE_OFF: self.time[-1] * self.total_energy,
+            OptParam.MIN_TIME:
+            self.time[-1],
+            OptParam.MIN_DISTANCE:
+            self.dyn.x_e[-1] if not np.isscalar(self.dyn.x_e) else 0,
+            OptParam.MAX_TIME:
+            -self.time[-1],
+            OptParam.MAX_DISTANCE:
+            -self.dyn.x_e[-1] if not np.isscalar(self.dyn.x_e) else 0,
+            OptParam.ENERGY:
+            self.total_energy,
+            OptParam.MAX_POWER:
+            self.max_power,
+            OptParam.TRADE_OFF:
+            self.time[-1] * self.total_energy,
         }[self.opt_param]
         # Optimize
         self.opti.minimize(opt_param)
@@ -163,7 +168,9 @@ class Optimalisation(Model, ABC):
         logger.info(
             f"Total energy: {self.params['total energy'] / 3600000:.1f} kWh")
         logger.info(f"Total time: {self.params['time'][-1]:.1f} s")
-        logger.info(f"Total distance: {self.params['x'][-1] / 1000 if not np.isscalar(self.params['x']) else 0:.1f} km")
+        logger.info(
+            f"Total distance: {self.params['x'][-1] / 1000 if not np.isscalar(self.params['x']) else 0:.1f} km"
+        )
         logger.info(f"Max power: {self.params['max power'] / 1000:.1f} kW")
 
     def to_dataframe(self, i_log: int = None) -> pd.DataFrame:
@@ -247,7 +254,7 @@ class Optimalisation(Model, ABC):
         ax2.set_ylabel('Thrust, $T$ [kN]', color='r')
         fig.legend(loc='center left', bbox_to_anchor=(.2, .6), ncol=1)
         # ax2.set_yticks(ax1.get_yticks())
-        ax1.set_ylim(bottom=0)#, top=100)
+        ax1.set_ylim(bottom=0)  #, top=100)
         ax2.set_ylim(bottom=0, top=21)
         ax1.set_xlim(right=20)
 
@@ -264,13 +271,26 @@ class Optimalisation(Model, ABC):
 
     @show
     @save_with_name(lambda self: f"{self.__class__.__name__}_over_distance")
-    def plot_alt_hor_ver_vel_power_over_distance(self) -> tuple[plt.Figure, plt.Axes]:
+    def plot_alt_hor_ver_vel_power_over_distance(
+            self) -> tuple[plt.Figure, plt.Axes]:
         fig, axs = plt.subplots(2, 2, figsize=(15, 10), sharex=True)
         df = self.to_dataframe()
-        axs[0, 0].plot(df['x'] / 1000, df['altitude'], label='Altitude', color='b')
-        axs[0, 1].plot(df['x'] / 1000, df['power'] / 1000, label='Power', color='g')
-        axs[1, 0].plot(df['x'] / 1000, df['u'], label='Horizontal velocity', color='r')
-        axs[1, 1].plot(df['x'] / 1000, -df['w'], label='Vertical velocity', color='m')
+        axs[0, 0].plot(df['x'] / 1000,
+                       df['altitude'],
+                       label='Altitude',
+                       color='b')
+        axs[0, 1].plot(df['x'] / 1000,
+                       df['power'] / 1000,
+                       label='Power',
+                       color='g')
+        axs[1, 0].plot(df['x'] / 1000,
+                       df['u'],
+                       label='Horizontal velocity',
+                       color='r')
+        axs[1, 1].plot(df['x'] / 1000,
+                       -df['w'],
+                       label='Vertical velocity',
+                       color='m')
         for ax in axs.flatten():
             ax.grid()
         for ax in axs[1]:

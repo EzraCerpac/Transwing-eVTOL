@@ -7,18 +7,19 @@ from utility.plotting import show, save
 
 plt = p.plt
 
+
 @show
 def plot_power_over_velocity(
-        velocities: np.ndarray,
-        total_power: np.ndarray,
-        acceleration_power: np.ndarray,
-        power_required: np.ndarray,
-        profile_power: np.ndarray,
-        induced_power: np.ndarray,
-        parasite_power: np.ndarray,
-        times: np.ndarray = None,
-        cut_off_at_transition: bool = False,
-        n_timesteps: np.ndarray = None,
+    velocities: np.ndarray,
+    total_power: np.ndarray,
+    acceleration_power: np.ndarray,
+    power_required: np.ndarray,
+    profile_power: np.ndarray,
+    induced_power: np.ndarray,
+    parasite_power: np.ndarray,
+    times: np.ndarray = None,
+    cut_off_at_transition: bool = False,
+    n_timesteps: np.ndarray = None,
 ) -> (plt.Figure, plt.Axes):
     if cut_off_at_transition:
         assert times is not None, "If cut_off_at_transition is True, you must provide a times array."
@@ -51,31 +52,30 @@ def plot_power_over_velocity(
             # add a label to the line
             ax.text(velocity + .5, 175, f"{time} s", verticalalignment='top')
 
-
     ax.xaxis.set_major_locator(ticker.MultipleLocator(5))
     ax.xaxis.set_minor_locator(ticker.MultipleLocator(1))
     ax.yaxis.set_major_locator(ticker.AutoLocator())
     ax.yaxis.set_minor_locator(ticker.AutoMinorLocator(5))
-
 
     ax.grid(True)
     ax.legend()
 
     return fig, ax
 
+
 @show
 # @save
 def plot_power_over_velocity_and_time(
-        velocities: np.ndarray,
-        total_power: np.ndarray,
-        acceleration_power: np.ndarray,
-        power_required: np.ndarray,
-        profile_power: np.ndarray,
-        induced_power: np.ndarray,
-        parasite_power: np.ndarray,
-        times: np.ndarray = None,
-        cut_off_at_transition: bool = False,
-        n_timesteps: np.ndarray = None,
+    velocities: np.ndarray,
+    total_power: np.ndarray,
+    acceleration_power: np.ndarray,
+    power_required: np.ndarray,
+    profile_power: np.ndarray,
+    induced_power: np.ndarray,
+    parasite_power: np.ndarray,
+    times: np.ndarray = None,
+    cut_off_at_transition: bool = False,
+    n_timesteps: np.ndarray = None,
 ) -> (plt.Figure, plt.Axes):
     if cut_off_at_transition:
         assert times is not None, "If cut_off_at_transition is True, you must provide a times array."

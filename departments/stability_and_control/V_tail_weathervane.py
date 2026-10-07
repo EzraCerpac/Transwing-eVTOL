@@ -33,8 +33,9 @@ class V_tail_weathervane(Model):
 
     @property
     def sv_s(self):
-        C_N_b_f = -2 * self.parametric.fuselages[0].volume() / (self.aircraft.wing.area * self.aircraft.wing.span)
-        C_N_b = 0.0571 # requirement from roskam
+        C_N_b_f = -2 * self.parametric.fuselages[0].volume() / (
+            self.aircraft.wing.area * self.aircraft.wing.span)
+        C_N_b = 0.0571  # requirement from roskam
         CLva = 6.503070975
         b = self.aircraft.wing.span
         lv = 4.748632233

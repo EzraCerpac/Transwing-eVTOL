@@ -3,7 +3,6 @@ import numpy as np
 import sys
 import os
 
-
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
 parent_dir = os.path.abspath(os.path.join(parent_dir, '..'))
@@ -17,9 +16,8 @@ from data.concept_parameters.aircraft import AC
 from sizing_tools.model import Model
 
 
-
-
 class Performance:
+
     def __init__(self, ac: AC) -> None:
         self.ac = ac
         self.parametric = ac.parametric
@@ -30,9 +28,11 @@ class Performance:
         CL_MAX = Aero(self.ac).CL_max
         print(CL_MAX)
         wing_loading = self.aircraft.total_mass * g / self.aircraft.wing.area
-        stall_speed = np.sqrt(2 * wing_loading / (Atmosphere(self.aircraft.cruise_altitude).density() * 1.1 * CL_MAX )) #TODO CLmax
+        stall_speed = np.sqrt(
+            2 * wing_loading /
+            (Atmosphere(self.aircraft.cruise_altitude).density() * 1.1 *
+             CL_MAX))  #TODO CLmax
         return stall_speed  #stall speed in m/s
-    
 
 
 if __name__ == "__main__":

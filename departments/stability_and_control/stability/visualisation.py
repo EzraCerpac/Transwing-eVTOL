@@ -8,6 +8,7 @@ MODEL_SCALE = 5
 
 ac = rot_wing
 
+
 def show_3D_longitudinal(response: ct.TimeResponseData, end_time=5):
     end_index = np.argmin(np.abs(response.time - end_time))
     V = ac.data.cruise_velocity
@@ -21,6 +22,7 @@ def show_3D_longitudinal(response: ct.TimeResponseData, end_time=5):
     dyn.x_e = dyn.time * dyn.speed * np.cos(dyn.gamma)
     dyn.z_e = dyn.time * dyn.speed * np.sin(dyn.gamma)
     dyn.draw(ac.parametric, scale_vehicle_model=MODEL_SCALE)
+
 
 def show_3D_lateral(response: ct.TimeResponseData, end_time=6):
     import pyvista as pv
@@ -53,4 +55,3 @@ def show_3D_lateral(response: ct.TimeResponseData, end_time=6):
     # plotter.camera.Elevation(00)
     plotter.show(interactive=False, full_screen=True)
     plotter.screenshot("roll3D", transparent_background=True, scale=5)
-

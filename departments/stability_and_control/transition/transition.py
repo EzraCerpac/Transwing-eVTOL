@@ -35,7 +35,7 @@ class TransitionOpt(Optimalisation):
         #     self.total_energy <= self.aircraft.mission_profile.energy)
 
     def constraints(self):
-        self.end_time = 60# self.opti.variable(init_guess=20, log_transform=True)
+        self.end_time = 60  # self.opti.variable(init_guess=20, log_transform=True)
         self.time = np.linspace(0, self.end_time, self.n_timesteps)
         self.dyn = asb.DynamicsRigidBody2DBody(
             mass_props=asb.mass_properties_from_radius_of_gyration(
@@ -45,8 +45,8 @@ class TransitionOpt(Optimalisation):
                 radius_of_gyration_z=1),
             x_e=self.opti.variable(init_guess=np.linspace(
                 0, 100, self.n_timesteps),
-                lower_bound=0,
-                upper_bound=self.aircraft.range),
+                                   lower_bound=0,
+                                   upper_bound=self.aircraft.range),
             z_e=self.opti.variable(init_guess=-100,
                                    n_vars=self.n_timesteps,
                                    upper_bound=0),
@@ -68,7 +68,6 @@ class TransitionOpt(Optimalisation):
         )
         self.transval = np.linspace(1, 0, self.n_timesteps)
 
-
         self.opti.subject_to([
             self.dyn.x_e[0] == 0,
             # np.diff(self.dyn.x_e) > 0,
@@ -87,7 +86,7 @@ class TransitionOpt(Optimalisation):
             # self.dyn.alpha[0] == -9,
             # self.thrust_level[0] == 0.5,
             # self.thrust_level < 1,
-            ])
+        ])
 
         # pitchrate = self.dyn.state_derivatives()['gamma']
         # alpha_derivative = self.opti.derivative_of(self.dyn.alpha, self.time,
@@ -106,7 +105,7 @@ class TransitionOpt(Optimalisation):
             # np.diff(self.thrust_level) > -0.01,
             # np.diff(self.elevator_deflection) < 0.1,
             # np.diff(self.elevator_deflection) > -0.1,
-            ])
+        ])
         # self.opti.subject_to([
         #     # np.diff(self.dyn.speed) < 2,
         #     # np.diff(self.dyn.speed) > -2,
@@ -117,12 +116,16 @@ class TransitionOpt(Optimalisation):
         # ])
 
     def dynamics(self):
-        aero = [asb.AeroBuildup(
-            airplane=self.parametric_fn(trans_val),
-            op_point=self.dyn.op_point,
-        ).run() for trans_val in self.transval]
-        aero = {k: np.concatenate([a[k] for a in aero])
-                for k in aero[0].keys()}
+        aero = [
+            asb.AeroBuildup(
+                airplane=self.parametric_fn(trans_val),
+                op_point=self.dyn.op_point,
+            ).run() for trans_val in self.transval
+        ]
+        aero = {
+            k: np.concatenate([a[k] for a in aero])
+            for k in aero[0].keys()
+        }
 
         self.CL = aero['CL']
         self.dyn.add_force(
@@ -135,7 +138,8 @@ class TransitionOpt(Optimalisation):
         )
 
         self.thrust_per_engine = self.opti.variable(
-            init_guess=self.aircraft.total_mass * g / self.parametric.propulsors,
+            init_guess=self.aircraft.total_mass * g /
+            self.parametric.propulsors,
             n_vars=(self.n_timesteps, self.parametric.propulsors),
             log_transform=True,
             lower_bound=0,
@@ -150,8 +154,7 @@ class TransitionOpt(Optimalisation):
                 axes='body',
             )
             self.dyn.add_moment(
-                My=thrust *
-                   np.cross(propulsor.xyz_normal, propulsor.xyz_c)[1],
+                My=thrust * np.cross(propulsor.xyz_normal, propulsor.xyz_c)[1],
                 axes='body',
             )
 

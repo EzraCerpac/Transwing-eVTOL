@@ -26,6 +26,7 @@ class AxisVal(Enum):
     DELTA_E = 'delta_e'
     TRANS_VAl = 'trans_val'
 
+
 Val = Union[OutputVal, AxisVal]
 
 label: dict[Val, str] = {

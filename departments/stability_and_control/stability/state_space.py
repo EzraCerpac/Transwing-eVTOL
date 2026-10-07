@@ -32,15 +32,23 @@ def SS_symetric(C_X_u, C_X_alpha, C_Z_0, C_X_q, C_Z_u, C_Z_alpha, C_X_0, C_Z_q, 
     ])
     A = np.linalg.inv(P) @ Q
     B = np.linalg.inv(P) @ R
-    C = np.diag([1, np.degrees(1), np.degrees(1), np.degrees(1) * V /c])
+    C = np.diag([1, np.degrees(1), np.degrees(1), np.degrees(1) * V / c])
     D = np.zeros_like(B)
 
-    sys = ct.ss(A, B, C, D,
+    sys = ct.ss(A,
+                B,
+                C,
+                D,
                 inputs=[r'$\delta_e$ [rad]'],
-                states=[r'$\hat{u}$', r'$\alpha$', r'$\theta$', r'$\frac{q\hat{c}}{V}$'],
-                outputs=[r'$\hat{u} [m/s]$', r'$\alpha [deg]$', r'$\theta$ [deg]', r'$q$ [deg/s]'],
-                name='Longitudinal Dynamics'
-                )
+                states=[
+                    r'$\hat{u}$', r'$\alpha$', r'$\theta$',
+                    r'$\frac{q\hat{c}}{V}$'
+                ],
+                outputs=[
+                    r'$\hat{u} [m/s]$', r'$\alpha [deg]$', r'$\theta$ [deg]',
+                    r'$q$ [deg/s]'
+                ],
+                name='Longitudinal Dynamics')
 
     alpha_0 = 0
     theta_0 = 0
@@ -75,34 +83,34 @@ def SS_symetric(C_X_u, C_X_alpha, C_Z_0, C_X_q, C_Z_u, C_Z_alpha, C_X_0, C_Z_q, 
 
 
 def SS_asymetric(
-        C_L,
-        C_Y_beta,
-        C_Y_beta_dot,
-        C_l_beta,
-        C_l_beta_dot,
-        C_n_beta,
-        C_n_beta_dot,
-        C_Y_p,
-        C_l_p,
-        C_n_p,
-        C_Y_r,
-        C_l_r,
-        C_n_r,
-        C_Y_delta_a,
-        C_l_delta_a,
-        C_n_delta_a,
-        C_Y_delta_r,
-        C_l_delta_r,
-        C_n_delta_r,
-        mu_b,
-        b,
-        V,
-        K_X_squared,
-        K_XZ,
-        K_Z_squared,
-        T=1,
-        u=None,
-        show_3D=False,
+    C_L,
+    C_Y_beta,
+    C_Y_beta_dot,
+    C_l_beta,
+    C_l_beta_dot,
+    C_n_beta,
+    C_n_beta_dot,
+    C_Y_p,
+    C_l_p,
+    C_n_p,
+    C_Y_r,
+    C_l_r,
+    C_n_r,
+    C_Y_delta_a,
+    C_l_delta_a,
+    C_n_delta_a,
+    C_Y_delta_r,
+    C_l_delta_r,
+    C_n_delta_r,
+    mu_b,
+    b,
+    V,
+    K_X_squared,
+    K_XZ,
+    K_Z_squared,
+    T=1,
+    u=None,
+    show_3D=False,
 ):
     Q = -np.array([
         [C_Y_beta, C_L, C_Y_p, C_Y_r - 4 * mu_b],
@@ -121,7 +129,7 @@ def SS_asymetric(
     ])
     P = b / V * np.array([
         [C_Y_beta_dot - 2 * mu_b, 0, 0, 0],
-        [0, -1/2, 0, 0],
+        [0, -1 / 2, 0, 0],
         [0, 0, -4 * mu_b * K_X_squared, 4 * mu_b * K_XZ],
         [C_n_beta_dot, 0, 4 * mu_b * K_XZ, -4 * mu_b * K_Z_squared],
     ])
@@ -132,12 +140,17 @@ def SS_asymetric(
     D = np.zeros_like(B)
     C = np.degrees(C)
 
-    sys = ct.ss(A, B, C, D,
-                inputs=[r'$\delta_a$'],
-                states=[r'$\beta$', r'$\phi$', r'$\frac{pb}{2V}$', r'$\frac{rb}{2V}$'],
-                outputs=[r'$\beta$ [deg]', r'$\phi$ [deg]', r'$p$ [deg/s]', r'$r$ [deg/s]'],
-                name='Lateral Dynamics'
-                )
+    sys = ct.ss(
+        A,
+        B,
+        C,
+        D,
+        inputs=[r'$\delta_a$'],
+        states=[r'$\beta$', r'$\phi$', r'$\frac{pb}{2V}$', r'$\frac{rb}{2V}$'],
+        outputs=[
+            r'$\beta$ [deg]', r'$\phi$ [deg]', r'$p$ [deg/s]', r'$r$ [deg/s]'
+        ],
+        name='Lateral Dynamics')
 
     num = 1000
     T = np.linspace(0, T, num)
@@ -167,7 +180,6 @@ def SS_asymetric(
     # ct.pole_zero_plot(sys_pz, grid=True)
     # plt.show()
     return response.outputs[2], T, eigvals  #roll rate, time and eigenvalues
-
 
 
 def cessna_SS(T=1):
@@ -234,7 +246,6 @@ def cessna_SS(T=1):
     for name in dir():
         if name.startswith('C_'):
             print(name, '=', eval(name))
-
 
 
 if __name__ == '__main__':
